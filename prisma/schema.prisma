@@ -19,6 +19,7 @@ model Store {
   addressId     String
   address       Address        @relation(fields: [addressId], references: [id])
   storeContacts StoreContact[]
+  users         StoreUser[]
 }
 
 model Category {
@@ -59,4 +60,15 @@ model Address {
   state   String
   zipCode String
   stores  Store[]
+}
+
+model StoreUser {
+  id       String @id @default(uuid())
+  name     String
+  storeId  String
+  store    Store  @relation(fields: [storeId], references: [id])
+  username String
+  password String
+
+  @@unique([storeId, username])
 }
