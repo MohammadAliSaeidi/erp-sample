@@ -7,13 +7,9 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import {
-	Field,
-	FieldDescription,
-	FieldGroup,
-	FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import React from "react";
 
 export function LoginForm({
 	className,
@@ -21,10 +17,10 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
 	return (
 		<div className={cn("flex flex-col gap-6", className)} {...props}>
-			<Card>
+			<Card className="backdrop-blur-2xl bg-card/5 border-border/10 border backdrop-brightness-125">
 				<CardHeader>
-					<CardTitle>Login</CardTitle>
-					<CardDescription>
+					<CardTitle className="text-white/90">Login</CardTitle>
+					<CardDescription className="text-white/50">
 						Enter your Username and Password below to login to
 						your store.
 					</CardDescription>
@@ -33,10 +29,13 @@ export function LoginForm({
 					<form>
 						<FieldGroup>
 							<Field>
-								<FieldLabel htmlFor="email">
+								<LoginFieldLabel
+									htmlFor="Username"
+									className="text-white/70"
+								>
 									Email
-								</FieldLabel>
-								<Input
+								</LoginFieldLabel>
+								<LoginInput
 									id="email"
 									type="email"
 									placeholder="m@example.com"
@@ -45,17 +44,14 @@ export function LoginForm({
 							</Field>
 							<Field>
 								<div className="flex items-center">
-									<FieldLabel htmlFor="password">
-										Password
-									</FieldLabel>
-									<a
-										href="#"
-										className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+									<LoginFieldLabel
+										htmlFor="password"
+										className="text-white/70"
 									>
-										Forgot your password?
-									</a>
+										Password
+									</LoginFieldLabel>
 								</div>
-								<Input
+								<LoginInput
 									id="password"
 									type="password"
 									required
@@ -63,18 +59,33 @@ export function LoginForm({
 							</Field>
 							<Field>
 								<Button type="submit">Login</Button>
-								<Button variant="outline" type="button">
-									Login with Google
-								</Button>
-								<FieldDescription className="text-center">
-									Don&apos;t have an account?{" "}
-									<a href="#">Sign up</a>
-								</FieldDescription>
 							</Field>
 						</FieldGroup>
 					</form>
 				</CardContent>
 			</Card>
 		</div>
+	);
+}
+
+function LoginInput(props: React.ComponentProps<typeof Input>) {
+	return (
+		<Input
+			{...props}
+			className={cn(
+				"bg-transparent text-white border-white/30 border placeholder-white/30",
+				props.className,
+			)}
+		/>
+	);
+}
+
+
+function LoginFieldLabel(props: React.ComponentProps<typeof FieldLabel>) {
+	return (
+		<FieldLabel
+			{...props}
+			className={cn("text-white/70", props.className)}
+		/>
 	);
 }
