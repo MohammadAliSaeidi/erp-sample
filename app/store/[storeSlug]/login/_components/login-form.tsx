@@ -1,4 +1,5 @@
-import { cn } from "@/lib/utils";
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -9,12 +10,29 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { LoginBody, loginBodySchema } from "@/lib/schema/auth";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
+import { useForm } from "react-hook-form";
 
-export function LoginForm({
-	className,
-	...props
-}: React.ComponentProps<"div">) {
+export type LoginFormProps = React.ComponentProps<"div"> & {
+	storeSlug: string;
+};
+
+export function LoginForm({ className, ...props }: LoginFormProps) {
+	const { handleSubmit } = useForm<LoginBody>({
+		defaultValues: {
+			username: "",
+			password: "",
+		},
+		resolver: zodResolver(loginBodySchema),
+	});
+
+	const onSubmit = handleSubmit(async (formValues: LoginBody) => {
+		
+	});
+
 	return (
 		<div className={cn("flex flex-col gap-6", className)} {...props}>
 			<Card className="backdrop-blur-2xl bg-card/5 border-border/10 border backdrop-brightness-125">
@@ -26,7 +44,7 @@ export function LoginForm({
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<form>
+					<form onSubmit={onSubmit}>
 						<FieldGroup>
 							<Field>
 								<LoginFieldLabel
@@ -79,7 +97,6 @@ function LoginInput(props: React.ComponentProps<typeof Input>) {
 		/>
 	);
 }
-
 
 function LoginFieldLabel(props: React.ComponentProps<typeof FieldLabel>) {
 	return (

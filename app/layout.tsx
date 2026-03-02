@@ -1,7 +1,9 @@
+import NextTopLoader from "nextjs-toploader";
 import { DirectionProvider } from "@/components/ui/direction";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
 
 const publicSans = Public_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -27,9 +29,15 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" className={publicSans.variable}>
+			<Script
+				src="//unpkg.com/react-scan/dist/auto.global.js"
+				crossOrigin="anonymous"
+				strategy="beforeInteractive"
+			/>
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
+				<NextTopLoader color="var(--primary)"/>
 				<DirectionProvider dir="rtl" direction="rtl">
 					{children}
 				</DirectionProvider>
