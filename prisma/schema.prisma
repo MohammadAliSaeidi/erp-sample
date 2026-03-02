@@ -20,6 +20,7 @@ model Store {
   address       Address        @relation(fields: [addressId], references: [id])
   storeContacts StoreContact[]
   users         StoreUser[]
+  slug          String         @unique
 }
 
 model Category {
