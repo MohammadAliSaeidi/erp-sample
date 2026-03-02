@@ -1,18 +1,14 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
+import { getStoreSlugFromPath } from "./utils/get-store-slug-from-path";
 
-const LOGIN_PAGES = {
-	"/dashboard": "/login",
-	"/manager": "/manager/login",
-} as const;
+const LOGIN_PAGES = {} as const;
 
 type LoginPagePrefix = keyof typeof LOGIN_PAGES;
 const LOGIN_PAGE_PREFIXES = Object.keys(LOGIN_PAGES) as LoginPagePrefix[];
 
 function getStoreLoginPath(currentPath: string): string | null {
-	const match = currentPath.match(/^\/store\/[a-zA-Z1-9\-\_]+\/.*/g);
-	if (!match) return null;
+	const storeSlug = getStoreSlugFromPath(currentPath);
 
-	const [, storeSlug] = match;
 	return `/store/${storeSlug}/login`;
 }
 
