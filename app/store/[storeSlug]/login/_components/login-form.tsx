@@ -1,27 +1,25 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useParamBasedRedirect } from "@/hooks/use-safe-redirect";
 import { LoginBody, loginBodySchema } from "@/lib/schema/auth";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
-import { useForm } from "react-hook-form";
+import { EyeClosedIcon, EyeIcon } from "lucide-react";
+import React, { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useLoginMutation } from "../_hooks/use-log-in-mutation";
 
 export type LoginFormProps = React.ComponentProps<"div"> & {
 	storeSlug: string;
 };
 
-export function LoginForm({ className, ...props }: LoginFormProps) {
-	const { handleSubmit } = useForm<LoginBody>({
+export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
+	const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+	const { handleSubmit, control } = useForm<LoginBody>({
 		defaultValues: {
 			username: "",
 			password: "",
@@ -29,8 +27,14 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
 		resolver: zodResolver(loginBodySchema),
 	});
 
+	const { mutate: login } = useLoginMutation();
+	const safeRedirect = useParamBasedRedirect({
+		paramKey: "redirect",
+		defaultPath: `/store/${storeSlug}/dashboard`,
+	});
+
 	const onSubmit = handleSubmit(async (formValues: LoginBody) => {
-		
+		login(formValues, { onSuccess: () => safeRedirect() });
 	});
 
 	return (
@@ -39,40 +43,56 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
 				<CardHeader>
 					<CardTitle className="text-white/90">Login</CardTitle>
 					<CardDescription className="text-white/50">
-						Enter your Username and Password below to login to
-						your store.
+						Enter your Username and Password below to login to your store.
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<form onSubmit={onSubmit}>
 						<FieldGroup>
 							<Field>
-								<LoginFieldLabel
-									htmlFor="Username"
-									className="text-white/70"
-								>
-									Email
-								</LoginFieldLabel>
-								<LoginInput
-									id="email"
-									type="email"
-									placeholder="m@example.com"
-									required
+								<Controller
+									control={control}
+									name="username"
+									render={({ field, fieldState: { invalid, error } }) => (
+										<Field data-invalid={invalid}>
+											<LoginFieldLabel htmlFor="login-username-field">
+												Username
+											</LoginFieldLabel>
+											<LoginInput
+												{...field}
+												id="login-username-field"
+												aria-invalid={invalid}
+												key={"login-username-field"}
+												placeholder="admin_1234"
+												autoComplete="username"
+												type="text"
+											/>
+											{invalid && <FieldError errors={[error]} />}
+										</Field>
+									)}
 								/>
 							</Field>
 							<Field>
-								<div className="flex items-center">
-									<LoginFieldLabel
-										htmlFor="password"
-										className="text-white/70"
-									>
-										Password
-									</LoginFieldLabel>
-								</div>
-								<LoginInput
-									id="password"
-									type="password"
-									required
+								<Controller
+									control={control}
+									name="password"
+									render={({ field, fieldState: { invalid, error } }) => (
+										<Field>
+											<LoginFieldLabel htmlFor="login-password-field">
+												Password
+											</LoginFieldLabel>
+											<LoginInput
+												{...field}
+												id="login-password-field"
+												key="login-password-field"
+												type={isPasswordVisible ? "text" : "password"}
+												aria-invalid={invalid}
+												placeholder="1234"
+												endIcon={isPasswordVisible ? <EyeIcon /> : <EyeClosedIcon />}
+											/>
+											{invalid && <FieldError errors={[error]} />}
+										</Field>
+									)}
 								/>
 							</Field>
 							<Field>
@@ -99,10 +119,5 @@ function LoginInput(props: React.ComponentProps<typeof Input>) {
 }
 
 function LoginFieldLabel(props: React.ComponentProps<typeof FieldLabel>) {
-	return (
-		<FieldLabel
-			{...props}
-			className={cn("text-white/70", props.className)}
-		/>
-	);
+	return <FieldLabel {...props} className={cn("text-white/70", props.className)} />;
 }

@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 
-const ROUNDED_SALTS = 10;
+const ROUNDED_SALTS = 12;
 const BCRYPT_HASH_PREFIX = "$2";
 
 /**

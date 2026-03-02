@@ -1,0 +1,7 @@
+:root {
+     --store-header-height: 5rem;
+}
+
+.header {
+     height: var(--store-header-height)
+}

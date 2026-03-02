@@ -1,16 +1,15 @@
-// import DarkVeil from "@/components/DarkVeil";
+"use client";
+
+import DarkVeil from "@/components/DarkVeil";
 import { LoginForm } from "./_components/login-form";
+import { useStoreUrlSlug } from "@/hooks/use-store-url-slug";
 
-type LoginPageProps = {
-	params: Promise<{storeSlug: string}>
-}
+export default function LoginPage() {
+	const storeSlug = useStoreUrlSlug()
 
-export default async function LoginPage(props: LoginPageProps) {
-	const { storeSlug } = await props.params;
-	
 	return (
 		<div className="flex min-h-svh w-full items-center justify-center relative p-6 md:p-10">
-			{/* <div className="absolute inset-0">
+			<div className="absolute inset-0">
 				<DarkVeil
 					hueShift={0}
 					noiseIntensity={0.05}
@@ -20,7 +19,7 @@ export default async function LoginPage(props: LoginPageProps) {
 					warpAmount={0}
 					maxFps={20}
 				/>
-			</div> */}
+			</div>
 			<div className="w-full max-w-sm z-100">
 				<LoginForm storeSlug={storeSlug} />
 			</div>

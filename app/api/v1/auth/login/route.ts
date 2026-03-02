@@ -17,7 +17,7 @@ export const POST = withValidatedBody(
 			return NextResponse.json(
 				{},
 				{
-					status: 404,
+					status: 401,
 					statusText: "incorrect Username or Password",
 				},
 			);
