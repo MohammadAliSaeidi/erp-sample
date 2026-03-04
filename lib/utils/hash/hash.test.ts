@@ -63,9 +63,7 @@ test("isHashMatch rejects non-string data/encrypted values", async () => {
 });
 
 test("isHashMatch rejects hashes without bcrypt prefix", async () => {
-	await expect(isHashMatch("plain", "invalid-hash")).rejects.toThrow(
-		"Encrypted value does not look like a bcrypt hash",
-	);
+	await expect(isHashMatch("plain", "invalid-hash")).resolves.toBe(false)
 });
 
 test("isHashMatch surfaces bcrypt compare failures", async () => {
@@ -75,8 +73,6 @@ test("isHashMatch surfaces bcrypt compare failures", async () => {
 		.spyOn(bcrypt, "compare" as any)
 		.mockRejectedValueOnce(new Error("boom"));
 
-	await expect(isHashMatch("plain", hashString)).rejects.toThrow(
-		"Failed to compare hash: boom",
-	);
+	await expect(isHashMatch("plain", hashString)).resolves.toBe(false)
 	expect(spy).toHaveBeenCalledWith("plain", hashString);
 });

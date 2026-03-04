@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 
 const ROUNDED_SALTS = 12;
-const BCRYPT_HASH_PREFIX = "$2";
 
 /**
  * Ensures the provided value is a string.
@@ -26,7 +25,8 @@ export async function hash(input: string): Promise<string> {
 	try {
 		return await bcrypt.hash(input, ROUNDED_SALTS);
 	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
+		const message =
+			error instanceof Error ? error.message : String(error);
 		throw new Error(`Failed to hash input: ${message}`);
 	}
 }
@@ -36,8 +36,6 @@ export async function hash(input: string): Promise<string> {
  * @param data - The plain text value to verify.
  * @param encrypted - The bcrypt hash to compare against.
  * @returns `true` when the values match, `false` otherwise.
- * @throws TypeError when either argument is not a string.
- * @throws Error when the hash does not look like bcrypt output or bcrypt.compare fails.
  */
 export async function isHashMatch(
 	data: string,
@@ -46,14 +44,12 @@ export async function isHashMatch(
 	assertString(data, "data");
 	assertString(encrypted, "encrypted");
 
-	if (!encrypted.startsWith(BCRYPT_HASH_PREFIX)) {
-		throw new Error("Encrypted value does not look like a bcrypt hash");
-	}
-
 	try {
 		return await bcrypt.compare(data, encrypted);
 	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
-		throw new Error(`Failed to compare hash: ${message}`);
+		const message =
+			error instanceof Error ? error.message : String(error);
+		console.log(message);
+		return false;
 	}
 }
