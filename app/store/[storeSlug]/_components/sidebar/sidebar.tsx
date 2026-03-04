@@ -17,7 +17,7 @@ export default function AppSidebar({
 			{...props}
 		>
 			<SidebarContent>
-				<NavMain items={sidebarData.navMain} />
+				<NavMain items={sidebarData} />
 			</SidebarContent>
 		</Sidebar>
 	);
