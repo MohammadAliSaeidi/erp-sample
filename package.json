@@ -21,6 +21,7 @@
     "@tanstack/react-query-devtools": "^5.91.3",
     "@types/bcrypt": "^6.0.0",
     "@types/jest": "^30.0.0",
+    "ag-grid-react": "^35.1.0",
     "axios": "^1.13.6",
     "bcrypt": "^6.0.0",
     "class-variance-authority": "^0.7.1",
