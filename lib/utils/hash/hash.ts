@@ -7,9 +7,9 @@ const ROUNDED_SALTS = 12;
  * @throws TypeError when the value is not a string.
  */
 function assertString(value: unknown, name: string): asserts value is string {
-	if (typeof value !== "string") {
-		throw new TypeError(`${name} must be a string`);
-	}
+  if (typeof value !== "string") {
+    throw new TypeError(`${name} must be a string`);
+  }
 }
 
 /**
@@ -20,15 +20,14 @@ function assertString(value: unknown, name: string): asserts value is string {
  * @throws Error when bcrypt fails.
  */
 export async function hash(input: string): Promise<string> {
-	assertString(input, "input");
+  assertString(input, "input");
 
-	try {
-		return await bcrypt.hash(input, ROUNDED_SALTS);
-	} catch (error) {
-		const message =
-			error instanceof Error ? error.message : String(error);
-		throw new Error(`Failed to hash input: ${message}`);
-	}
+  try {
+    return await bcrypt.hash(input, ROUNDED_SALTS);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to hash input: ${message}`);
+  }
 }
 
 /**
@@ -38,18 +37,17 @@ export async function hash(input: string): Promise<string> {
  * @returns `true` when the values match, `false` otherwise.
  */
 export async function isHashMatch(
-	data: string,
-	encrypted: string,
+  data: string,
+  encrypted: string,
 ): Promise<boolean> {
-	assertString(data, "data");
-	assertString(encrypted, "encrypted");
+  assertString(data, "data");
+  assertString(encrypted, "encrypted");
 
-	try {
-		return await bcrypt.compare(data, encrypted);
-	} catch (error) {
-		const message =
-			error instanceof Error ? error.message : String(error);
-		console.log(message);
-		return false;
-	}
+  try {
+    return await bcrypt.compare(data, encrypted);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.log(message);
+    return false;
+  }
 }

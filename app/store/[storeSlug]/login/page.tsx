@@ -1,14 +1,14 @@
 "use client";
 
 import DarkVeil from "@/components/DarkVeil";
-import { LoginForm } from "./_components/login-form";
 import { useStoreUrlSlug } from "@/hooks/use-store-url-slug";
+import { LoginForm } from "./_components/login-form";
 
 export default function LoginPage() {
-	const storeSlug = useStoreUrlSlug()
+	const storeSlug = useStoreUrlSlug();
 
 	return (
-		<div className="flex min-h-svh w-full items-center justify-center relative p-6 md:p-10">
+		<div className="flex min-h-svh w-svw items-center justify-center relative p-6 md:p-10 bg-black overflow-hidden">
 			<div className="absolute inset-0">
 				<DarkVeil
 					hueShift={0}
@@ -21,7 +21,7 @@ export default function LoginPage() {
 				/>
 			</div>
 			<div className="w-full max-w-sm z-100">
-				<LoginForm storeSlug={storeSlug} />
+				<LoginForm storeSlug={storeSlug as string} />
 			</div>
 		</div>
 	);

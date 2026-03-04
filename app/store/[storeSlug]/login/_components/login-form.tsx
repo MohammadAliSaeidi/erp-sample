@@ -1,9 +1,22 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { SpinnerCustom } from "@/components/ui/spinner";
+import { useIsHydrated } from "@/hooks/use-is-hydrated";
 import { useParamBasedRedirect } from "@/hooks/use-safe-redirect";
 import { LoginBody, loginBodySchema } from "@/lib/schema/auth";
 import { cn } from "@/lib/utils";
@@ -19,6 +32,8 @@ export type LoginFormProps = React.ComponentProps<"div"> & {
 
 export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
 	const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+	const isHydrated = useIsHydrated();
+
 	const { handleSubmit, control } = useForm<LoginBody>({
 		defaultValues: {
 			username: "",
@@ -88,7 +103,9 @@ export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
 												type={isPasswordVisible ? "text" : "password"}
 												aria-invalid={invalid}
 												placeholder="1234"
-												endIcon={isPasswordVisible ? <EyeIcon /> : <EyeClosedIcon />}
+												endIcon={
+													isPasswordVisible ? <EyeIcon /> : <EyeClosedIcon />
+												}
 											/>
 											{invalid && <FieldError errors={[error]} />}
 										</Field>
@@ -96,7 +113,9 @@ export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
 								/>
 							</Field>
 							<Field>
-								<Button type="submit">Login</Button>
+								<Button disabled={!isHydrated} type="submit">
+									{isHydrated ? "Login" : <SpinnerCustom />}
+								</Button>
 							</Field>
 						</FieldGroup>
 					</form>
@@ -119,5 +138,7 @@ function LoginInput(props: React.ComponentProps<typeof Input>) {
 }
 
 function LoginFieldLabel(props: React.ComponentProps<typeof FieldLabel>) {
-	return <FieldLabel {...props} className={cn("text-white/70", props.className)} />;
+	return (
+		<FieldLabel {...props} className={cn("text-white/70", props.className)} />
+	);
 }
