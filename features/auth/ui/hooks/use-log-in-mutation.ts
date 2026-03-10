@@ -1,5 +1,5 @@
 import { mutationOptions, useMutation } from "@tanstack/react-query";
-import { login } from "../_services/api/login";
+import { login } from "../../../../app/store/[storeSlug]/login/_services/api/login";
 
 export const buildLoginMutationOptions = () => {
 	return mutationOptions({

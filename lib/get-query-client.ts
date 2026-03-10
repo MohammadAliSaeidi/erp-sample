@@ -3,6 +3,7 @@ import {
   defaultShouldDehydrateQuery,
   isServer,
 } from "@tanstack/react-query";
+import { cache } from "react";
 
 function makeQueryClient() {
   return new QueryClient({
@@ -21,11 +22,12 @@ function makeQueryClient() {
 }
 
 let browserQueryClient: QueryClient | undefined = undefined;
+const getServerQueryClient = cache(makeQueryClient);
 
 export function getQueryClient() {
   if (isServer) {
-    // Server: always make a new query client
-    return makeQueryClient();
+    // Server: cache one query client per request/render tree
+    return getServerQueryClient();
   } else {
     // Browser: make a new query client if we don't already have one
     // This is very important, so we don't re-make a new client if React

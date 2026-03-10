@@ -21,12 +21,17 @@ model Store {
   storeContacts StoreContact[]
   users         StoreUser[]
   slug          String         @unique
+  categories    Category[]
+
+  roles Role[]
 }
 
 model Category {
-  id    String @id @default(uuid())
-  name  String
-  items Item[]
+  id      String @id @default(uuid())
+  storeId String
+  name    String @unique
+  items   Item[]
+  store   Store  @relation(fields: [storeId], references: [id])
 }
 
 model Item {
@@ -70,6 +75,35 @@ model StoreUser {
   store    Store  @relation(fields: [storeId], references: [id])
   username String
   password String
+  roleId   String
+  role     Role   @relation(fields: [roleId], references: [id])
 
   @@unique([storeId, username])
+}
+
+model Permission {
+  id              String           @id @default(uuid())
+  key             String           @unique
+  rolePermissions RolePermission[]
+}
+
+model Role {
+  id              String           @id @default(uuid())
+  name            String
+  storeId         String
+  store           Store            @relation(fields: [storeId], references: [id])
+  rolePermissions RolePermission[]
+  admins          StoreUser[]
+
+  @@unique([storeId, name])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
 }
