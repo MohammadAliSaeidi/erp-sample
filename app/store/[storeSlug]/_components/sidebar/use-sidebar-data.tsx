@@ -17,7 +17,9 @@ export const useSidebarData = (): NavMainItem[] => {
 			items: [
 				{
 					title: "Items",
-					url: storeSlug ? URLS.STORE.INVENTORY.ITEMS.LIST(storeSlug) : "#",
+					url: storeSlug
+						? URLS.STORE.INVENTORY.ITEMS.LIST(storeSlug)
+						: "#",
 					icon: <BoxIcon />,
 				},
 				{

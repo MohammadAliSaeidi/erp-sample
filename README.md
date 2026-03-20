@@ -102,6 +102,7 @@ DB, env, mailer, queue → server/
 Pure util, 3+ features → shared/
 Reusable UI component → ui/
 Just a route or page → app/
+
 # API Layer
 
 This module handles all HTTP communication and server state management. It is split into two responsibilities: **fetching** and **caching**.
@@ -125,10 +126,10 @@ Both expose the same `ApiClient` interface (`get`, `post`, `put`, `delete`), so 
 
 Any response with a `401 Unauthorized` status triggers an automatic redirect to the appropriate login page — determined by the current path.
 
-| Context | Example path | Redirects to |
-|---|---|---|
+| Context         | Example path      | Redirects to        |
+| --------------- | ----------------- | ------------------- |
 | Store dashboard | `/store/acme/...` | `/store/acme/login` |
-| Other | `/admin/...` | `/login` |
+| Other           | `/admin/...`      | `/login`            |
 
 This is handled transparently by the client, so call sites don't need to manage auth failures themselves.
 

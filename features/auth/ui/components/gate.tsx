@@ -11,14 +11,14 @@ import { usePermissions } from "../hooks/use-permissions";
 type GateBehavior = "hide" | "disable" | "message";
 
 type GateProps = {
-	// One permission or many — all must be satisfied
-	permission: Permission | Permission[];
-	children: ReactNode;
-	// Custom fallback for "hide" behavior (e.g. an upgrade CTA)
-	fallback?: ReactNode;
-	behavior?: GateBehavior;
-	// Optional custom message for "message" behavior
-	noAccessMessage?: string;
+  // One permission or many — all must be satisfied
+  permission: Permission | Permission[];
+  children: ReactNode;
+  // Custom fallback for "hide" behavior (e.g. an upgrade CTA)
+  fallback?: ReactNode;
+  behavior?: GateBehavior;
+  // Optional custom message for "message" behavior
+  noAccessMessage?: string;
 };
 
 // Keeps permission logic out of feature components entirely.
@@ -42,36 +42,36 @@ type GateProps = {
 //   </Gate>
 
 export const Gate = ({
-	permission,
-	children,
-	fallback = null,
-	behavior = "hide",
-	noAccessMessage = "You don't have permission to perform this action.",
+  permission,
+  children,
+  fallback = null,
+  behavior = "hide",
+  noAccessMessage = "You don't have permission to perform this action.",
 }: GateProps) => {
-	const { can } = usePermissions();
-	const allowed = can(permission);
+  const { can } = usePermissions();
+  const allowed = can(permission);
 
-	if (allowed) return <>{children}</>;
+  if (allowed) return <>{children}</>;
 
-	if (behavior === "message") {
-		return (
-			<p className="text-sm text-muted-foreground" role="status">
-				{noAccessMessage}
-			</p>
-		);
-	}
+  if (behavior === "message") {
+    return (
+      <p className="text-sm text-muted-foreground" role="status">
+        {noAccessMessage}
+      </p>
+    );
+  }
 
-	if (behavior === "disable") {
-		return (
-			<div
-				className="pointer-events-none select-none opacity-50"
-				aria-disabled="true"
-			>
-				{children}
-			</div>
-		);
-	}
+  if (behavior === "disable") {
+    return (
+      <div
+        className="pointer-events-none select-none opacity-50"
+        aria-disabled="true"
+      >
+        {children}
+      </div>
+    );
+  }
 
-	// behavior === "hide"
-	return <>{fallback}</>;
+  // behavior === "hide"
+  return <>{fallback}</>;
 };
