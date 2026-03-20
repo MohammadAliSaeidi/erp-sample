@@ -1,4 +1,4 @@
-import { Permission } from "../types/permission.type";
+import { Permission, PermissionEnum } from "../types/permission.type";
 
 // Use these constants in route definitions and tests instead of raw strings.
 // Auto-complete works, typos are caught at compile time.
@@ -41,5 +41,5 @@ export const PERMISSIONS = {
 // Flat list of every permission. Used to seed the DB and for super-admin roles.
 
 export const ALL_PERMISSIONS: Permission[] = Object.values(PERMISSIONS).flatMap(
-	(group) => Object.values(group) as Permission[],
+  (group) => Object.values(group) as Permission[],
 );

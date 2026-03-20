@@ -3,7 +3,7 @@ import { rolePermissionRepositoryBuilder } from "./domain/repositories/permissio
 import { buildJwtService } from "./domain/services/jwt.service";
 import { permissionCacheBuilder } from "./domain/services/permission-cache.service";
 import { buildPermissionService } from "./domain/services/permission.service";
-import { makeWithAuthorization } from "./domain/utils/with-authorization";
+import { buildWithAuthorization } from "./domain/utils/with-authorization";
 
 type AuthModuleDeps = {
 	prismaClient: PrismaClient;
@@ -13,7 +13,7 @@ type AuthModuleDeps = {
 
 export const createAuthModule = (params: AuthModuleDeps) => {
 	const { prismaClient, jwtSecret, cacheTtlMs } = params;
-	
+
 	const jwtService = buildJwtService(jwtSecret);
 	const permissionCache = permissionCacheBuilder();
 	const permissionRepository = rolePermissionRepositoryBuilder(prismaClient);
@@ -23,7 +23,7 @@ export const createAuthModule = (params: AuthModuleDeps) => {
 		cacheTtlMs,
 	);
 
-	const withAuthorization = makeWithAuthorization(
+	const withAuthorization = buildWithAuthorization(
 		jwtService,
 		permissionService,
 	);

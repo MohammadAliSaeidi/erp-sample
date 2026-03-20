@@ -1,5 +1,5 @@
 import { LoginBody } from "@/features/auth/domain/types/login-body.type";
-import { AxiosInstance } from "axios";
+import { ApiClient } from "@/features/shared/lib/api-client";
 
-export const login = async (http: AxiosInstance, body: LoginBody) =>
-     await http.post<LoginBody>("/api/v1/auth/login", body);
+export const login = async (body: LoginBody, apiClient: ApiClient) =>
+	await apiClient.post<LoginBody>("/api/v1/auth/login", body);

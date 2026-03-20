@@ -1,4 +1,4 @@
-import { Prettify } from "@/types/prettify";
+import { Prettify } from "@/features/shared/types/prettify.type";
 import { create, StoreApi, UseBoundStore } from "zustand";
 import { Permission } from "../domain/types/permission.type";
 

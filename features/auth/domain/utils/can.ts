@@ -40,9 +40,9 @@ import { Permission } from "../types/permission.type";
  * }, [userPermissions]);
  */
 export const can = (
-	userPermissions: Permission[],
-	required: Permission | Permission[],
+  userPermissions: Permission[],
+  required: Permission | Permission[],
 ): boolean => {
-	const requirements = Array.isArray(required) ? required : [required];
-	return requirements.every((p) => userPermissions.includes(p));
+  const requirements = Array.isArray(required) ? required : [required];
+  return requirements.every((p) => userPermissions.includes(p));
 };

@@ -22,8 +22,8 @@ model Store {
   users         StoreUser[]
   slug          String         @unique
   categories    Category[]
-
-  roles Role[]
+  roles         Role[]
+  items         Item[]
 }
 
 model Category {
@@ -41,6 +41,8 @@ model Item {
   price       Float
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [id])
+  storeId     String
+  store       Store    @relation(fields: [storeId], references: [id])
 }
 
 model Contact {

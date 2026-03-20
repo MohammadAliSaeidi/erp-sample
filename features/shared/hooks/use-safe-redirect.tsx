@@ -1,6 +1,6 @@
 "use client";
 
-import { getSafeRedirect } from "@/lib/redirect-utils";
+import { getSafeRedirect } from "@/features/shared/lib/redirect-utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 

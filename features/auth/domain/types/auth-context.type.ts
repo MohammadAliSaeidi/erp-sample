@@ -4,8 +4,10 @@ import { Permission } from "./permission.type";
 
 // Permissions are already resolved — handlers never need to look them up.
 export type AuthContext = {
-	adminId: string;
-	storeId: string;
-	roleId: string;
-	permissions: Permission[];
+  adminId: string;
+  storeId: string;
+  storeSlug: string;
+  username: string;
+  roleId: string;
+  permissions: Permission[];
 };

@@ -1,8 +1,8 @@
 "use client";
 
 import DarkVeil from "@/components/DarkVeil";
-import { useStoreUrlSlug } from "@/hooks/use-store-url-slug";
-import { LoginForm } from "./_components/login-form";
+import { LoginForm } from "@/features/auth/ui/components/login-form";
+import { useStoreUrlSlug } from "@/features/shared/hooks/use-store-url-slug";
 
 export default function LoginPage() {
 	const storeSlug = useStoreUrlSlug();

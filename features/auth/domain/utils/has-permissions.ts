@@ -48,9 +48,9 @@ import { Permission } from "../types/permission.type";
  * @see {@link can} - For the frontend equivalent with more flexible input types
  */
 export const hasPermissions = (
-	userPermissions: Permission[],
-	required: Permission[],
+  userPermissions: Permission[],
+  required: Permission[],
 ): boolean => {
-	if (required.length === 0) return true;
-	return required.every((p) => userPermissions.includes(p));
+  if (required.length === 0) return true;
+  return required.every((p) => userPermissions.includes(p));
 };

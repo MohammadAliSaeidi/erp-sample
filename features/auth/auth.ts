@@ -1,5 +1,5 @@
 import { createAuthModule } from "@/features/auth";
-import prisma from "@/lib/prisma";
+import prisma from "@/features/shared/lib/prisma";
 
 /**
  * Authentication Dependency Injection Module
@@ -36,8 +36,8 @@ import prisma from "@/lib/prisma";
  * @module lib/di
  */
 export const { withAuthorization, jwtService, permissionRepository } =
-	createAuthModule({
-		prismaClient: prisma,
-		jwtSecret: process.env.JWT_SECRET! as unknown as Uint8Array,
-		cacheTtlMs: 60_000, // 1 minute — tune to your consistency requirements
-	});
+  createAuthModule({
+    prismaClient: prisma,
+    jwtSecret: new TextEncoder().encode(process.env.JWT_SECRET!),
+    cacheTtlMs: 60_000, // 1 minute — tune to your consistency requirements
+  });
