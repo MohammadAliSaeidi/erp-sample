@@ -1,7 +1,7 @@
 "use client";
 
 import { URLS } from "@/constants/urls";
-import { useStoreUrlSlug } from "@/hooks/use-store-url-slug";
+import { useStoreUrlSlug } from "@/features/shared/hooks/use-store-url-slug";
 import { BoxesIcon, BoxIcon, WarehouseIcon } from "lucide-react";
 import { NavMainItem } from "./nav-main";
 
@@ -22,9 +22,11 @@ export const useSidebarData = (): NavMainItem[] => {
 				},
 				{
 					title: "Categories",
-					url: storeSlug ? URLS.STORE.INVENTORY.CATEGORIES.LIST(storeSlug) : "#",
-					icon: <BoxesIcon />
-				}
+					url: storeSlug
+						? URLS.STORE.INVENTORY.CATEGORIES.LIST(storeSlug)
+						: "#",
+					icon: <BoxesIcon />,
+				},
 			],
 		},
 	];

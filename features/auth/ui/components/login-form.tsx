@@ -27,7 +27,6 @@ import { Controller, useForm } from "react-hook-form";
 import { LoginBody } from "../../domain/types/login-body.type";
 import { useLoginMutation } from "../hooks/use-log-in-mutation";
 import {
-	clientApiClient,
 	createApiClient,
 } from "@/features/shared/lib/api-client";
 import { ClientRedirectHandler } from "@/features/shared/lib/api-client/handlers/client-redirect-handler";

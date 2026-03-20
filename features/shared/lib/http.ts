@@ -41,7 +41,7 @@ async function apiFetch<T>(
 ): Promise<T> {
 	const { skipAuthRedirect = false, ...fetchOptions } = options;
 
-	const response = await fetch(url, { ...fetchOptions, headers });
+	const response = await fetch(url, { ...fetchOptions });
 
 	if (response.status === 401 && !skipAuthRedirect) {
 		if (typeof window !== "undefined") {
