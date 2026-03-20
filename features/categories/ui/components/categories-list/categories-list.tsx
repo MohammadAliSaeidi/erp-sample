@@ -12,49 +12,43 @@ import Link from "next/link";
 import { buildGetCategoriesQueryOptions } from "../../hooks/use-get-category-query";
 
 const columns: ColDef<Category>[] = [
-	{
-		sortable: false,
-		resizable: false,
-		width: 57,
-		cellRenderer: (params: ICellRendererParams<Category>) => (
-			<Button size="icon-xs" variant={"ghost"} disabled={!params.data}>
-				<Link
-					href={
-						params.data
-							? `categories/${params.data?.id}`
-							: "#"
-					}
-				>
-					<EyeIcon />
-				</Link>
-			</Button>
-		),
-	},
-	{
-		field: "name",
-		minWidth: 100,
-	},
+  {
+    sortable: false,
+    resizable: false,
+    width: 57,
+    cellRenderer: (params: ICellRendererParams<Category>) => (
+      <Button size="icon-xs" variant={"ghost"} disabled={!params.data}>
+        <Link href={params.data ? `categories/${params.data?.id}` : "#"}>
+          <EyeIcon />
+        </Link>
+      </Button>
+    ),
+  },
+  {
+    field: "name",
+    minWidth: 100,
+  },
 ];
 
 function CategoriesList() {
-	const { data, isFetching } = useSuspenseQuery(
-		buildGetCategoriesQueryOptions(
-			createApiClient({
-				redirectHandler: new ClientRedirectHandler(),
-			}),
-		),
-	);
+  const { data, isFetching } = useSuspenseQuery(
+    buildGetCategoriesQueryOptions(
+      createApiClient({
+        redirectHandler: new ClientRedirectHandler(),
+      }),
+    ),
+  );
 
-	const categories = data ?? [];
+  const categories = data ?? [];
 
-	return (
-		<AgGridReact
-			loading={isFetching}
-			columnDefs={columns}
-			rowData={categories}
-			domLayout="normal"
-		/>
-	);
+  return (
+    <AgGridReact
+      loading={isFetching}
+      columnDefs={columns}
+      rowData={categories}
+      domLayout="normal"
+    />
+  );
 }
 
 export default CategoriesList;

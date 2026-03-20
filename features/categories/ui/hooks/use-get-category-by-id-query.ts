@@ -4,25 +4,25 @@ import { CATEGORY_QUERY_KEYS } from "../constants/query-keys";
 import { getCategoryById } from "../services/api/get-category-by-id";
 
 export const buildGetCategoryByIdQueryOptions = (
-	categoryId: string,
-	apiClient: ApiClient,
+  categoryId: string,
+  apiClient: ApiClient,
 ) => {
-	return queryOptions({
-		queryFn: () => getCategoryById(categoryId, apiClient),
-		queryKey: CATEGORY_QUERY_KEYS.detail(categoryId),
-	});
+  return queryOptions({
+    queryFn: () => getCategoryById(categoryId, apiClient),
+    queryKey: CATEGORY_QUERY_KEYS.detail(categoryId),
+  });
 };
 
 export const useGetCategoryByIdQueryOptions = (
-	categoryId: string,
-	apiClient: ApiClient,
+  categoryId: string,
+  apiClient: ApiClient,
 ) => {
-	return buildGetCategoryByIdQueryOptions(categoryId, apiClient);
+  return buildGetCategoryByIdQueryOptions(categoryId, apiClient);
 };
 
 export const useGetCategoryByIdQuery = (
-	categoryId: string,
-	apiClient: ApiClient,
+  categoryId: string,
+  apiClient: ApiClient,
 ) => {
-	return useQuery(useGetCategoryByIdQueryOptions(categoryId, apiClient));
+  return useQuery(useGetCategoryByIdQueryOptions(categoryId, apiClient));
 };

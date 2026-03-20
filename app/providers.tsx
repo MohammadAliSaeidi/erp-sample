@@ -20,7 +20,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 		<QueryClientProvider client={queryClient}>
 			<DirectionProvider dir="rtl" direction="rtl">
 				<TooltipProvider>
-					<AgGridProvider modules={modules}>{children}</AgGridProvider>
+					<AgGridProvider modules={modules}>
+						{children}
+					</AgGridProvider>
 				</TooltipProvider>
 			</DirectionProvider>
 			<ReactQueryDevtools />

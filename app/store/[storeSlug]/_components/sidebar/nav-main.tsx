@@ -40,7 +40,11 @@ export function NavMain(props: NavMainProps) {
 	return (
 		<SidebarMenu>
 			{items.map((item) => (
-				<Collapsible key={item.title} asChild defaultOpen={item.isActive}>
+				<Collapsible
+					key={item.title}
+					asChild
+					defaultOpen={item.isActive}
+				>
 					<SidebarMenuItem>
 						<SidebarMenuButton asChild tooltip={item.title}>
 							<Link href={item.url}>
@@ -59,11 +63,15 @@ export function NavMain(props: NavMainProps) {
 								<CollapsibleContent>
 									<SidebarMenuSub>
 										{item.items?.map((subItem) => (
-											<SidebarMenuSubItem key={subItem.title}>
+											<SidebarMenuSubItem
+												key={subItem.title}
+											>
 												<SidebarMenuSubButton asChild>
 													<Link href={subItem.url}>
 														{subItem.icon}
-														<span>{subItem.title}</span>
+														<span>
+															{subItem.title}
+														</span>
 													</Link>
 												</SidebarMenuSubButton>
 											</SidebarMenuSubItem>

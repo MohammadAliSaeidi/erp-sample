@@ -3,16 +3,16 @@ import { ServerRedirectHandler } from "@/features/shared/lib/api-client/handlers
 import { useGetCategoryByIdQuery } from "../../hooks/use-get-category-by-id-query";
 
 type CategoryDetailsProps = {
-	categoryId: string;
+  categoryId: string;
 };
 
 export default function CategoryDetails(props: CategoryDetailsProps) {
-	const { categoryId } = props;
+  const { categoryId } = props;
 
-	const {} = useGetCategoryByIdQuery(
-		categoryId,
-		createApiClient({ redirectHandler: new ServerRedirectHandler() }),
-	);
+  const {} = useGetCategoryByIdQuery(
+    categoryId,
+    createApiClient({ redirectHandler: new ServerRedirectHandler() }),
+  );
 
-	return <div></div>;
+  return <div></div>;
 }

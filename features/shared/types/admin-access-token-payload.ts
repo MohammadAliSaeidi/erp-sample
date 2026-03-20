@@ -3,10 +3,10 @@ import { AdminAccessTokenPayloadStoreUser } from "./admin-access-token-payload-s
 import { Prettify } from "./prettify.type";
 
 export type AdminAccessTokenPayload = Prettify<
-	TokenPayload &
-		AdminAccessTokenPayloadStoreUser & {
-			adminId: string;
-			storeSlug: string;
-			roleId: string;
-		}
+  TokenPayload &
+    AdminAccessTokenPayloadStoreUser & {
+      adminId: string;
+      storeSlug: string;
+      roleId: string;
+    }
 >;

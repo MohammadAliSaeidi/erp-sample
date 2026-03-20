@@ -3,19 +3,17 @@ import { create, StoreApi, UseBoundStore } from "zustand";
 import { Permission } from "../domain/types/permission.type";
 
 export type AuthState = {
-	adminId: string | null;
-	storeId: string | null;
-	permissions: Permission[];
-	isAuthenticated: boolean;
+  adminId: string | null;
+  storeId: string | null;
+  permissions: Permission[];
+  isAuthenticated: boolean;
 };
 
 export type AuthActions = {
-	setAuth: (
-		auth: Prettify<
-			Pick<AuthState, "adminId" | "storeId" | "permissions">
-		>,
-	) => void;
-	clearAuth: () => void;
+  setAuth: (
+    auth: Prettify<Pick<AuthState, "adminId" | "storeId" | "permissions">>,
+  ) => void;
+  clearAuth: () => void;
 };
 
 /**
@@ -24,10 +22,10 @@ export type AuthActions = {
  * @readonly
  */
 export const initialState: AuthState = {
-	adminId: null,
-	storeId: null,
-	permissions: [],
-	isAuthenticated: false,
+  adminId: null,
+  storeId: null,
+  permissions: [],
+  isAuthenticated: false,
 };
 
 /**
@@ -49,11 +47,11 @@ export const initialState: AuthState = {
  * useAuthStore.getState().setAuth({ adminId, storeId, permissions })
  */
 export const useAuthStore: UseBoundStore<StoreApi<AuthState & AuthActions>> =
-	create<AuthState & AuthActions>((set) => ({
-		...initialState,
+  create<AuthState & AuthActions>((set) => ({
+    ...initialState,
 
-		setAuth: ({ adminId, storeId, permissions }) =>
-			set({ adminId, storeId, permissions, isAuthenticated: true }),
+    setAuth: ({ adminId, storeId, permissions }) =>
+      set({ adminId, storeId, permissions, isAuthenticated: true }),
 
-		clearAuth: () => set(initialState),
-	}));
+    clearAuth: () => set(initialState),
+  }));

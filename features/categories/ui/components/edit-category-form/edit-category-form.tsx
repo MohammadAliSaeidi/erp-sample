@@ -14,63 +14,59 @@ import { useCreateCategoryMutation } from "../../hooks/use-create-item-mutation"
 import { useGetCategoryByIdQuery } from "../../hooks/use-get-category-by-id-query";
 
 export type EditCategoryFormWrapper = {
-	categoryId: string;
+  categoryId: string;
 };
 
 function EditCategoryFormWrapper(props: EditCategoryFormWrapper) {
-	const { categoryId } = props;
-	const {} = useGetCategoryByIdQuery(
-		categoryId,
-		createApiClient({ redirectHandler: new ClientRedirectHandler() }),
-	);
+  const { categoryId } = props;
+  const {} = useGetCategoryByIdQuery(
+    categoryId,
+    createApiClient({ redirectHandler: new ClientRedirectHandler() }),
+  );
 }
 
 function EditCategoryForm() {
-	const form = useForm<CreateCategoryBody>({
-		resolver: zodResolver(createCategoryBody),
-		defaultValues: {
-			name: "",
-		},
-	});
+  const form = useForm<CreateCategoryBody>({
+    resolver: zodResolver(createCategoryBody),
+    defaultValues: {
+      name: "",
+    },
+  });
 
-	const { mutate: mutateCreateCategory } = useCreateCategoryMutation(
-		createApiClient({ redirectHandler: new ClientRedirectHandler() }),
-	);
+  const { mutate: mutateCreateCategory } = useCreateCategoryMutation(
+    createApiClient({ redirectHandler: new ClientRedirectHandler() }),
+  );
 
-	const handleCreateCategory = (formData: CreateCategoryBody) => {
-		mutateCreateCategory(formData, {
-			onSuccess: () =>
-				toast.success(
-					`Category "${formData.name}" has been successfully`,
-				),
-		});
-	};
+  const handleCreateCategory = (formData: CreateCategoryBody) => {
+    mutateCreateCategory(formData, {
+      onSuccess: () =>
+        toast.success(`Category "${formData.name}" has been successfully`),
+    });
+  };
 
-	return (
-		<form onSubmit={form.handleSubmit(handleCreateCategory)}>
-			<Controller
-				name="name"
-				control={form.control}
-				render={({ field, fieldState }) => (
-					<Field>
-						<FieldLabel>Name</FieldLabel>
-						<Input
-							{...field}
-							id="create-category-field--name"
-							aria-invalid={fieldState.invalid}
-							placeholder="Login button not working on mobile"
-							autoComplete="off"
-						/>
-						{fieldState.invalid && (
-							<FieldError errors={[fieldState.error]} />
-						)}
-					</Field>
-				)}
-			/>
-			<input {...form.register("name")} />
-			<Button type="submit"></Button>
-		</form>
-	);
+  return (
+    <form onSubmit={form.handleSubmit(handleCreateCategory)}>
+      <Controller
+        name="name"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel>Name</FieldLabel>
+            <Input
+              {...field}
+              id="create-category-field--name"
+              aria-invalid={fieldState.invalid}
+              placeholder="Login button not working on mobile"
+              autoComplete="off"
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+      <input {...form.register("name")} />
+      <Button type="submit"></Button>
+    </form>
+  );
 }
 
 export default EditCategoryForm;

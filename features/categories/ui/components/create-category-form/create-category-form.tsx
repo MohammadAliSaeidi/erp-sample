@@ -13,58 +13,54 @@ import { toast } from "sonner";
 import { useCreateCategoryMutation } from "../../hooks/use-create-item-mutation";
 
 function CreateCategoryForm() {
-	const form = useForm<CreateCategoryBody>({
-		resolver: zodResolver(createCategoryBody),
-		defaultValues: {
-			name: "",
-		},
-	});
+  const form = useForm<CreateCategoryBody>({
+    resolver: zodResolver(createCategoryBody),
+    defaultValues: {
+      name: "",
+    },
+  });
 
-	const {
-		mutate: mutateCreateCategory,
-		isPending: isMutateCreateCategoryPending,
-	} = useCreateCategoryMutation(
-		createApiClient({ redirectHandler: new ClientRedirectHandler() }),
-	);
+  const {
+    mutate: mutateCreateCategory,
+    isPending: isMutateCreateCategoryPending,
+  } = useCreateCategoryMutation(
+    createApiClient({ redirectHandler: new ClientRedirectHandler() }),
+  );
 
-	const handleCreateCategory = (formData: CreateCategoryBody) => {
-		mutateCreateCategory(formData, {
-			onSuccess: () =>
-				toast.success(
-					`Category "${formData.name}" has been successfully`,
-				),
-		});
-	};
+  const handleCreateCategory = (formData: CreateCategoryBody) => {
+    mutateCreateCategory(formData, {
+      onSuccess: () =>
+        toast.success(`Category "${formData.name}" has been successfully`),
+    });
+  };
 
-	return (
-		<form
-			onSubmit={form.handleSubmit(handleCreateCategory)}
-			className="flex flex-nowrap items-end gap-4"
-		>
-			<Controller
-				name="name"
-				control={form.control}
-				render={({ field, fieldState }) => (
-					<Field>
-						<FieldLabel>Name</FieldLabel>
-						<Input
-							{...field}
-							id="create-category-field--name"
-							aria-invalid={fieldState.invalid}
-							placeholder="Ex: Phones, Cars, ELectronics, etc."
-							autoComplete="off"
-						/>
-						{fieldState.invalid && (
-							<FieldError errors={[fieldState.error]} />
-						)}
-					</Field>
-				)}
-			/>
-			<Button type="submit" loading={isMutateCreateCategoryPending}>
-				Create
-			</Button>
-		</form>
-	);
+  return (
+    <form
+      onSubmit={form.handleSubmit(handleCreateCategory)}
+      className="flex flex-nowrap items-end gap-4"
+    >
+      <Controller
+        name="name"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel>Name</FieldLabel>
+            <Input
+              {...field}
+              id="create-category-field--name"
+              aria-invalid={fieldState.invalid}
+              placeholder="Ex: Phones, Cars, ELectronics, etc."
+              autoComplete="off"
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+      <Button type="submit" loading={isMutateCreateCategoryPending}>
+        Create
+      </Button>
+    </form>
+  );
 }
 
 export default CreateCategoryForm;

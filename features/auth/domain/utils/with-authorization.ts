@@ -110,106 +110,102 @@ import { hasPermissions } from "./has-permissions";
  * @see {@link Permission} - Available permission types
  */
 export const buildWithAuthorization = (
-	jwtService: IJwtService,
-	permissionService: IPermissionService,
+  jwtService: IJwtService,
+  permissionService: IPermissionService,
 ) => {
-	return (requiredPermissions: Permission[]): Middleware => {
-		return <TContext = unknown>(handler: RouteHandler<TContext>) => {
-			return async (
-				request: NextRequest,
-				context: TContext,
-			): Promise<Response> => {
-				const cookieName =
-					resolveCookieNameFromRequest(request) ?? undefined;
+  return (requiredPermissions: Permission[]): Middleware => {
+    return <TContext = unknown>(handler: RouteHandler<TContext>) => {
+      return async (
+        request: NextRequest,
+        context: TContext,
+      ): Promise<Response> => {
+        const cookieName = resolveCookieNameFromRequest(request) ?? undefined;
 
-				const jwtPayload = await jwtService.extractFromRequest(
-					request,
-					cookieName,
-				);
+        const jwtPayload = await jwtService.extractFromRequest(
+          request,
+          cookieName,
+        );
 
-				if (!jwtPayload) {
-					return Response.json(
-						{
-							error: "Unauthorized",
-							message: "Missing or invalid token",
-						},
-						{ status: 401 },
-					);
-				}
+        if (!jwtPayload) {
+          return Response.json(
+            {
+              error: "Unauthorized",
+              message: "Missing or invalid token",
+            },
+            { status: 401 },
+          );
+        }
 
-				const storeSlugFromRequest =
-					resolveStoreSlugFromRequest(request);
+        const storeSlugFromRequest = resolveStoreSlugFromRequest(request);
 
-				const storeSlugFromJWTPayload = jwtPayload.storeSlug;
+        const storeSlugFromJWTPayload = jwtPayload.storeSlug;
 
-				const storeSlug =
-					storeSlugFromJWTPayload ?? storeSlugFromRequest;
+        const storeSlug = storeSlugFromJWTPayload ?? storeSlugFromRequest;
 
-				if (!storeSlug || !jwtPayload.username) {
-					return Response.json(
-						{
-							error: "Unauthorized",
-							message: "Invalid token payload",
-						},
-						{ status: 401 },
-					);
-				}
+        if (!storeSlug || !jwtPayload.username) {
+          return Response.json(
+            {
+              error: "Unauthorized",
+              message: "Invalid token payload",
+            },
+            { status: 401 },
+          );
+        }
 
-				const permissions =
-					await permissionService.getPermissionsByRoleId(
-						jwtPayload.roleId,
-					);
+        const permissions = await permissionService.getPermissionsByRoleId(
+          jwtPayload.roleId,
+        );
 
-				if (!hasPermissions(permissions, requiredPermissions)) {
-					return Response.json(
-						{
-							error: "Forbidden",
-							message: "You don't have permission to perform this action",
-						},
-						{ status: 403 },
-					);
-				}
+        if (!hasPermissions(permissions, requiredPermissions)) {
+          return Response.json(
+            {
+              error: "Forbidden",
+              message: "You don't have permission to perform this action",
+            },
+            { status: 403 },
+          );
+        }
 
-				const authContext: AuthContext = {
-					adminId: jwtPayload.adminId,
-					storeId: jwtPayload.storeId,
-					storeSlug,
-					username: jwtPayload.username,
-					roleId: jwtPayload.roleId,
-					permissions,
-				};
+        const authContext: AuthContext = {
+          adminId: jwtPayload.adminId,
+          storeId: jwtPayload.storeId,
+          storeSlug,
+          username: jwtPayload.username,
+          roleId: jwtPayload.roleId,
+          permissions,
+        };
 
-				const requestWithAuthContext = Object.assign(request, {
-					authContext,
-				});
+        const requestWithAuthContext = Object.assign(request, {
+          authContext,
+        });
 
-				console.log("requestWithAuthContext", authContext);
+        console.log("requestWithAuthContext", authContext);
 
-				return handler(requestWithAuthContext, context);
-			};
-		};
-	};
+        return handler(requestWithAuthContext, context);
+      };
+    };
+  };
 };
 
 const resolveStoreSlugFromRequest = (req: NextRequest): string | null => {
-	const headerSlug = req.headers?.get?.("x-store-slug")?.trim();
-	if (headerSlug) return headerSlug;
+  const headerSlug = req.headers?.get?.("x-store-slug")?.trim();
+  if (headerSlug) return headerSlug;
 
-	const referer = req.headers?.get?.("referer");
-	if (!referer) return null;
+  const referer = req.headers?.get?.("referer");
+  if (!referer) return null;
 
-	return getStoreSlugFromPath(referer);
+  return getStoreSlugFromPath(referer);
 };
 
 const resolveCookieNameFromRequest = (req: NextRequest): string | null => {
-	const storeSlug = resolveStoreSlugFromRequest(req);
-	if (storeSlug) return ADMIN_ACCESS_TOKEN_COOKIE_NAME(storeSlug);
+  const storeSlug = resolveStoreSlugFromRequest(req);
+  if (storeSlug) return ADMIN_ACCESS_TOKEN_COOKIE_NAME(storeSlug);
 
-	const cookies = req.cookies?.getAll?.() ?? [];
-	const matches = cookies.filter((cookie) =>
-		cookie.name.startsWith("ADMIN_ACCESS_TOKEN_COOKIE_"),
-	);
+  const cookies = req.cookies?.getAll?.() ?? [];
+  const matches = cookies.filter((cookie) =>
+    cookie.name.startsWith("ADMIN_ACCESS_TOKEN_COOKIE_"),
+  );
 
-	if (matches.length === 1) return matches[0].name;
-	return null;
+  if (matches.length === 1) return matches[0].name;
+  return null;
 };

@@ -5,20 +5,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { CreateCategoryBody } from "../types/create-category-body.type";
 
 export async function createCategoryController(request: NextRequest) {
-	const { validatedBody: body, authContext } = request as WithAuthContext<
-		WithValidatedBody<CreateCategoryBody>
-	>;
+  const { validatedBody: body, authContext } = request as WithAuthContext<
+    WithValidatedBody<CreateCategoryBody>
+  >;
 
-	try {
-		const category = await prisma.category.create({
-			data: { name: body.name, storeId: authContext.storeId },
-		});
+  try {
+    const category = await prisma.category.create({
+      data: { name: body.name, storeId: authContext.storeId },
+    });
 
-		return NextResponse.json({ category }, { status: 201 });
-	} catch {
-		return NextResponse.json(
-			{ error: "Could not create category" },
-			{ status: 400 },
-		);
-	}
+    return NextResponse.json({ category }, { status: 201 });
+  } catch {
+    return NextResponse.json(
+      { error: "Could not create category" },
+      { status: 400 },
+    );
+  }
 }

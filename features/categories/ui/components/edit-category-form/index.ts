@@ -1,1 +1,1 @@
-export {default } from './edit-category-form'
+export { default } from "./edit-category-form";
