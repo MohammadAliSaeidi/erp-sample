@@ -1,7 +1,7 @@
 import { withAuthorization } from "@/features/auth/auth";
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import { createCategoryController } from "@/features/categories/domain/controller/create-category-controller";
-import { getCategoriesController } from "@/features/categories/domain/controller/get-category-controller";
+import { getCategoriesController } from "@/features/categories/domain/controller/get-categories-controller";
 import { createCategoryBody } from "@/features/categories/domain/schemas/create-category-body.schema";
 import { compose } from "@/features/shared/middlewares/compose";
 import { bodyValidator } from "@/features/shared/middlewares/validate-body";
