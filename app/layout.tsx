@@ -1,11 +1,9 @@
-import NextTopLoader from "nextjs-toploader";
-import { DirectionProvider } from "@/components/ui/direction";
+import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
+import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
-import Script from "next/script";
 import Providers from "./providers";
-import { Toaster } from "@/components/ui/sonner";
 
 const publicSans = Public_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -40,7 +38,11 @@ export default function RootLayout({
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
 				<Toaster />
-				<NextTopLoader color="var(--primary)" />
+				<NextTopLoader
+					color="var(--primary)"
+					shadow={false}
+					showSpinner={false}
+				/>
 				<Providers>{children}</Providers>
 			</body>
 		</html>
