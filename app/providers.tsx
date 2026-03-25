@@ -25,7 +25,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 					</AgGridProvider>
 				</TooltipProvider>
 			</DirectionProvider>
-			<ReactQueryDevtools />
+			{process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
 		</QueryClientProvider>
 	);
 }
