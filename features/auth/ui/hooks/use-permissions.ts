@@ -1,5 +1,5 @@
+import { can } from "../../domain/lib/can";
 import { Permission } from "../../domain/types/permission.type";
-import { can } from "../../domain/utils/can";
 import { useAuthStore } from "../auth-store";
 
 // The only hook UI components should call for permission checks.
@@ -11,11 +11,11 @@ import { useAuthStore } from "../auth-store";
 //   const showSection = can(["items:read", "categories:read"])
 
 export const usePermissions = () => {
-  const permissions = useAuthStore((state) => state.permissions);
+	const permissions = useAuthStore((state) => state.permissions);
 
-  return {
-    permissions,
-    can: (required: Permission | Permission[]): boolean =>
-      can(permissions, required),
-  };
+	return {
+		permissions,
+		can: (required: Permission | Permission[]): boolean =>
+			can(permissions, required),
+	};
 };

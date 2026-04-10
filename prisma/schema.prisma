@@ -29,9 +29,10 @@ model Store {
 model Category {
   id      String @id @default(uuid())
   storeId String
-  name    String @unique
+  name    String
   items   Item[]
   store   Store  @relation(fields: [storeId], references: [id])
+  @@unique([storeId, name])
 }
 
 model Item {

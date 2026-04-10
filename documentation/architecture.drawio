@@ -1,0 +1,251 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="7gDV6vqYGuLUllOeiFKH">
+    <mxGraphModel dx="1348" dy="592" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ZdSf715osR-sVHiuEG9W-39" parent="1" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;size=136.4000000000001;" value="" vertex="1">
+          <mxGeometry height="474" width="568.8" x="253.6" y="143" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-47" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-1" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;endArrow=classic;" target="ZdSf715osR-sVHiuEG9W-45">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-1" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="PostgreSQL" vertex="1">
+          <mxGeometry height="80" width="70" x="890" y="143" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-23" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-2" style="shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;elbow=vertical;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" target="ZdSf715osR-sVHiuEG9W-9">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="299.79288461538454" y="610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-35" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-2" style="shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;elbow=vertical;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" target="ZdSf715osR-sVHiuEG9W-34">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-2" parent="1" style="html=1;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;shadow=0;dashed=0;strokeWidth=1;shape=mxgraph.ios7.misc.ipad13inch;strokeColor=light-dark(#C0C0C0,#FFFFFF);" value="Client" vertex="1">
+          <mxGeometry height="108.6" width="76.41" x="110" y="325.7" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;rotation=60;" value="&lt;span style=&quot;caret-color: rgba(0, 0, 0, 0);&quot;&gt;Adapter of&lt;/span&gt;&lt;br style=&quot;caret-color: rgba(0, 0, 0, 0);&quot;&gt;&lt;span style=&quot;caret-color: rgba(0, 0, 0, 0);&quot;&gt;HTTP Request (CSR)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="50" width="147.32" x="272.68" y="465" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-26" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-9" style="shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;elbow=vertical;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" target="ZdSf715osR-sVHiuEG9W-2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="299.79288461538454" y="610" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-32" parent="1" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;size=110;" value="" vertex="1">
+          <mxGeometry height="380" width="456" x="310" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-33" parent="1" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;size=22.40000000000009;" value="Entity" vertex="1">
+          <mxGeometry height="84" width="100.8" x="487.6" y="338" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-31" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" value="Infrastructure" vertex="1">
+          <mxGeometry height="30" width="84" x="496" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-17" parent="1" style="rounded=0;whiteSpace=wrap;html=1;rotation=60;" value="Port" vertex="1">
+          <mxGeometry height="30" width="140" x="310" y="456" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-36" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-34" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;endArrow=classic;" target="ZdSf715osR-sVHiuEG9W-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-34" parent="1" style="rounded=0;whiteSpace=wrap;html=1;rotation=-60;" value="&lt;span style=&quot;caret-color: rgba(0, 0, 0, 0);&quot;&gt;Adapter of&lt;/span&gt;&lt;br style=&quot;caret-color: rgba(0, 0, 0, 0);&quot;&gt;&lt;span style=&quot;caret-color: rgba(0, 0, 0, 0);&quot;&gt;Server Action (SSR)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="50" width="147.32" x="269.680635094611" y="247.00143124276173" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-38" parent="1" style="rounded=0;whiteSpace=wrap;html=1;rotation=-60;" value="Port" vertex="1">
+          <mxGeometry height="30" width="140" x="308.00038105676657" y="277.00177826491074" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-40" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" value="Application" vertex="1">
+          <mxGeometry height="30" width="60" x="508" y="245" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-43" parent="1" style="rounded=0;whiteSpace=wrap;html=1;rotation=60;" value="Port (Repo Interface)" vertex="1">
+          <mxGeometry height="30" width="140" x="626.0003810567665" y="274.0017782649107" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-46" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-45" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;endArrow=classic;" target="ZdSf715osR-sVHiuEG9W-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-45" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;rotation=60;" value="Adapter Repo Implementation" vertex="1">
+          <mxGeometry height="48" width="120" x="671.2" y="247" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-48" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="PostgreSQL" vertex="1">
+          <mxGeometry height="40" width="111" x="2473" y="1617" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-49" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="Driven Adapters" vertex="1">
+          <mxGeometry height="128" width="299" x="2369" y="1762" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-50" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="Domain / Application (Pure Business)" vertex="1">
+          <mxGeometry height="883" width="445" x="1903" y="1007" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-51" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="Ports (Interfaces)" vertex="1">
+          <mxGeometry height="128" width="822" x="1061" y="1184" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-52" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="Driving Adapters (Entry Points)" vertex="1">
+          <mxGeometry height="408" width="700" x="1782" y="397" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-53" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="Client (UI + Form)" vertex="1">
+          <mxGeometry height="128" width="482" x="1844" y="171" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-54" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="Shadcn Form + Zod + React Hook Form" vertex="1">
+          <mxGeometry height="78" width="260" x="1959" y="196" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-55" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="1. HTTP Adapter&#xa;(app/api/.../route.ts)" vertex="1">
+          <mxGeometry height="78" width="220" x="1907" y="422" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-56" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="2. Server Action Adapter&#xa;(&#39;use server&#39;)" vertex="1">
+          <mxGeometry height="78" width="235" x="2184" y="422" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-57" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="🔌 Port: IAuthTokenReader&#xa;(interface)" vertex="1">
+          <mxGeometry height="78" width="256" x="1952" y="702" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-58" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="Zod Body Validator&#xa;(in adapter)" vertex="1">
+          <mxGeometry height="78" width="195" x="1983" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-59" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="UseCase Port" vertex="1">
+          <mxGeometry height="54" width="153" x="1096" y="1221" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-60" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="Policy Port (authorize + permission checks)" vertex="1">
+          <mxGeometry height="78" width="260" x="1299" y="1209" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-61" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="AuthContext Builder Port" vertex="1">
+          <mxGeometry height="54" width="240" x="1609" y="1221" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-62" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="AuthContext&#xa;{ userId, storeId, role, permissions: Permission[] }" vertex="1">
+          <mxGeometry height="102" width="260" x="1950" y="1032" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-63" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="Pure Policies&#xa;• authorize(requiredPermissions)&#xa;• canReceiveShipment(ctx, storeId)" vertex="1">
+          <mxGeometry height="150" width="283" x="1938" y="1362" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-64" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="Use-Case (Orchestrator)&#xa;e.g. receiveShipment(cmd, ctx)" vertex="1">
+          <mxGeometry height="102" width="260" x="2054" y="1586" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-65" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="Entity / Aggregate&#xa;(Product, Shipment, etc.)" vertex="1">
+          <mxGeometry height="78" width="244" x="1948" y="1787" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-66" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="Prisma Repository&#xa;(implements Repo Port)" vertex="1">
+          <mxGeometry height="78" width="229" x="2404" y="1787" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-67" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;" value="AuthContextBuilder" vertex="1">
+          <mxGeometry height="54" width="201" x="1980" y="879" as="geometry" />
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-68" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-55" style="curved=1;startArrow=none;endArrow=block;exitX=0.08;exitY=1;entryX=0;entryY=0.13;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-58" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1864" y="525" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-69" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-56" style="curved=1;startArrow=none;endArrow=block;exitX=0;exitY=0.84;entryX=0.3;entryY=0;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-58" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2018" y="525" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-70" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-54" style="curved=1;startArrow=none;endArrow=block;exitX=0.16;exitY=1;entryX=0.3;entryY=0;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-55" value="submit">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1946" y="299" />
+              <mxPoint x="1946" y="397" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-71" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-54" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=1;entryX=0.5;entryY=0;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-56" value="submit">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2301" y="299" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-72" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-55" style="curved=1;startArrow=none;endArrow=block;exitX=0.73;exitY=1;entryX=0.56;entryY=0;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-58" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2100" y="525" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-73" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-56" style="curved=1;startArrow=none;endArrow=block;exitX=0.17;exitY=1;entryX=0.79;entryY=0;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-58" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2174" y="525" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-74" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-58" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-57" value="validated Command DTO">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-75" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-57" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-67" value="extract token/cookie">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-76" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-67" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-62" value="build">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-77" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-62" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=1;entryY=0.34;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-60" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2080" y="1184" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-78" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-60" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-63" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1429" y="1312" />
+              <mxPoint x="2080" y="1337" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-79" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-63" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.27;entryY=0;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-64" value="if fail → DomainError">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2080" y="1549" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-80" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-64" style="curved=1;startArrow=none;endArrow=block;exitX=0.25;exitY=1;entryX=0.5;entryY=0;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-65" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2070" y="1725" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-81" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-64" style="curved=1;startArrow=none;endArrow=block;exitX=0.61;exitY=1;entryX=0;entryY=0.17;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-66" value="calls via port">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2233" y="1725" />
+              <mxPoint x="2233" y="1762" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-82" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-66" style="curved=1;startArrow=none;endArrow=block;exitX=0.7;exitY=0;entryX=0.63;entryY=1;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-48" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2593" y="1762" />
+              <mxPoint x="2593" y="1725" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-83" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-48" style="curved=1;startArrow=none;endArrow=block;exitX=0.48;exitY=1;entryX=0.5;entryY=0;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-66" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2519" y="1725" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-84" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-64" style="curved=1;startArrow=none;endArrow=block;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-52" value="result or DomainError">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZdSf715osR-sVHiuEG9W-85" edge="1" parent="1" source="ZdSf715osR-sVHiuEG9W-52" style="curved=1;startArrow=none;endArrow=block;rounded=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;elbow=vertical;" target="ZdSf715osR-sVHiuEG9W-53" value="JSON / redirect / revalidate">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

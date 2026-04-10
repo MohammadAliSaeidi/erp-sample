@@ -1,19 +1,55 @@
-import { withAuthorization } from "@/features/auth/auth";
-import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { createCategoryController } from "@/features/categories/domain/controller/create-category-controller";
-import { getCategoriesController } from "@/features/categories/domain/controller/get-categories-controller";
-import { createCategoryBody } from "@/features/categories/domain/schemas/create-category-body.schema";
-import { compose } from "@/features/shared/middlewares/compose";
-import { bodyValidator } from "@/features/shared/middlewares/validate-body";
+import { withAuthContext } from "@/features/auth";
+import { buildCreateCategoryOperation } from "@/features/categories/application/operations/create-category.operation";
+import { buildListCategoriesOperation } from "@/features/categories/application/operations/list-categories.operation";
+import { buildCategoryRepository } from "@/features/categories/domain/repositories/categories.repository";
+import { mapOperationErrorToResponse } from "@/features/shared/adapters/http/map-operation-error-to-response";
+import { runOperation } from "@/features/shared/application/run-operation";
+import prisma from "@/features/shared/lib/prisma";
+import { validateRequestJsonBody } from "@/features/shared/lib/validate-request-json-body";
+import { WithAuthContext } from "@/features/shared/types/next-request-with-auth-context.type";
 import { RouteHandler } from "@/features/shared/types/route-handler.type";
+import { NextResponse } from "next/server";
 
-export const GET: RouteHandler = withAuthorization([
-	PERMISSIONS.CATEGORIES.READ,
-])(getCategoriesController);
+const categoryRepository = buildCategoryRepository(prisma);
+const listCategoriesOperation = buildListCategoriesOperation({
+	getListByStoreId: categoryRepository.getList,
+});
+const createCategoryOperation = buildCreateCategoryOperation({
+	createCategory: categoryRepository.create,
+});
 
-const createCategoryMiddlewares = compose(
-	withAuthorization([PERMISSIONS.CATEGORIES.CREATE]),
-	bodyValidator(createCategoryBody),
-);
+const getCategoriesHandler: RouteHandler = async (request) => {
+	const { authContext } = request as WithAuthContext;
 
-export const POST = createCategoryMiddlewares(createCategoryController);
+	try {
+		const categories = await runOperation({
+			operation: listCategoriesOperation,
+			rawInput: {},
+			authContext,
+		});
+
+		return NextResponse.json(categories);
+	} catch (error) {
+		return mapOperationErrorToResponse(error);
+	}
+};
+
+const createCategoryHandler: RouteHandler = async (request) => {
+	const { authContext } = request as WithAuthContext;
+
+	try {
+		const rawBody = await validateRequestJsonBody(request);
+		const createdCategory = await runOperation({
+			operation: createCategoryOperation,
+			rawInput: rawBody,
+			authContext,
+		});
+
+		return NextResponse.json(createdCategory, { status: 201 });
+	} catch (error) {
+		return mapOperationErrorToResponse(error);
+	}
+};
+
+export const GET: RouteHandler = withAuthContext(getCategoriesHandler);
+export const POST: RouteHandler = withAuthContext(createCategoryHandler);

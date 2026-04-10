@@ -1,54 +1,67 @@
 import type { ApiClient, FetchOptions, RedirectHandler } from "./types";
 
 interface ApiClientConfig {
-  redirectHandler: RedirectHandler;
+	redirectHandler: RedirectHandler;
+	baseUrl?: string;
 }
 
 function createApiFetch(config: ApiClientConfig) {
-  return async function apiFetch<T>(
-    url: string,
-    options: FetchOptions = {},
-  ): Promise<T> {
-    const { skipAuthRedirect = false, ...fetchOptions } = options;
+	return async function apiFetch<T>(
+		url: string,
+		options: FetchOptions = {},
+	): Promise<T> {
+		const { skipAuthRedirect = false, ...fetchOptions } = options;
 
-    const response = await fetch(url, {
-      credentials: "include",
-      ...fetchOptions,
-    });
+		const resolvedUrl =
+			config.baseUrl && url.startsWith("/")
+				? new URL(url, config.baseUrl).toString()
+				: url;
 
-    if (response.status === 401 && !skipAuthRedirect) {
-      await config.redirectHandler.redirectToLogin();
-    }
+		console.log("config.baseUrl", config.baseUrl);
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(error.message ?? `HTTP error: ${response.status}`);
-    }
+		console.log("resolvedUrl", resolvedUrl);
 
-    return response.json() as Promise<T>;
-  };
+		const response = await fetch(resolvedUrl, {
+			credentials: "include",
+			...fetchOptions,
+		});
+
+		if (response.status === 401 && !skipAuthRedirect) {
+			await config.redirectHandler.redirectToLogin();
+		}
+
+		if (!response.ok) {
+			const error = await response.json().catch(() => ({}));
+			throw new Error(
+				error.message ?? `HTTP error: ${response.status}`,
+			);
+		}
+
+		return response.json() as Promise<T>;
+	};
 }
 
 export function createApiClient(config: ApiClientConfig): ApiClient {
-  const apiFetch = createApiFetch(config);
+	const apiFetch = createApiFetch(config);
 
-  return {
-    get: (url, options) => apiFetch(url, { ...options, method: "GET" }),
+	return {
+		get: (url, options) => apiFetch(url, { ...options, method: "GET" }),
 
-    post: (url, body, options) =>
-      apiFetch(url, {
-        ...options,
-        method: "POST",
-        body: JSON.stringify(body),
-      }),
+		post: (url, body, options) =>
+			apiFetch(url, {
+				...options,
+				method: "POST",
+				body: JSON.stringify(body),
+			}),
 
-    put: (url, body, options) =>
-      apiFetch(url, {
-        ...options,
-        method: "PUT",
-        body: JSON.stringify(body),
-      }),
+		put: (url, body, options) =>
+			apiFetch(url, {
+				...options,
+				method: "PUT",
+				body: JSON.stringify(body),
+			}),
 
-    delete: (url, options) => apiFetch(url, { ...options, method: "DELETE" }),
-  };
+		delete: (url, options) =>
+			apiFetch(url, { ...options, method: "DELETE" }),
+	};
 }
