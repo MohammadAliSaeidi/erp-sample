@@ -1,7 +1,7 @@
 import { ForbiddenError } from "./errors/forbidden.error";
 import { UnauthorizedError } from "./errors/unauthorized.error";
 import { hasPermissions } from "./lib/has-permissions";
-import { authContextSchema } from "./schemas/auth-context.schema";
+import { adminAuthContextSchema } from "./schemas/auth-context.schema";
 import { IJwtService } from "./services/jwt.service";
 import { AuthContext } from "./types/auth-context.type";
 import { Permission } from "./types/permission.type";
@@ -16,7 +16,7 @@ const isValidAuthPayload = (
 	payload: AuthContext | null,
 ): payload is Omit<AuthContext, "permissions"> => {
 	if (!payload) return false;
-	return authContextSchema.safeParse(payload).success;
+	return adminAuthContextSchema.safeParse(payload).success;
 };
 
 export const authorize =
@@ -28,7 +28,10 @@ export const authorize =
 		const payload = (await deps.jwtService.verify(
 			token,
 		)) as AuthContext | null;
+
 		if (!isValidAuthPayload(payload)) throw new UnauthorizedError();
+
+		if (payload.grantsAll) return { ...payload, permissions: [] };
 
 		const permissions = await deps.getPermissions(payload.roleId);
 		if (!hasPermissions(permissions, required))

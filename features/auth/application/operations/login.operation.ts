@@ -1,32 +1,27 @@
 import { Store, StoreUser } from "@/app/generated/prisma/client";
 import { getAdminAccessTokenCookieName } from "@/constants/token-names";
-import { loginBodySchema } from "@/features/auth/domain/schemas/login-body.schema";
+import { Role } from "@/features/admin/domain/role";
+import { loginInputSchema } from "@/features/auth/domain/schemas/login-body.schema";
 import {
 	OperationNotFoundError,
 	OperationUnauthorizedError,
 } from "@/features/shared/application/errors/operation-errors";
 import { definePublicOperation } from "@/features/shared/application/operation";
 import { AdminAccessTokenPayload } from "@/features/shared/types/admin-access-token-payload";
-import z from "zod";
+import { LoginInput } from "@/features/auth/domain/types/login-body.type";
 
-const loginOperationInputSchema = loginBodySchema.extend({
-	storeSlug: z.string().min(1, "Store slug is required"),
-});
-
-type LoginOperationInput = z.infer<typeof loginOperationInputSchema>;
-
-type LoginStore = Pick<Store, "id" | "slug">;
-type LoginStoreUser = Pick<
+export type LoginStoreDTO = Pick<Store, "id" | "slug">;
+export type LoginStoreUserDTO = Pick<
 	StoreUser,
 	"id" | "name" | "storeId" | "username" | "roleId" | "password"
->;
+> & Pick<Role, "grantsAll">;
 
 export interface LoginOperationDeps {
-	findStoreBySlug: (storeSlug: string) => Promise<LoginStore | null>;
+	findStoreBySlug: (storeSlug: string) => Promise<LoginStoreDTO | null>;
 	findStoreUserByStoreAndUsername: (
 		storeId: string,
 		username: string,
-	) => Promise<LoginStoreUser | null>;
+	) => Promise<LoginStoreUserDTO | null>;
 	isPasswordMatch: (plainText: string, hashedText: string) => Promise<boolean>;
 }
 
@@ -39,11 +34,11 @@ export const buildLoginOperation = (deps: LoginOperationDeps) =>
 	definePublicOperation({
 		key: "auth.login",
 		auth: "public",
-		inputSchema: loginOperationInputSchema,
+		inputSchema: loginInputSchema,
 		execute: async ({
 			input,
 		}: {
-			input: LoginOperationInput;
+			input: LoginInput;
 		}): Promise<LoginOperationResult> => {
 			const store = await deps.findStoreBySlug(input.storeSlug);
 			if (!store) {
@@ -54,6 +49,13 @@ export const buildLoginOperation = (deps: LoginOperationDeps) =>
 				store.id,
 				input.username,
 			);
+
+			if(!storeUser) {
+				throw new OperationUnauthorizedError(
+					"Incorrect username or password",
+				);
+			}
+
 			const isValidCredentials =
 				storeUser &&
 				(await deps.isPasswordMatch(
@@ -71,9 +73,11 @@ export const buildLoginOperation = (deps: LoginOperationDeps) =>
 			const tokenPayload: AdminAccessTokenPayload = {
 				sub: storeUser.id,
 				adminId: storeUser.id,
-				name: storeUser.name,
 				storeId: storeUser.storeId,
 				storeSlug: input.storeSlug,
+				grantsAll: storeUser.grantsAll,
+				exp: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).getTime(),
+				iat: Date.now(),
 				username: storeUser.username,
 				roleId: storeUser.roleId,
 			};

@@ -5,7 +5,7 @@ import { defineAuthenticatedOperation } from "@/features/shared/application/oper
 import z from "zod";
 
 const getCategoryByIdInputSchema = z.object({
-	categoryId: z.uuidv4(),
+	categoryId: z.uuidv7(),
 });
 
 export interface GetCategoryByIdOperationDeps {

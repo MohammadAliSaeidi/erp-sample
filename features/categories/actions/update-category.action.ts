@@ -21,10 +21,10 @@ export async function updateCategoryAction(
 	rawInput: unknown,
 ): Promise<ActionResult<Category>> {
 	try {
-		const authContext = await requireSsrAuth([]);
+		const authContext = await requireSsrAuth(['categories:update']);
 		const updatedCategory = await runOperation({
 			operation: updateCategoryOperation,
-			rawInput,
+			input: rawInput,
 			authContext,
 		});
 

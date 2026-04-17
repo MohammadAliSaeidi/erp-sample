@@ -46,7 +46,10 @@ export async function setTokenCookie<T extends TokenPayload>(
   cookieName: string,
   payload: T,
 ): Promise<void> {
+  // console.log("payload", payload);
   const token = await encodeToken(payload);
+  // console.log("token", token);
+
   const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
   cookieStore.set(cookieName, token, {

@@ -5,6 +5,7 @@ import { AuthContext } from "../domain/types/auth-context.type";
 import { Permission } from "../domain/types/permission.type";
 
 const VALID_PAYLOAD = {
+	storeUserId: "11111111-1111-4111-8111-111111111111",
 	adminId: "admin-1",
 	storeId: "store-1",
 	storeSlug: "store-1",
@@ -39,9 +40,7 @@ const makeRequest = (token: string | null = "valid-token") =>
 		},
 	}) as unknown as Parameters<IJwtService["extractFromRequest"]>[0];
 
-const makeMockJwtService = (
-	result: Awaited<ReturnType<IJwtService["verify"]>>,
-): IJwtService => ({
+const makeMockJwtService = (result: unknown): IJwtService => ({
 	extractFromRequest: jest.fn(),
 	sign: jest.fn(),
 	verify: jest.fn().mockResolvedValue(result),

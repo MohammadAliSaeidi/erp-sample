@@ -1,12 +1,3 @@
-import { TokenPayload } from "@/features/shared/lib/token";
-import { AdminAccessTokenPayloadStoreUser } from "./admin-access-token-payload-store-user";
-import { Prettify } from "./prettify.type";
+import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
 
-export type AdminAccessTokenPayload = Prettify<
-  TokenPayload &
-    AdminAccessTokenPayloadStoreUser & {
-      adminId: string;
-      storeSlug: string;
-      roleId: string;
-    }
->;
+export type AdminAccessTokenPayload = AuthContext;

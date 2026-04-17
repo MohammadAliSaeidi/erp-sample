@@ -35,7 +35,7 @@ describe("runOperation", () => {
 		await expect(
 			runOperation({
 				operation,
-				rawInput: { value: "not-a-number" },
+				input: { value: "not-a-number" },
 			}),
 		).rejects.toBeInstanceOf(OperationValidationError);
 	});
@@ -52,7 +52,7 @@ describe("runOperation", () => {
 		await expect(
 			runOperation({
 				operation,
-				rawInput: { value: 2 },
+				input: { value: 2 },
 			}),
 		).rejects.toBeInstanceOf(OperationUnauthorizedError);
 	});
@@ -69,7 +69,7 @@ describe("runOperation", () => {
 		await expect(
 			runOperation({
 				operation,
-				rawInput: { value: 2 },
+				input: { value: 2 },
 				authContext: {
 					...AUTH_CONTEXT,
 					permissions: [],
@@ -93,7 +93,7 @@ describe("runOperation", () => {
 		await expect(
 			runOperation({
 				operation,
-				rawInput: { value: 4 },
+				input: { value: 4 },
 				authContext: AUTH_CONTEXT,
 			}),
 		).resolves.toMatchObject({

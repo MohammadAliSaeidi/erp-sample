@@ -32,7 +32,7 @@ const getCategoryByIdHandler: RouteHandler<CategoryRouteContext> = async (
 		const { categoryId } = await context.params;
 		const category = await runOperation({
 			operation: getCategoryByIdOperation,
-			rawInput: { categoryId },
+			input: { categoryId },
 			authContext,
 		});
 
@@ -57,7 +57,7 @@ const updateCategoryHandler: RouteHandler<CategoryRouteContext> = async (
 		};
 		const updatedCategory = await runOperation({
 			operation: updateCategoryOperation,
-			rawInput,
+			input: rawInput,
 			authContext,
 		});
 

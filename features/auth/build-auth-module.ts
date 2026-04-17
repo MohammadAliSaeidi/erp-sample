@@ -45,7 +45,9 @@ export const buildAuthModule: IAuthModuleBuilder = (
 		jwtService,
 		permissionService,
 	);
+	
 	const withAuthContext = withAuthorization([]);
+
 	const requireSsrAuth = buildRequireSsrAuth({
 		jwtService,
 		getPermissionsByRoleId: permissionService.getPermissionsByRoleId,

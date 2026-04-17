@@ -1,8 +1,7 @@
-  import z from "zod";
-  import { StoreUserId } from "@/features/admin/domain/StoreUser";
-import { StoreId, StoreSlug } from "@/features/store/domain/store";
+import z from "zod";
+import { StoreUserId, StoreId, RoleId } from "@/features/shared/domain/ids";
+import { StoreSlug } from "@/features/store/domain/store";
 import { Username } from "@/features/shared/domain/username";
-import { RoleId } from "../actor";
 
 export const JwtPayload = z.object({
   storeUserId: StoreUserId,
@@ -12,6 +11,6 @@ export const JwtPayload = z.object({
   roleId: RoleId,
   iat: z.number(),
   exp: z.number(),
-})
+});
 
-export type JwtPayload = z.infer<typeof JwtPayload>
+export type JwtPayload = z.infer<typeof JwtPayload>;

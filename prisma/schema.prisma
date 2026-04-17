@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Store {
-  id            String         @id @default(uuid())
+  id            String         @id @default(uuid(7))
   name          String
   addressId     String
   address       Address        @relation(fields: [addressId], references: [id])
@@ -27,16 +27,17 @@ model Store {
 }
 
 model Category {
-  id      String @id @default(uuid())
+  id      String @id @default(uuid(7))
   storeId String
   name    String
   items   Item[]
   store   Store  @relation(fields: [storeId], references: [id])
+
   @@unique([storeId, name])
 }
 
 model Item {
-  id          String   @id @default(uuid())
+  id          String   @id @default(uuid(7))
   name        String
   description String
   price       Float
@@ -47,7 +48,7 @@ model Item {
 }
 
 model Contact {
-  id            String         @id @default(uuid())
+  id            String         @id @default(uuid(7))
   name          String
   email         String
   phone         String
@@ -55,7 +56,7 @@ model Contact {
 }
 
 model StoreContact {
-  id        String  @id @default(uuid())
+  id        String  @id @default(uuid(7))
   storeId   String
   contactId String
   store     Store   @relation(fields: [storeId], references: [id])
@@ -63,7 +64,7 @@ model StoreContact {
 }
 
 model Address {
-  id      String  @id @default(uuid())
+  id      String  @id @default(uuid(7))
   street  String
   city    String
   state   String
@@ -72,7 +73,7 @@ model Address {
 }
 
 model StoreUser {
-  id       String @id @default(uuid())
+  id       String @id @default(uuid(7))
   name     String
   storeId  String
   store    Store  @relation(fields: [storeId], references: [id])
@@ -85,18 +86,19 @@ model StoreUser {
 }
 
 model Permission {
-  id              String           @id @default(uuid())
+  id              String           @id @default(uuid(7))
   key             String           @unique
   rolePermissions RolePermission[]
 }
 
 model Role {
-  id              String           @id @default(uuid())
+  id              String           @id @default(uuid(7))
   name            String
   storeId         String
   store           Store            @relation(fields: [storeId], references: [id])
   rolePermissions RolePermission[]
   admins          StoreUser[]
+  grantsAll       Boolean
 
   @@unique([storeId, name])
 }

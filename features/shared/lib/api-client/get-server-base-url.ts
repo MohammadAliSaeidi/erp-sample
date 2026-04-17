@@ -2,17 +2,15 @@ import { headers } from "next/headers";
 import "server-only";
 
 export async function getServerBaseUrl(): Promise<string> {
-	return "http://localhost:3000";
-
 	const envBaseUrl =
 		process.env.NEXT_PUBLIC_APP_URL ??
 		process.env.APP_URL ??
 		process.env.NEXT_PUBLIC_BASE_URL ??
 		process.env.BASE_URL;
 
-	console.log("envBaseUrl", envBaseUrl);
-
-	if (envBaseUrl) return envBaseUrl;
+	if (typeof envBaseUrl === "string" && envBaseUrl.length > 0) {
+		return envBaseUrl;
+	}
 
 	const headersList = await headers();
 	const host =

@@ -1,5 +1,11 @@
-import { CreateItemBody } from "@/features/items/types/create-item-body.type";
-import { AxiosInstance } from "axios";
+import { ApiClient } from "@/features/shared/lib/api-client";
 
-export const createItem = async (http: AxiosInstance, body: CreateItemBody) =>
-  await http.post<CreateItemBody>("/api/v1/inventory/item", body);
+export interface CreateItemBody {
+	name: string;
+	categoryId: string;
+}
+
+export const createItem = async (
+	apiClient: ApiClient,
+	body: CreateItemBody,
+) => await apiClient.post<CreateItemBody>("/api/v1/inventory/item", body);

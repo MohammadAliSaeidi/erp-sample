@@ -21,15 +21,16 @@ export default async function CategoryPage(props: CategoryPageProps) {
 	const { params } = props;
 	const { storeSlug } = await params;
 
-	const authContext = await requireSsrAuth([], { storeSlug });
+	const authContext = await requireSsrAuth(['categories:read'], { storeSlug });
 
 	const categoryRepository = buildCategoryRepository(prisma);
 	const listCategoriesOperation = buildListCategoriesOperation({
 		getListByStoreId: categoryRepository.getList,
 	});
+	
 	const categories = await runOperation({
 		operation: listCategoriesOperation,
-		rawInput: {},
+		input: {},
 		authContext,
 	});
 

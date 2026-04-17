@@ -51,7 +51,7 @@ describe("categories operations", () => {
 
 		const result = await runOperation({
 			operation,
-			rawInput: {},
+			input: {},
 			authContext: AUTH_CONTEXT,
 		});
 
@@ -68,7 +68,7 @@ describe("categories operations", () => {
 		await expect(
 			runOperation({
 				operation,
-				rawInput: {},
+				input: {},
 				authContext: { ...AUTH_CONTEXT, permissions: [] },
 			}),
 		).rejects.toBeInstanceOf(OperationForbiddenError);
@@ -83,7 +83,7 @@ describe("categories operations", () => {
 		await expect(
 			runOperation({
 				operation,
-				rawInput: { name: "" },
+				input: { name: "" },
 				authContext: AUTH_CONTEXT,
 			}),
 		).rejects.toBeInstanceOf(OperationValidationError);
@@ -98,7 +98,7 @@ describe("categories operations", () => {
 		await expect(
 			runOperation({
 				operation,
-				rawInput: { categoryId: CATEGORY_ID },
+				input: { categoryId: CATEGORY_ID },
 				authContext: AUTH_CONTEXT,
 			}),
 		).rejects.toBeInstanceOf(OperationNotFoundError);
@@ -115,7 +115,7 @@ describe("categories operations", () => {
 		await expect(
 			runOperation({
 				operation,
-				rawInput: {
+				input: {
 					id: CATEGORY_ID,
 					name: "Updated",
 				},

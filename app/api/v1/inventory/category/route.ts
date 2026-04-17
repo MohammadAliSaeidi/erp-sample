@@ -24,7 +24,7 @@ const getCategoriesHandler: RouteHandler = async (request) => {
 	try {
 		const categories = await runOperation({
 			operation: listCategoriesOperation,
-			rawInput: {},
+			input: {},
 			authContext,
 		});
 
@@ -41,7 +41,7 @@ const createCategoryHandler: RouteHandler = async (request) => {
 		const rawBody = await validateRequestJsonBody(request);
 		const createdCategory = await runOperation({
 			operation: createCategoryOperation,
-			rawInput: rawBody,
+			input: rawBody,
 			authContext,
 		});
 

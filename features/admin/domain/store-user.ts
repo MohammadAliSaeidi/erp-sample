@@ -1,8 +1,5 @@
-import { RoleId } from "@/features/auth/domain/actor";
-import { StoreId } from "@/features/store/domain/store";
+import { RoleId, StoreUserId, StoreId } from "@/features/shared/domain/ids";
 import z from "zod";
-
-export const StoreUserId = z.uuidv4().brand("StoreUserId");
 
 export const StoreUser = z.object({
   id: StoreUserId,

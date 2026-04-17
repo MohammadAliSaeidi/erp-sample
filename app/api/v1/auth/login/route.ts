@@ -17,7 +17,7 @@ const loginOperation = buildLoginOperation({
 		});
 	},
 	findStoreUserByStoreAndUsername: async (storeId, username) => {
-		return prisma.storeUser.findUnique({
+		const storeUser = await prisma.storeUser.findUnique({
 			where: {
 				storeId_username: { storeId, username },
 			},
@@ -28,8 +28,25 @@ const loginOperation = buildLoginOperation({
 				username: true,
 				roleId: true,
 				password: true,
+				role: {
+					select: {
+						grantsAll: true,
+					},
+				},
 			},
 		});
+		
+		return storeUser
+			? {
+					id: storeUser.id,
+					name: storeUser.name,
+					storeId: storeUser.storeId,
+					username: storeUser.username,
+					roleId: storeUser.roleId,
+					password: storeUser.password,
+					grantsAll: storeUser.role?.grantsAll ?? false,
+				}
+			: null;
 	},
 	isPasswordMatch: isHashMatch,
 });
@@ -40,7 +57,7 @@ export const POST: RouteHandler = async (request: NextRequest) => {
 		const storeSlug = resolveStoreSlugFromRequest(request);
 		const loginResult = await runOperation({
 			operation: loginOperation,
-			rawInput: { ...((rawBody as object) ?? {}), storeSlug },
+			input: { ...((rawBody as object) ?? {}), storeSlug },
 		});
 
 		await setTokenCookie(loginResult.cookieName, loginResult.tokenPayload);

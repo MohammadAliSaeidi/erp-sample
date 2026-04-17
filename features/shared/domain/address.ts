@@ -1,11 +1,10 @@
-import z from "zod"
-
-export const AddressId = z.uuidv4().brand("AddressId")
+import z from "zod";
+import { AddressId } from "./ids";
 
 export const Address = z.object({
-  id: AddressId,
-  street: z.string(),
-  city: z.string(),
-  state: z.string(),
-  zipCode: z.string(),
-})
+	id: AddressId,
+	street: z.string(),
+	city: z.string(),
+	state: z.string(),
+	zipCode: z.string(),
+});

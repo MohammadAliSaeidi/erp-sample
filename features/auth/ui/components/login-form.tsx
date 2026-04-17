@@ -15,46 +15,66 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { SpinnerCustom } from "@/components/ui/spinner";
-import { loginBodySchema } from "@/features/auth/domain/schemas/login-body.schema";
+import { loginInputSchema } from "@/features/auth/domain/schemas/login-body.schema";
 import { useIsHydrated } from "@/features/shared/hooks/use-is-hydrated";
 import { useParamBasedRedirect } from "@/features/shared/hooks/use-safe-redirect";
 import { cn } from "@/features/shared/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeClosedIcon, EyeIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useActionState, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { LoginBody } from "../../domain/types/login-body.type";
-import { useLoginMutation } from "../hooks/use-log-in-mutation";
-import { createApiClient } from "@/features/shared/lib/api-client";
-import { ClientRedirectHandler } from "@/features/shared/lib/api-client/handlers/client-redirect-handler";
+import { ActionResult } from "@/features/shared/adapters/action/map-operation-error-to-action-result";
+import { loginAction } from "../../actions/login.action";
+import type { LoginInput as LoginInputType } from "../../domain/types/login-body.type";
+import { Prettify } from "@/features/shared/types/prettify.type";
+import { startTransition } from "react";
 
 export type LoginFormProps = React.ComponentProps<"div"> & {
   storeSlug: string;
 };
 
 export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
-  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const isHydrated = useIsHydrated();
 
-  const { handleSubmit, control } = useForm<LoginBody>({
+  const { handleSubmit, control, setValue } = useForm<LoginInputType>({
     defaultValues: {
+      storeSlug: "",
       username: "",
       password: "",
     },
-    resolver: zodResolver(loginBodySchema),
+    resolver: zodResolver(loginInputSchema),
   });
 
-  const { mutate: login } = useLoginMutation(
-    createApiClient({ redirectHandler: new ClientRedirectHandler() }),
-  );
+  useEffect(() => {
+    setValue("storeSlug", storeSlug);
+  }, [setValue, storeSlug]);
+
   const safeRedirect = useParamBasedRedirect({
     paramKey: "redirect",
     defaultPath: `/store/${storeSlug}/dashboard`,
   });
 
-  const onSubmit = handleSubmit(async (formValues: LoginBody) => {
-    login(formValues, { onSuccess: () => safeRedirect() });
+  const [state, formAction, isPending] = useActionState(
+    async (
+      previousState: ActionResult<null> | null,
+      formData: LoginInputType,
+    ) => {
+      const result = await loginAction(formData);
+
+      if (result.ok) {
+        safeRedirect();
+        return result;
+      }
+
+      return result;
+    },
+    null,
+  );
+
+  const onSubmit = handleSubmit(async (formValues: LoginInputType) => {
+    startTransition(async () => {
+      formAction(formValues);
+    });
   });
 
   return (
@@ -105,12 +125,8 @@ export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
                         {...field}
                         id="login-password-field"
                         key="login-password-field"
-                        type={isPasswordVisible ? "text" : "password"}
                         aria-invalid={invalid}
                         placeholder="1234"
-                        endIcon={
-                          isPasswordVisible ? <EyeIcon /> : <EyeClosedIcon />
-                        }
                       />
                       {invalid && <FieldError errors={[error]} />}
                     </Field>
@@ -118,8 +134,12 @@ export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
                 />
               </Field>
               <Field>
-                <Button disabled={!isHydrated} type="submit">
-                  {isHydrated ? "Login" : <SpinnerCustom />}
+                <Button
+                  loading={isPending || !isHydrated}
+                  disabled={!isHydrated}
+                  type="submit"
+                >
+                  Login
                 </Button>
               </Field>
             </FieldGroup>
@@ -130,10 +150,35 @@ export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
   );
 }
 
-function LoginInput(props: React.ComponentProps<typeof Input>) {
+function LoginInput(
+  props: React.ComponentProps<typeof Input>,
+) {
+  const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+
+  const type = isPasswordVisible ? "text" : "password";
+  const endIcon = isPasswordVisible ? (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+    >
+      <EyeIcon />
+    </Button>
+  ) : (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+    >
+      <EyeClosedIcon />
+    </Button>
+  );
+
   return (
     <Input
       {...props}
+      type={type}
+      endIcon={endIcon}
       className={cn(
         "bg-transparent text-white border-white/30 border placeholder-white/30",
         props.className,

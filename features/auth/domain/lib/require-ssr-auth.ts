@@ -5,52 +5,53 @@ import { resolveAdminAccessTokenCookieName } from "./resolve-admin-access-token-
 import { resolveAuthContext } from "./resolve-auth-context";
 
 export interface SsrAuthContextSource {
-	storeSlug?: string;
-	cookieName?: string;
+  storeSlug?: string;
+  cookieName?: string;
 }
 
 export interface IBuildRequireSsrAuthDeps {
-	jwtService: Pick<IJwtService, "verify">;
-	getPermissionsByRoleId: (roleId: string) => Promise<Permission[]>;
-	getToken?: (contextSource: SsrAuthContextSource) => Promise<string | null>;
+  jwtService: Pick<IJwtService, "verify">;
+  getPermissionsByRoleId: (roleId: string) => Promise<Permission[]>;
+  getToken?: (contextSource: SsrAuthContextSource) => Promise<string | null>;
 }
 
 export interface IRequireSsrAuth {
-	(
-		requiredPermissions: Permission[],
-		contextSource?: SsrAuthContextSource,
-	): Promise<AuthContext>;
+  (
+    requiredPermissions: Permission[],
+    contextSource?: SsrAuthContextSource,
+  ): Promise<AuthContext>;
 }
 
 const defaultGetToken = async (
-	contextSource: SsrAuthContextSource,
+  contextSource: SsrAuthContextSource,
 ): Promise<string | null> => {
-	const { cookies } = await import("next/headers");
-	const cookieStore = await cookies();
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
 
-	const cookieName = resolveAdminAccessTokenCookieName(
-		contextSource,
-		cookieStore.getAll().map((cookie) => cookie.name),
-	);
+  const cookieName = resolveAdminAccessTokenCookieName(
+    contextSource,
+    cookieStore.getAll().map((cookie) => cookie.name),
+  );
 
-	if (!cookieName) return null;
-	return cookieStore.get(cookieName)?.value ?? null;
+  if (!cookieName) return null;
+  const token = cookieStore.get(cookieName)?.value ?? null;
+  return token;
 };
 
 export const buildRequireSsrAuth = (
-	deps: IBuildRequireSsrAuthDeps,
+  deps: IBuildRequireSsrAuthDeps,
 ): IRequireSsrAuth => {
-	const getToken = deps.getToken ?? defaultGetToken;
+  const getToken = deps.getToken ?? defaultGetToken;
 
-	return async (
-		requiredPermissions: Permission[],
-		contextSource: SsrAuthContextSource = {},
-	): Promise<AuthContext> => {
-		return resolveAuthContext({
-			requiredPermissions,
-			getToken: () => getToken(contextSource),
-			getPermissionsByRoleId: deps.getPermissionsByRoleId,
-			jwtService: deps.jwtService,
-		});
-	};
+  return async (
+    requiredPermissions: Permission[],
+    contextSource: SsrAuthContextSource = {},
+  ): Promise<AuthContext> => {
+    return resolveAuthContext({
+      requiredPermissions,
+      getToken: () => getToken(contextSource),
+      getPermissionsByRoleId: deps.getPermissionsByRoleId,
+      jwtService: deps.jwtService,
+    });
+  };
 };

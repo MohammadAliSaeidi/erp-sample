@@ -29,8 +29,10 @@ function CreateCategoryForm() {
 
   const handleCreateCategory = (formData: CreateCategoryBody) => {
     mutateCreateCategory(formData, {
-      onSuccess: () =>
-        toast.success(`Category "${formData.name}" has been successfully`),
+      onSuccess: () => {
+        toast.success(`Category "${formData.name}" has been successfully`);
+        form.reset();
+      },
     });
   };
 

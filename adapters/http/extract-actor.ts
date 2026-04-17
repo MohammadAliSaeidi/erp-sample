@@ -1,5 +1,5 @@
-import { StoreUserId } from "@/features/admin/domain/StoreUser";
-import { Actor, RoleId } from "@/features/auth/domain/actor";
+import { Actor } from "@/features/auth/domain/actor";
+import { RoleId, StoreUserId } from "@/features/shared/domain/ids";
 import { resolveAdminAccessTokenCookieName } from "@/features/auth/domain/lib/resolve-admin-access-token-cookie-name";
 import { UnauthenticatedError } from "@/features/auth/domain/errors/unauthenticated.error";
 import { IJwtService } from "@/features/auth/domain/services/jwt.service";

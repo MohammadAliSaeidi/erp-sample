@@ -19,7 +19,7 @@ export default async function CategoryDetailsPage(props: CategoryDetailsProps) {
 	const { params } = props;
 	const { categoryId, storeSlug } = await params;
 
-	const authContext = await requireSsrAuth([], { storeSlug });
+	const authContext = await requireSsrAuth(['categories:read-details'], { storeSlug });
 
 	const categoryRepository = buildCategoryRepository(prisma);
 	const getCategoryByIdOperation = buildGetCategoryByIdOperation({
@@ -27,7 +27,7 @@ export default async function CategoryDetailsPage(props: CategoryDetailsProps) {
 	});
 	const category = await runOperation({
 		operation: getCategoryByIdOperation,
-		rawInput: { categoryId },
+		input: { categoryId },
 		authContext,
 	});
 

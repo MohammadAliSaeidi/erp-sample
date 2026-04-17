@@ -28,6 +28,8 @@ export const buildRolePermissionRepository: IRolePermissionRepositoryBuilder = (
 					},
 				});
 
+				console.log(permissionsOfTheRole);
+				
 			return permissionsOfTheRole.map(
 				(permission): Permission =>
 					permission.permission.key as Permission,

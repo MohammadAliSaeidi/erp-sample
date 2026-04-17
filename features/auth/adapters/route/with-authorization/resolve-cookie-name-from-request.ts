@@ -7,7 +7,7 @@ export const resolveCookieNameFromRequest = (
 ): string | null => {
 	const storeSlug = resolveStoreSlugFromRequest(req);
 	return resolveAdminAccessTokenCookieName(
-		{ storeSlug },
+		storeSlug ? { storeSlug } : {},
 		(req.cookies?.getAll?.() ?? []).map((cookie) => cookie.name),
 	);
 };

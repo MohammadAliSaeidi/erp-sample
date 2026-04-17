@@ -17,7 +17,7 @@ describe("login operation", () => {
 		await expect(
 			runOperation({
 				operation,
-				rawInput: {
+				input: {
 					username: "admin",
 					password: "1234",
 				},
@@ -35,7 +35,7 @@ describe("login operation", () => {
 		await expect(
 			runOperation({
 				operation,
-				rawInput: {
+				input: {
 					storeSlug: "missing-store",
 					username: "admin",
 					password: "1234",
@@ -65,7 +65,7 @@ describe("login operation", () => {
 		await expect(
 			runOperation({
 				operation,
-				rawInput: {
+				input: {
 					storeSlug: "store-1",
 					username: "admin",
 					password: "bad-pass",
@@ -95,7 +95,7 @@ describe("login operation", () => {
 		await expect(
 			runOperation({
 				operation,
-				rawInput: {
+				input: {
 					storeSlug: "store-1",
 					username: "admin",
 					password: "correct-pass",

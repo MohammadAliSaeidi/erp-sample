@@ -1,4 +1,4 @@
 import z from "zod";
-import { loginBodySchema } from "../schemas/login-body.schema";
+import { loginInputSchema } from "../schemas/login-body.schema";
 
-export type LoginBody = z.infer<typeof loginBodySchema>;
+export type LoginInput = z.infer<typeof loginInputSchema>;

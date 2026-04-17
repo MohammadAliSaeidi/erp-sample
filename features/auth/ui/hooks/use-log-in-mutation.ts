@@ -1,11 +1,11 @@
 import { ApiClient } from "@/features/shared/lib/api-client";
 import { mutationOptions, useMutation } from "@tanstack/react-query";
-import { LoginBody } from "../../domain/types/login-body.type";
+import { LoginInput } from "../../domain/types/login-body.type";
 import { login } from "../services/api/login";
 
 export const buildLoginMutationOptions = (apiClient: ApiClient) => {
   return mutationOptions({
-    mutationFn: (body: LoginBody) => login(body, apiClient),
+    mutationFn: (body: LoginInput) => login(body, apiClient),
   });
 };
 
