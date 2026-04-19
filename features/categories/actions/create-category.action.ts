@@ -11,6 +11,7 @@ import {
 } from "@/features/shared/adapters/action/map-operation-error-to-action-result";
 import { runOperation } from "@/features/shared/application/run-operation";
 import prisma from "@/features/shared/lib/prisma";
+import { CreateCategoryBody } from "../domain/types/create-category-body.type";
 
 const categoryRepository = buildCategoryRepository(prisma);
 const createCategoryOperation = buildCreateCategoryOperation({
@@ -18,7 +19,7 @@ const createCategoryOperation = buildCreateCategoryOperation({
 });
 
 export async function createCategoryAction(
-	rawInput: unknown,
+	rawInput: CreateCategoryBody,
 ): Promise<ActionResult<Category>> {
 	try {
 		const authContext = await requireSsrAuth(['categories:create']);

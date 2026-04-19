@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { NavMain } from "@/app/store/[storeSlug]/_components/sidebar/nav-main";
+import { NavMain } from "@/app/store/[storeSlug]/admin/_components/sidebar/nav-main";
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { useSidebarData } from "./use-sidebar-data";
 

@@ -47,7 +47,10 @@ export function NavMain(props: NavMainProps) {
 				>
 					<SidebarMenuItem>
 						<SidebarMenuButton asChild tooltip={item.title}>
-							<Link href={item.url}>
+							<Link
+								href={item.url}
+								className="**:text-sidebar-foreground"
+							>
 								{item.icon}
 								<span>{item.title}</span>
 							</Link>
@@ -67,8 +70,12 @@ export function NavMain(props: NavMainProps) {
 												key={subItem.title}
 											>
 												<SidebarMenuSubButton asChild>
-													<Link href={subItem.url}>
+													<Link
+														href={subItem.url}
+														className="**:text-sidebar-foreground"
+													>
 														{subItem.icon}
+
 														<span>
 															{subItem.title}
 														</span>

@@ -1,4 +1,4 @@
-import CategoryOverview from "@/features/categories/ui/components/category-details/category-details";
+import CategoryDetails from "@/features/categories/ui/components/category-details/category-details";
 import { requireSsrAuth } from "@/features/auth";
 import { buildGetCategoryByIdOperation } from "@/features/categories/application/operations/get-category-by-id.operation";
 import { buildCategoryRepository } from "@/features/categories/domain/repositories/categories.repository";
@@ -7,6 +7,7 @@ import { runOperation } from "@/features/shared/application/run-operation";
 import { getQueryClient } from "@/features/shared/lib/get-query-client";
 import prisma from "@/features/shared/lib/prisma";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import Breadcrumb from "../../../../../../../features/categories/ui/components/category-details/breadcrumb";
 
 type CategoryDetailsProps = {
 	params: Promise<{
@@ -19,7 +20,9 @@ export default async function CategoryDetailsPage(props: CategoryDetailsProps) {
 	const { params } = props;
 	const { categoryId, storeSlug } = await params;
 
-	const authContext = await requireSsrAuth(['categories:read-details'], { storeSlug });
+	const authContext = await requireSsrAuth(["categories:read-details"], {
+		storeSlug,
+	});
 
 	const categoryRepository = buildCategoryRepository(prisma);
 	const getCategoryByIdOperation = buildGetCategoryByIdOperation({
@@ -35,8 +38,10 @@ export default async function CategoryDetailsPage(props: CategoryDetailsProps) {
 	queryClient.setQueryData(CATEGORY_QUERY_KEYS.detail(categoryId), category);
 
 	return (
-		<HydrationBoundary state={dehydrate(queryClient)}>
-			<CategoryOverview categoryId={categoryId} />
-		</HydrationBoundary>
+		<>
+			<HydrationBoundary state={dehydrate(queryClient)}>
+				<CategoryDetails categoryId={categoryId} />
+			</HydrationBoundary>
+		</>
 	);
 }

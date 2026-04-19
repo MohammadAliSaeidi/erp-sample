@@ -11,12 +11,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useCreateCategoryMutation } from "../../hooks/use-create-item-mutation";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { InfoIcon } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 function CreateCategoryForm() {
   const form = useForm<CreateCategoryBody>({
     resolver: zodResolver(createCategoryBody),
     defaultValues: {
       name: "",
+      description: "",
     },
   });
 
@@ -37,31 +46,73 @@ function CreateCategoryForm() {
   };
 
   return (
-    <form
-      onSubmit={form.handleSubmit(handleCreateCategory)}
-      className="flex flex-nowrap items-end gap-4"
-    >
-      <Controller
-        name="name"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field>
-            <FieldLabel>Name</FieldLabel>
-            <Input
-              {...field}
-              id="create-category-field--name"
-              aria-invalid={fieldState.invalid}
-              placeholder="Ex: Phones, Cars, ELectronics, etc."
-              autoComplete="off"
-            />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
-      <Button type="submit" loading={isMutateCreateCategoryPending}>
-        Create
-      </Button>
-    </form>
+    <Card>
+      <CardContent>
+        <form
+          onSubmit={form.handleSubmit(handleCreateCategory)}
+          className="flex flex-col items-end gap-4"
+        >
+          <Controller
+            name="name"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field>
+                <div className="flex items-center gap-2">
+                  <FieldLabel>Name</FieldLabel>
+                  <UniqueCategoryNameTooltip />
+                </div>
+                <Input
+                  {...field}
+                  id="create-category-field--name"
+                  aria-invalid={fieldState.invalid}
+                  placeholder="Must Be Unique. Ex: Phones, Cars, ELectronics, etc."
+                  autoComplete="off"
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <Controller
+            name="description"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel>Description</FieldLabel>
+                <Textarea
+                  {...field}
+                  id="create-category-field--description"
+                  aria-invalid={fieldState.invalid}
+                  autoComplete="off"
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+        </form>
+      </CardContent>
+      <CardFooter>
+        <Button type="submit" loading={isMutateCreateCategoryPending}>
+          Create Category
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+}
+
+function UniqueCategoryNameTooltip() {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <InfoIcon className="w-4 h-4 text-muted-foreground" />
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>Name Must Be Unique</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 

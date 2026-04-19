@@ -1,5 +1,5 @@
-import { SiteHeader } from "@/app/store/[storeSlug]/_components/header";
-import AppSidebar from "@/app/store/[storeSlug]/_components/sidebar/sidebar";
+import { SiteHeader } from "@/app/store/[storeSlug]/admin/_components/header";
+import AppSidebar from "@/app/store/[storeSlug]/admin/_components/sidebar/sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PropsWithChildren } from "react";
 
@@ -10,7 +10,7 @@ export default function AdminDashboardLayout({ children }: PropsWithChildren) {
         <SiteHeader />
         <div className="flex flex-1">
           <AppSidebar />
-          <SidebarInset className="px-4 py-3">{children}</SidebarInset>
+          <SidebarInset className="px-4 py-3 bg-gray-50">{children}</SidebarInset>
         </div>
       </SidebarProvider>
     </div>

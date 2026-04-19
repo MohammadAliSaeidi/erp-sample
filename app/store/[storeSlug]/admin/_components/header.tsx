@@ -1,6 +1,6 @@
 "use client";
 
-import { SearchForm } from "@/app/store/[storeSlug]/_components/sidebar/search-form";
+import { SearchForm } from "@/app/store/[storeSlug]/admin/_components/sidebar/search-form";
 import { Breadcrumb, BreadcrumbList } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";

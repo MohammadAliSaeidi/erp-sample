@@ -1,26 +1,30 @@
 export const URLS = {
   STORE: {
-    LOGIN: (storeSlug: string) => `/store/${storeSlug}/login`,
-    DASHBOARD: (storeSlug: string) => `/store/${storeSlug}/dashboard`,
-    INVENTORY: {
-      INDEX: (storeSlug: string) => `/store/${storeSlug}/inventory`,
-      ITEMS: {
-        LIST: (storeSlug: string) => `/store/${storeSlug}/inventory/items`,
-        CREATE: (storeSlug: string) =>
-          `/store/${storeSlug}/inventory/items/form`,
-        EDIT: (storeSlug: string, itemId: string) =>
-          `/store/${storeSlug}/inventory/items/form/${itemId}`,
-        DETAILS: (storeSlug: string, itemId: string) =>
-          `/store/${storeSlug}/inventory/items/${itemId}`,
-      },
-      CATEGORIES: {
-        LIST: (storeSlug: string) => `/store/${storeSlug}/inventory/categories`,
-        CREATE: (storeSlug: string) =>
-          `/store/${storeSlug}/inventory/categories/form`,
-        EDIT: (storeSlug: string, itemId: string) =>
-          `/store/${storeSlug}/inventory/categories/form/${itemId}`,
-        DETAILS: (storeSlug: string, itemId: string) =>
-          `/store/${storeSlug}/inventory/categories/${itemId}`,
+    ADMIN: {
+      LOGIN: (storeSlug: string) => `/store/${storeSlug}/admin/login`,
+      DASHBOARD: (storeSlug: string) => `/store/${storeSlug}/admin/dashboard`,
+      INVENTORY: {
+        INDEX: (storeSlug: string) => `/store/${storeSlug}/admin/inventory`,
+        ITEMS: {
+          LIST: (storeSlug: string) =>
+            `/store/${storeSlug}/admin/inventory/items`,
+          CREATE: (storeSlug: string) =>
+            `/store/${storeSlug}/admin/inventory/items/form`,
+          EDIT: (storeSlug: string, itemId: string) =>
+            `/store/${storeSlug}/admin/inventory/items/form/${itemId}`,
+          DETAILS: (storeSlug: string, itemId: string) =>
+            `/store/${storeSlug}/admin/inventory/items/${itemId}`,
+        },
+        CATEGORIES: {
+          LIST: (storeSlug: string) =>
+            `/store/${storeSlug}/admin/inventory/categories`,
+          CREATE: (storeSlug: string) =>
+            `/store/${storeSlug}/admin/inventory/categories/create`,
+          EDIT: (storeSlug: string, itemId: string) =>
+            `/store/${storeSlug}/admin/inventory/categories/form/${itemId}`,
+          DETAILS: (storeSlug: string, itemId: string) =>
+            `/store/${storeSlug}/admin/inventory/categories/${itemId}`,
+        },
       },
     },
   },

@@ -51,7 +51,7 @@ export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
 
   const safeRedirect = useParamBasedRedirect({
     paramKey: "redirect",
-    defaultPath: `/store/${storeSlug}/dashboard`,
+    defaultPath: `/store/${storeSlug}/admin/dashboard`,
   });
 
   const [state, formAction, isPending] = useActionState(

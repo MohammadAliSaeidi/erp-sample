@@ -11,21 +11,21 @@ export const useSidebarData = (): NavMainItem[] => {
 	return [
 		{
 			title: "Inventory",
-			url: storeSlug ? URLS.STORE.INVENTORY.INDEX(storeSlug) : "#",
+			url: storeSlug ? URLS.STORE.ADMIN.INVENTORY.INDEX(storeSlug) : "#",
 			icon: <WarehouseIcon />,
 			isActive: true,
 			items: [
 				{
 					title: "Items",
 					url: storeSlug
-						? URLS.STORE.INVENTORY.ITEMS.LIST(storeSlug)
+						? URLS.STORE.ADMIN.INVENTORY.ITEMS.LIST(storeSlug)
 						: "#",
 					icon: <BoxIcon />,
 				},
 				{
 					title: "Categories",
 					url: storeSlug
-						? URLS.STORE.INVENTORY.CATEGORIES.LIST(storeSlug)
+						? URLS.STORE.ADMIN.INVENTORY.CATEGORIES.LIST(storeSlug)
 						: "#",
 					icon: <BoxesIcon />,
 				},
