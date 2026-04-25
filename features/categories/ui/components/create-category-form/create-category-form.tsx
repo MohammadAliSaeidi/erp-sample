@@ -84,7 +84,6 @@ function CreateCategoryForm() {
                   {...field}
                   id="create-category-field--description"
                   aria-invalid={fieldState.invalid}
-                  autoComplete="off"
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />

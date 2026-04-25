@@ -2,7 +2,6 @@
 import { DirectionProvider } from "@/components/ui/direction";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { getQueryClient } from "@/features/shared/lib/get-query-client";
-import { useSwitchLocale } from "@/lib/i18n/use-switch-locale";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
@@ -22,10 +21,6 @@ export default function Providers({
 	dir: "ltr" | "rtl";
 }) {
 	const queryClient = getQueryClient();
-	// const switchLocale = useSwitchLocale()
-
-	// switchLocale("ar")
-
 	return (
 		<QueryClientProvider client={queryClient}>
 			<DirectionProvider dir={dir} direction={dir}>

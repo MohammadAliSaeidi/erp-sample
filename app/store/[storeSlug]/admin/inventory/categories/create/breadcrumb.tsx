@@ -47,7 +47,7 @@ export default function Breadcrumb() {
 				</BreadcrumbItem>
 				<BreadcrumbSeparator />
 				<BreadcrumbItem>
-					<BreadcrumbLink>
+					<BreadcrumbLink asChild>
 						<Link
 							href={
 								storeSlug
@@ -63,8 +63,8 @@ export default function Breadcrumb() {
 				</BreadcrumbItem>
 				<BreadcrumbSeparator />
 				<BreadcrumbItem>
-					<BreadcrumbLink className="text-primary">
-						Create Category
+					<BreadcrumbLink asChild>
+						<span className="text-primary">Create Category</span>
 					</BreadcrumbLink>
 				</BreadcrumbItem>
 			</BreadcrumbList>
