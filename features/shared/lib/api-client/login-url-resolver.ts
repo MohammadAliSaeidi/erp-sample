@@ -7,7 +7,7 @@ const LOGIN_PAGE_PREFIXES = Object.keys(LOGIN_PAGES) as LoginPagePrefix[];
 function resolveStoreLoginUrl(currentPath: string): string | null {
   const storeSlug = getStoreSlugFromPath(currentPath);
   if (!storeSlug) return null;
-  return `/store/${storeSlug}/login`;
+  return `/store/${storeSlug}/admin/login`;
 }
 
 function resolveDefaultLoginUrl(currentPath: string): string {

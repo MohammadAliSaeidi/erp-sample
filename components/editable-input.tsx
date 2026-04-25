@@ -37,7 +37,7 @@ function EditableInput(props: EditableInputProps) {
   };
 
   const handleCancel = () => {
-    setResetKey((k) => k + 1); // forces renderEditInput to remount → defaultValue restored
+    setResetKey((k) => k + 1);
     setIsEditing(false);
     onCancel?.();
   };
@@ -45,30 +45,32 @@ function EditableInput(props: EditableInputProps) {
   return (
     <div
       className={cn(
-        "flex gap-2 w-fit",
-        isEditing && editLayout === "horizontal" ? "flex-row items-center" : "flex-col",
-        !isEditing && viewLayout === "horizontal" ? "flex-row items-center" : "flex-col",
+        "flex gap-2 w-full",
+
+        isEditing &&
+          editLayout === "horizontal" &&
+          "flex-row flex-nowrap items-center",
+
+        isEditing && editLayout === "vertical" && "flex-col",
+
+        !isEditing && viewLayout === "vertical" && "flex-col",
+
+        !isEditing &&
+          viewLayout === "horizontal" &&
+          "flex-row flex-nowrap items-center",
+
         className,
       )}
     >
       {isEditing ? (
         <>
-          <div key={resetKey}>{renderEditInput()}</div>
-          <div className="flex gap-2 justify-end">
-            <Button
-              variant="default"
-              onClick={handleSave}
-              disabled={loading}
-              key="save"
-            >
+          <div className="flex-1 min-w-0">{renderEditInput()}</div>
+          <div className="flex gap-2 justify-end shrink-0">
+            {" "}
+            <Button variant="default" onClick={handleSave} disabled={loading}>
               Save <SaveIcon />
             </Button>
-            <Button
-              variant="outline"
-              onClick={handleCancel}
-              disabled={loading}
-              key="cancel"
-            >
+            <Button variant="outline" onClick={handleCancel} disabled={loading}>
               Cancel <XIcon />
             </Button>
           </div>

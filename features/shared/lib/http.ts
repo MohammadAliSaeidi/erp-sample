@@ -9,7 +9,7 @@ const LOGIN_PAGE_PREFIXES = Object.keys(LOGIN_PAGES) as LoginPagePrefix[];
 function getStoreLoginPath(currentPath: string): string | null {
   const storeSlug = getStoreSlugFromPath(currentPath);
 
-  return `/store/${storeSlug}/login`;
+  return `/store/${storeSlug}/admin/login`;
 }
 
 function redirectToLogin(currentPath: string) {

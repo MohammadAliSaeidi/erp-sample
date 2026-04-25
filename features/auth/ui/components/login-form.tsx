@@ -150,9 +150,7 @@ export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
   );
 }
 
-function LoginInput(
-  props: React.ComponentProps<typeof Input>,
-) {
+function LoginInput(props: React.ComponentProps<typeof Input>) {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const type = isPasswordVisible ? "text" : "password";
