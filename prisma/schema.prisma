@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../app/generated/prisma"
@@ -24,36 +18,95 @@ model Store {
   categories    Category[]
   roles         Role[]
   items         Item[]
+  deletedAt     DateTime?
+  updatedAt     DateTime?      @updatedAt
 }
 
 model Category {
-  id          String  @id @default(uuid(7))
-  storeId     String
-  name        String
-  description String?
-  items       Item[]
-  store       Store   @relation(fields: [storeId], references: [id])
+  id             String          @id @default(uuid(7))
+  storeId        String
+  store          Store           @relation(fields: [storeId], references: [id])
+  parentId       String?
+  parent         Category?       @relation("CategoryTree", fields: [parentId], references: [id])
+  children       Category[]      @relation("CategoryTree")
+  name           String
+  description    String?
+  deletedAt      DateTime?
+  updatedAt      DateTime?       @updatedAt
+  items          Item[]
+  specifications Specification[]
 
-  @@unique([storeId, name])
+  @@unique([storeId, parentId, name])
 }
 
 model Item {
   id          String   @id @default(uuid(7))
   name        String
+  number      String // required, not optional
   description String
   price       Float
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [id])
   storeId     String
   store       Store    @relation(fields: [storeId], references: [id])
+  vendors     Vendor[]
+
+  itemSpecificationValues ItemSpecificationValue[]
+  deletedAt               DateTime?
+  updatedAt               DateTime?                @updatedAt
+
+  @@unique([storeId, number])
+}
+
+model Vendor {
+  id             String          @id @default(uuid(7))
+  name           String
+  description    String?
+  vendorContacts VendorContact[]
+  vendorItems    Item[]
+  addressId      String
+  address        Address         @relation(fields: [addressId], references: [id])
+  deletedAt      DateTime?
+  updatedAt      DateTime?       @updatedAt
+}
+
+model Client {
+  id             String          @id @default(uuid(7))
+  name           String
+  description    String?
+  clientContacts ClientContact[]
+  addressId      String
+  address        Address         @relation(fields: [addressId], references: [id])
+  deletedAt      DateTime?
+  updatedAt      DateTime?       @updatedAt
+}
+
+model ClientContact {
+  id        String  @id @default(uuid(7))
+  clientId  String
+  client    Client  @relation(fields: [clientId], references: [id])
+  contactId String
+  contact   Contact @relation(fields: [contactId], references: [id])
+}
+
+model VendorContact {
+  id        String  @id @default(uuid(7))
+  vendorId  String
+  vendor    Vendor  @relation(fields: [vendorId], references: [id])
+  contactId String
+  contact   Contact @relation(fields: [contactId], references: [id])
 }
 
 model Contact {
-  id            String         @id @default(uuid(7))
-  name          String
-  email         String
-  phone         String
-  storeContacts StoreContact[]
+  id             String          @id @default(uuid(7))
+  name           String
+  email          String
+  phone          String
+  storeContacts  StoreContact[]
+  vendorContacts VendorContact[]
+  clientContacts ClientContact[]
+  deletedAt      DateTime?
+  updatedAt      DateTime?       @updatedAt
 }
 
 model StoreContact {
@@ -65,23 +118,28 @@ model StoreContact {
 }
 
 model Address {
-  id      String  @id @default(uuid(7))
-  street  String
-  city    String
-  state   String
-  zipCode String
-  stores  Store[]
+  id        String    @id @default(uuid(7))
+  street    String
+  city      String
+  state     String
+  zipCode   String
+  stores    Store[]
+  vendors   Vendor[]
+  clients   Client[]
+  updatedAt DateTime? @updatedAt
 }
 
 model StoreUser {
-  id       String @id @default(uuid(7))
-  name     String
-  storeId  String
-  store    Store  @relation(fields: [storeId], references: [id])
-  username String
-  password String
-  roleId   String
-  role     Role   @relation(fields: [roleId], references: [id])
+  id        String    @id @default(uuid(7))
+  name      String
+  storeId   String
+  store     Store     @relation(fields: [storeId], references: [id])
+  username  String
+  password  String
+  roleId    String
+  role      Role      @relation(fields: [roleId], references: [id])
+  deletedAt DateTime?
+  updatedAt DateTime? @updatedAt
 
   @@unique([storeId, username])
 }
@@ -100,6 +158,8 @@ model Role {
   rolePermissions RolePermission[]
   admins          StoreUser[]
   grantsAll       Boolean
+  deletedAt       DateTime?
+  updatedAt       DateTime?        @updatedAt
 
   @@unique([storeId, name])
 }
@@ -112,4 +172,53 @@ model RolePermission {
 
   @@id([roleId, permissionId])
   @@index([permissionId])
+}
+
+enum SpecType {
+  PRIMARY
+  REQUIRED
+  OPTIONAL
+}
+
+enum SpecificationValueType {
+  STRING
+  BOOLEAN
+  NUMBER
+}
+
+model Specification {
+  id                      String                   @id @default(uuid(7))
+  name                    String
+  categoryId              String
+  category                Category                 @relation(fields: [categoryId], references: [id])
+  type                    SpecificationValueType
+  specType                SpecType
+  specificationValues     SpecificationValue[]
+  itemSpecificationValues ItemSpecificationValue[]
+  deletedAt               DateTime?
+  updatedAt               DateTime?                @updatedAt
+
+  @@unique([categoryId, name])
+}
+
+model SpecificationValue {
+  id              String        @id @default(uuid(7))
+  value           String
+  specificationId String
+  specification   Specification @relation(fields: [specificationId], references: [id], onDelete: Cascade)
+  deletedAt       DateTime?
+
+  itemSpecificationValues ItemSpecificationValue[]
+}
+
+model ItemSpecificationValue {
+  itemId               String
+  specificationId      String
+  specificationValueId String
+
+  item               Item               @relation(fields: [itemId], references: [id])
+  specification      Specification      @relation(fields: [specificationId], references: [id])
+  specificationValue SpecificationValue @relation(fields: [specificationValueId], references: [id])
+
+  @@id([itemId, specificationId])
 }
