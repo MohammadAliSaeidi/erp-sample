@@ -1,13 +1,18 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createApiClient } from "@/lib/api-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useGetCategoryByIdQueryOptions } from "../../hooks/use-get-category-by-id-query";
 import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect-handler";
 import Breadcrumb from "./breadcrumb";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CategoryOverview from "./tabs/category-overview";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import {
+  CategoryTab,
+  CategoryTabProps,
+  categoryTabsConfig,
+} from "./tab-config";
+import { useTabManager } from "@/lib/tabs/use-tab-manager";
+import { ShadcnTabNavigation } from "@/components/ui/tab-navigation";
 
 type CategoryDetailsProps = {
   categoryId: string;
@@ -25,52 +30,42 @@ export default function CategoryDetails(props: CategoryDetailsProps) {
     ),
   );
 
+  const tabProps: CategoryTabProps = {
+    categoryId,
+    categoryName: category?.name ?? "",
+  };
+
+  const { activeTab, availableTabs, changeTab, ActiveComponent } =
+    useTabManager(
+      {
+        tabs: categoryTabsConfig,
+        defaultTab: CategoryTab.Overview,
+        onTabChange: (tab) => console.log(`Tab changed to ${tab}`),
+      },
+      tabProps,
+    );
+
   return (
     <>
-      {/* Breadcrumb navigation landmark */}
       <nav aria-label="Breadcrumb navigation">
         <Breadcrumb categoryName={category?.name} />
       </nav>
 
-      <Tabs defaultValue="overview">
-        <TabsList aria-label="Category sections">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger disabled value="specifications">
-            Specifications
-          </TabsTrigger>
-          <TabsTrigger disabled value="items">
-            Items
-          </TabsTrigger>
-          <TabsTrigger disabled value="documents">
-            Documents
-          </TabsTrigger>
-          <TabsTrigger disabled value="photos">
-            Photos
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent
-          value="overview"
-          role="tabpanel"
-          aria-labelledby="overview-tab"
-        >
-          <CategoryOverview categoryId={categoryId} />
-        </TabsContent>
-
-        <TabsContent
-          value="documents"
-          role="tabpanel"
-          aria-labelledby="documents-tab"
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle id="documents-tab">Documents</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Documents goes here</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
+      <Tabs
+        value={activeTab}
+        onValueChange={(val) => changeTab(val as CategoryTab)}
+      >
+        <ShadcnTabNavigation
+          tabs={availableTabs}
+          activeTab={activeTab}
+          onTabChange={changeTab}
+          ariaLabel="Category sections"
+        />
+        {ActiveComponent && (
+          <TabsContent value={activeTab} forceMount className="mt-4">
+            <ActiveComponent {...tabProps} />
+          </TabsContent>
+        )}
       </Tabs>
     </>
   );
