@@ -4,14 +4,14 @@ import { useParams } from "next/navigation";
 
 /**
  *
- * @returns store slug in the url. example: https://erp.com/store/[storeSlug]/dashboard --> `storeSlug`
+ * @returns store slug in the url. example: https://erp.com/store/my-store-name/admin/dashboard --> `my-store-name`
  */
 export function useStoreUrlSlug(): string | undefined {
   const params = useParams<{ storeSlug: string | undefined }>();
   const slug = params.storeSlug;
 
   if (!slug || Array.isArray(slug)) {
-    throw new Error("storeSlug not found in URL");
+    throw new Error("storeSlug not found in the URL");
   }
 
   return slug;

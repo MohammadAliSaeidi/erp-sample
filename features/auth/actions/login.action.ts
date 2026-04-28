@@ -10,9 +10,9 @@ import {
   mapOperationErrorToActionResult,
 } from "@/features/shared/adapters/action/map-operation-error-to-action-result";
 import { runOperation } from "@/features/shared/application/run-operation";
-import prisma from "@/features/shared/lib/prisma";
-import { setTokenCookie } from "@/features/shared/lib/token";
-import { isHashMatch } from "@/features/shared/lib/utils/hash/hash";
+import prisma from "@/lib/prisma";
+import { setTokenCookie } from "@/lib/token";
+import { isHashMatch } from "@/lib/utils/hash/hash";
 import { LoginInput } from "../domain/types/login-body.type";
 
 const loginOperation = buildLoginOperation({

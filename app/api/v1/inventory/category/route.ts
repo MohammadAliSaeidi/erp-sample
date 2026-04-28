@@ -4,8 +4,8 @@ import { buildListCategoriesOperation } from "@/features/categories/application/
 import { buildCategoryRepository } from "@/features/categories/domain/repositories/categories.repository";
 import { mapOperationErrorToResponse } from "@/features/shared/adapters/http/map-operation-error-to-response";
 import { runOperation } from "@/features/shared/application/run-operation";
-import prisma from "@/features/shared/lib/prisma";
-import { validateRequestJsonBody } from "@/features/shared/lib/validate-request-json-body";
+import prisma from "@/lib/prisma";
+import { validateRequestJsonBody } from "@/lib/validate-request-json-body";
 import { WithAuthContext } from "@/features/shared/types/next-request-with-auth-context.type";
 import { RouteHandler } from "@/features/shared/types/route-handler.type";
 import { NextResponse } from "next/server";

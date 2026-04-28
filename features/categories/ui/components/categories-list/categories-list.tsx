@@ -3,8 +3,8 @@
 import { Category } from "@/app/generated/prisma/client";
 import AgGridReact from "@/components/ag-grid-react";
 import { Button } from "@/components/ui/button";
-import { createApiClient } from "@/features/shared/lib/api-client";
-import { ClientRedirectHandler } from "@/features/shared/lib/api-client/handlers/client-redirect-handler";
+import { createApiClient } from "@/lib/api-client";
+import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect-handler";
 import { useQuery } from "@tanstack/react-query";
 import { ColDef, ICellRendererParams } from "ag-grid-community";
 import { EyeIcon } from "lucide-react";

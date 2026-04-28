@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { URLS } from "@/constants/urls";
-import { useStoreUrlSlug } from "@/features/shared/hooks/use-store-url-slug";
+import { useStoreUrlSlug } from "@/hooks/use-store-url-slug";
 import Link from "next/link";
 
 type BreadcrumbProps = {

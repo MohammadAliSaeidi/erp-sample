@@ -1,4 +1,4 @@
-import { ApiClient } from "@/features/shared/lib/api-client";
+import { ApiClient } from "@/lib/api-client";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { CATEGORY_QUERY_KEYS } from "../constants/query-keys";
 import { getCategoryById } from "../services/api/get-category-by-id";

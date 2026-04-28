@@ -1,4 +1,4 @@
-import { ApiClient } from "@/features/shared/lib/api-client";
+import { ApiClient } from "@/lib/api-client";
 import { mutationOptions, QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CreateCategoryBody } from "../../domain/types/create-category-body.type";
 import { createCategory } from "../services/api/create-category";

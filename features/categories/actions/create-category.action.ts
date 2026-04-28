@@ -10,7 +10,7 @@ import {
 	mapOperationErrorToActionResult,
 } from "@/features/shared/adapters/action/map-operation-error-to-action-result";
 import { runOperation } from "@/features/shared/application/run-operation";
-import prisma from "@/features/shared/lib/prisma";
+import prisma from "@/lib/prisma";
 import { CreateCategoryBody } from "../domain/types/create-category-body.type";
 
 const categoryRepository = buildCategoryRepository(prisma);

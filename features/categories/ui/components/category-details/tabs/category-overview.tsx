@@ -10,9 +10,9 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import { useGetCategoryByIdQueryOptions } from "../../hooks/use-get-category-by-id-query";
-import { ClientRedirectHandler } from "@/features/shared/lib/api-client/handlers/client-redirect-handler";
-import { createApiClient } from "@/features/shared/lib/api-client";
+import { useGetCategoryByIdQueryOptions } from "../../../hooks/use-get-category-by-id-query";
+import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect-handler";
+import { createApiClient } from "@/lib/api-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   editCategoryBody,

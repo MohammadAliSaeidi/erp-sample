@@ -2,10 +2,10 @@ import { resolveStoreSlugFromRequest } from "@/adapters/http/resolve-store-slug-
 import { buildLoginOperation } from "@/features/auth/application/operations/login.operation";
 import { mapOperationErrorToResponse } from "@/features/shared/adapters/http/map-operation-error-to-response";
 import { runOperation } from "@/features/shared/application/run-operation";
-import prisma from "@/features/shared/lib/prisma";
-import { validateRequestJsonBody } from "@/features/shared/lib/validate-request-json-body";
-import { setTokenCookie } from "@/features/shared/lib/token";
-import { isHashMatch } from "@/features/shared/lib/utils/hash/hash";
+import prisma from "@/lib/prisma";
+import { validateRequestJsonBody } from "@/lib/validate-request-json-body";
+import { setTokenCookie } from "@/lib/token";
+import { isHashMatch } from "@/lib/utils/hash/hash";
 import { RouteHandler } from "@/features/shared/types/route-handler.type";
 import { NextRequest, NextResponse } from "next/server";
 

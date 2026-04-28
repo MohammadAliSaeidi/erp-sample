@@ -1,7 +1,7 @@
 "use client";
 
 import { URLS } from "@/constants/urls";
-import { useStoreUrlSlug } from "@/features/shared/hooks/use-store-url-slug";
+import { useStoreUrlSlug } from "@/hooks/use-store-url-slug";
 import { BoxesIcon, BoxIcon, WarehouseIcon } from "lucide-react";
 import { NavMainItem } from "./nav-main";
 

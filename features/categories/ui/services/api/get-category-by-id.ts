@@ -1,5 +1,5 @@
 import { Category } from "@/app/generated/prisma/client";
-import { ApiClient } from "@/features/shared/lib/api-client";
+import { ApiClient } from "@/lib/api-client";
 
 export const getCategoryById = async (
   categoryId: string,

@@ -4,7 +4,7 @@ export { useAuthStore } from "./ui/auth-store";
 export { Gate } from "./ui/components/gate";
 export { ProtectedRoute } from "./ui/components/protected-route";
 import { buildAuthModule } from "@/features/auth/build-auth-module";
-import prisma from "@/features/shared/lib/prisma";
+import prisma from "@/lib/prisma";
 
 /**
  * Authentication Dependency Injection Module

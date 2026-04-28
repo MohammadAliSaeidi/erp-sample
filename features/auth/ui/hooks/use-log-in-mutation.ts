@@ -1,4 +1,4 @@
-import { ApiClient } from "@/features/shared/lib/api-client";
+import { ApiClient } from "@/lib/api-client";
 import { mutationOptions, useMutation } from "@tanstack/react-query";
 import { LoginInput } from "../../domain/types/login-body.type";
 import { login } from "../services/api/login";

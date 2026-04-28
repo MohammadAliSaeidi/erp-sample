@@ -1,6 +1,6 @@
 import { PrismaClient } from "@/app/generated/prisma/client";
 import { PermissionsArray } from "@/features/auth/domain/types/permission.type";
-import { hash } from "@/features/shared/lib/utils/hash/hash";
+import { hash } from "@/lib/utils/hash/hash";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 const DEMO_PREFIX = "zzz-dev-"; 

@@ -5,8 +5,8 @@ import { buildListCategoriesOperation } from "@/features/categories/application/
 import { buildCategoryRepository } from "@/features/categories/domain/repositories/categories.repository";
 import { CATEGORY_QUERY_KEYS } from "@/features/categories/ui/constants/query-keys";
 import { runOperation } from "@/features/shared/application/run-operation";
-import { getQueryClient } from "@/features/shared/lib/get-query-client";
-import prisma from "@/features/shared/lib/prisma";
+import { getQueryClient } from "@/lib/get-query-client";
+import prisma from "@/lib/prisma";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
 import Breadcrumb from "./breadcrumb";

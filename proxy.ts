@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { resolveAdminAccessTokenCookieName } from "./features/auth/domain/lib/resolve-admin-access-token-cookie-name";
 import { buildJwtService } from "./features/auth/domain/services/jwt.service";
-import { getStoreSlugFromPath } from "./features/shared/lib/utils/get-store-slug-from-path";
+import { getStoreSlugFromPath } from "./lib/utils/get-store-slug-from-path";
 
 export async function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);

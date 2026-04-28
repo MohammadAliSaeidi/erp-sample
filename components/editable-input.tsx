@@ -1,7 +1,7 @@
 import { ReactNode, useState } from "react";
 import { Button } from "./ui/button";
 import { SaveIcon, XIcon, EditIcon } from "lucide-react";
-import { cn } from "@/features/shared/lib/utils";
+import { cn } from "@/lib/utils";
 
 type EditableInputProps = {
   loading?: boolean;

@@ -4,7 +4,7 @@ import { WithValidatedBody } from "@/features/shared/types/next-request-with-val
 import { NextRequest, NextResponse } from "next/server";
 import { z, type ZodType } from "zod";
 import { JSONBodyValidationError } from "@/features/shared/errors/json-body-validation.error";
-import { validateRequestJsonBody } from "@/features/shared/lib/validate-request-json-body";
+import { validateRequestJsonBody } from "@/lib/validate-request-json-body";
 
 export const validateHttpBody = async <
   TBody = unknown,

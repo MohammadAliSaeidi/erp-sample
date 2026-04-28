@@ -7,8 +7,8 @@ import {
 	editCategoryBody,
 	EditCategoryBody,
 } from "@/features/categories/domain/schemas/edit-category-body.schema";
-import { createApiClient } from "@/features/shared/lib/api-client";
-import { ClientRedirectHandler } from "@/features/shared/lib/api-client/handlers/client-redirect-handler";
+import { createApiClient } from "@/lib/api-client";
+import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect-handler";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";

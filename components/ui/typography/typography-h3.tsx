@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { cn } from "@/features/shared/lib/utils";
+import { cn } from "@/lib/utils";
 
 export function TypographyH3({ children, className }: PropsWithChildren<{ className?: string }>) {
 	return (

@@ -16,9 +16,9 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { loginInputSchema } from "@/features/auth/domain/schemas/login-body.schema";
-import { useIsHydrated } from "@/features/shared/hooks/use-is-hydrated";
-import { useParamBasedRedirect } from "@/features/shared/hooks/use-safe-redirect";
-import { cn } from "@/features/shared/lib/utils";
+import { useIsHydrated } from "@/hooks/use-is-hydrated";
+import { useParamBasedRedirect } from "@/hooks/use-safe-redirect";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeClosedIcon, EyeIcon } from "lucide-react";
 import React, { useActionState, useEffect, useState } from "react";

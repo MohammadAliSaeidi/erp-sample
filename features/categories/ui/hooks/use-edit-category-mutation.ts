@@ -1,4 +1,4 @@
-import { ApiClient } from "@/features/shared/lib/api-client";
+import { ApiClient } from "@/lib/api-client";
 import {
   mutationOptions,
   QueryClient,

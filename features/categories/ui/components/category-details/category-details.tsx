@@ -1,13 +1,13 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { createApiClient } from "@/features/shared/lib/api-client";
+import { createApiClient } from "@/lib/api-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useGetCategoryByIdQueryOptions } from "../../hooks/use-get-category-by-id-query";
-import { ClientRedirectHandler } from "@/features/shared/lib/api-client/handlers/client-redirect-handler";
+import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect-handler";
 import Breadcrumb from "./breadcrumb";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CategoryOverview from "./category-overview";
+import CategoryOverview from "./tabs/category-overview";
 
 type CategoryDetailsProps = {
   categoryId: string;
