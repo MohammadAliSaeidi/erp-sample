@@ -1,25 +1,20 @@
 import { withAuthContext } from "@/features/auth";
-import { buildGetCategoryByIdOperation } from "@/features/categories/application/operations/get-category-by-id.operation";
-import { buildUpdateCategoryOperation } from "@/features/categories/application/operations/update-category.operation";
-import { buildCategoryRepository } from "@/features/categories/domain/repositories/categories.repository";
+import { buildGetCategoryByIdUsecase } from "@/features/specifications/application/category/usecase/get-category-by-id.usecase";
+import { updateCategoryUsecase } from "@/features/categories/application/operations/update-category.operation";
 import { mapOperationErrorToResponse } from "@/features/shared/adapters/http/map-operation-error-to-response";
-import { runOperation } from "@/features/shared/application/run-operation";
-import prisma from "@/lib/prisma";
+import { runUseCase } from "@/features/shared/application/run-use-case";
 import { validateRequestJsonBody } from "@/lib/validate-request-json-body";
 import { WithAuthContext } from "@/features/shared/types/next-request-with-auth-context.type";
 import { RouteHandler } from "@/features/shared/types/route-handler.type";
 import { NextResponse } from "next/server";
+import { categoryRepositoryAdapter } from "@/features/specifications/infrastructure/database/adapters/category/category-repository.adapter";
 
 type CategoryRouteContext = {
 	params: Promise<{ categoryId: string }>;
 };
 
-const categoryRepository = buildCategoryRepository(prisma);
-const getCategoryByIdOperation = buildGetCategoryByIdOperation({
-	getByIdAndStoreId: categoryRepository.getById,
-});
-const updateCategoryOperation = buildUpdateCategoryOperation({
-	updateCategory: categoryRepository.update,
+const getCategoryByIdOperation = buildGetCategoryByIdUsecase({
+	getByIdAndStoreId: categoryRepositoryAdapter.getById,
 });
 
 const getCategoryByIdHandler: RouteHandler<CategoryRouteContext> = async (
@@ -30,8 +25,8 @@ const getCategoryByIdHandler: RouteHandler<CategoryRouteContext> = async (
 
 	try {
 		const { categoryId } = await context.params;
-		const category = await runOperation({
-			operation: getCategoryByIdOperation,
+		const category = await runUseCase({
+			useCase: getCategoryByIdOperation,
 			input: { categoryId },
 			authContext,
 		});
@@ -55,8 +50,9 @@ const updateCategoryHandler: RouteHandler<CategoryRouteContext> = async (
 			...(typeof rawBody === "object" && rawBody !== null ? rawBody : {}),
 			id: categoryId,
 		};
-		const updatedCategory = await runOperation({
-			operation: updateCategoryOperation,
+
+		const updatedCategory = await runUseCase({
+			useCase: updateCategoryUsecase,
 			input: rawInput,
 			authContext,
 		});
@@ -67,7 +63,9 @@ const updateCategoryHandler: RouteHandler<CategoryRouteContext> = async (
 	}
 };
 
-export const GET: RouteHandler<CategoryRouteContext> =
-	withAuthContext(getCategoryByIdHandler);
-export const PUT: RouteHandler<CategoryRouteContext> =
-	withAuthContext(updateCategoryHandler);
+export const GET: RouteHandler<CategoryRouteContext> = withAuthContext(
+	getCategoryByIdHandler,
+);
+export const PUT: RouteHandler<CategoryRouteContext> = withAuthContext(
+	updateCategoryHandler,
+);

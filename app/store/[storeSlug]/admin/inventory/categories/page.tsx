@@ -1,12 +1,10 @@
 import { SpinnerCustom } from "@/components/ui/spinner";
 import CategoriesList from "@/features/categories/ui/components/categories-list/categories-list";
 import { requireSsrAuth } from "@/features/auth";
-import { buildListCategoriesOperation } from "@/features/categories/application/operations/list-categories.operation";
-import { buildCategoryRepository } from "@/features/categories/domain/repositories/categories.repository";
+import { makeListCategoriesUseCase } from "@/features/categories/application/operations/list-categories.operation";
 import { CATEGORY_QUERY_KEYS } from "@/features/categories/ui/constants/query-keys";
-import { runOperation } from "@/features/shared/application/run-operation";
+import { runUseCase } from "@/features/shared/application/run-use-case";
 import { getQueryClient } from "@/lib/get-query-client";
-import prisma from "@/lib/prisma";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
 import Breadcrumb from "./breadcrumb";
@@ -14,6 +12,7 @@ import { URLS } from "@/constants/urls";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
+import { categoryRepositoryAdapter } from "@/features/specifications/infrastructure/database/adapters/category/category-repository.adapter";
 
 type CategoryPageProps = {
 	params: Promise<{
@@ -29,13 +28,12 @@ export default async function CategoryPage(props: CategoryPageProps) {
 		storeSlug,
 	});
 
-	const categoryRepository = buildCategoryRepository(prisma);
-	const listCategoriesOperation = buildListCategoriesOperation({
-		getListByStoreId: categoryRepository.getList,
+	const listCategoriesOperation = makeListCategoriesUseCase({
+		getListByStoreId: categoryRepositoryAdapter.getList,
 	});
 
-	const categories = await runOperation({
-		operation: listCategoriesOperation,
+	const categories = await runUseCase({
+		useCase: listCategoriesOperation,
 		input: {},
 		authContext,
 	});

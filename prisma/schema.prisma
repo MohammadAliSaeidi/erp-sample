@@ -8,33 +8,33 @@ datasource db {
 }
 
 model Store {
-  id            String         @id @default(uuid(7))
-  name          String
-  addressId     String
-  address       Address        @relation(fields: [addressId], references: [id])
-  storeContacts StoreContact[]
-  users         StoreUser[]
-  slug          String         @unique
-  categories    Category[]
-  roles         Role[]
-  items         Item[]
-  deletedAt     DateTime?
-  updatedAt     DateTime?      @updatedAt
+  id             String          @id @default(uuid(7))
+  specifications Specification[]
+  name           String
+  addressId      String
+  address        Address         @relation(fields: [addressId], references: [id])
+  storeContacts  StoreContact[]
+  users          StoreUser[]
+  slug           String          @unique
+  categories     Category[]
+  roles          Role[]
+  items          Item[]
+  deletedAt      DateTime?
+  updatedAt      DateTime?       @updatedAt
 }
 
 model Category {
-  id             String          @id @default(uuid(7))
-  storeId        String
-  store          Store           @relation(fields: [storeId], references: [id])
-  parentId       String?
-  parent         Category?       @relation("CategoryTree", fields: [parentId], references: [id])
-  children       Category[]      @relation("CategoryTree")
-  name           String
-  description    String?
-  deletedAt      DateTime?
-  updatedAt      DateTime?       @updatedAt
-  items          Item[]
-  specifications Specification[]
+  id          String     @id @default(uuid(7))
+  storeId     String
+  store       Store      @relation(fields: [storeId], references: [id])
+  parentId    String?
+  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryTree")
+  name        String
+  description String?
+  deletedAt   DateTime?
+  updatedAt   DateTime?  @updatedAt
+  items       Item[]
 
   @@unique([storeId, parentId, name])
 }
@@ -174,12 +174,6 @@ model RolePermission {
   @@index([permissionId])
 }
 
-enum SpecType {
-  PRIMARY
-  REQUIRED
-  OPTIONAL
-}
-
 enum SpecificationValueType {
   STRING
   BOOLEAN
@@ -187,18 +181,22 @@ enum SpecificationValueType {
 }
 
 model Specification {
-  id                      String                   @id @default(uuid(7))
-  name                    String
-  categoryId              String
-  category                Category                 @relation(fields: [categoryId], references: [id])
+  id         String  @id @default(uuid(7))
+  name       String
+  categoryId String?
+  storeId    String
+
   type                    SpecificationValueType
-  specType                SpecType
+  isPrimary               Boolean
+  isRequired              Boolean
   specificationValues     SpecificationValue[]
   itemSpecificationValues ItemSpecificationValue[]
+  isActive                Boolean                  @default(true)
   deletedAt               DateTime?
   updatedAt               DateTime?                @updatedAt
+  stores                  Store[]
 
-  @@unique([categoryId, name])
+  @@unique([categoryId, name, storeId])
 }
 
 model SpecificationValue {

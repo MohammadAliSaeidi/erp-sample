@@ -1,6 +1,6 @@
 import { ZodError } from "zod";
 
-export type OperationErrorCode =
+export type UseCaseErrorCode =
 	| "validation"
 	| "unauthorized"
 	| "forbidden"
@@ -8,16 +8,16 @@ export type OperationErrorCode =
 	| "conflict"
 	| "bad_request";
 
-export class OperationError extends Error {
+export class UseCaseError extends Error {
 	constructor(
-		public readonly code: OperationErrorCode,
+		public readonly code: UseCaseErrorCode,
 		message: string,
 	) {
 		super(message);
 	}
 }
 
-export class OperationValidationError extends OperationError {
+export class UseCaseValidationError extends UseCaseError {
 	constructor(
 		public readonly zodError: ZodError,
 		message: string = "Validation failed",
@@ -26,31 +26,31 @@ export class OperationValidationError extends OperationError {
 	}
 }
 
-export class OperationUnauthorizedError extends OperationError {
+export class UseCaseUnauthorizedError extends UseCaseError {
 	constructor(message: string = "Unauthorized") {
 		super("unauthorized", message);
 	}
 }
 
-export class OperationForbiddenError extends OperationError {
+export class UseCaseForbiddenError extends UseCaseError {
 	constructor(message: string = "Forbidden") {
 		super("forbidden", message);
 	}
 }
 
-export class OperationNotFoundError extends OperationError {
+export class UseCaseNotFoundError extends UseCaseError {
 	constructor(message: string = "Not found") {
 		super("not_found", message);
 	}
 }
 
-export class OperationConflictError extends OperationError {
+export class UseCaseConflictError extends UseCaseError {
 	constructor(message: string = "Conflict") {
 		super("conflict", message);
 	}
 }
 
-export class OperationBadRequestError extends OperationError {
+export class UseCaseBadRequestError extends UseCaseError {
 	constructor(message: string = "Bad request") {
 		super("bad_request", message);
 	}

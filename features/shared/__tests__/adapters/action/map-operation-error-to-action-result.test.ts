@@ -1,7 +1,7 @@
 import {
-	OperationForbiddenError,
-	OperationValidationError,
-} from "@/features/shared/application/errors/operation-errors";
+	UseCaseForbiddenError,
+	UseCaseValidationError,
+} from "@/features/shared/application/errors/use-case-errors";
 import { mapOperationErrorToActionResult } from "@/features/shared/adapters/action/map-operation-error-to-action-result";
 import z from "zod";
 
@@ -16,7 +16,7 @@ describe("mapOperationErrorToActionResult", () => {
 		}
 
 		const result = mapOperationErrorToActionResult(
-			new OperationValidationError(parseResult.error),
+			new UseCaseValidationError(parseResult.error),
 		);
 
 		expect(result.ok).toBe(false);
@@ -28,7 +28,7 @@ describe("mapOperationErrorToActionResult", () => {
 
 	it("maps forbidden errors into forbidden action failures", () => {
 		const result = mapOperationErrorToActionResult(
-			new OperationForbiddenError("forbidden"),
+			new UseCaseForbiddenError("forbidden"),
 		);
 
 		expect(result).toMatchObject({

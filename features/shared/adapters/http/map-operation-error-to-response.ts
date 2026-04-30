@@ -5,16 +5,16 @@ import { JSONBodyValidationError } from "@/features/shared/errors/json-body-vali
 import { NextResponse } from "next/server";
 import z from "zod";
 import {
-	OperationBadRequestError,
-	OperationConflictError,
-	OperationForbiddenError,
-	OperationNotFoundError,
-	OperationUnauthorizedError,
-	OperationValidationError,
-} from "@/features/shared/application/errors/operation-errors";
+	UseCaseBadRequestError,
+	UseCaseConflictError,
+	UseCaseForbiddenError,
+	UseCaseNotFoundError,
+	UseCaseUnauthorizedError,
+	UseCaseValidationError,
+} from "@/features/shared/application/errors/use-case-errors";
 
 export function mapOperationErrorToResponse(error: unknown): NextResponse {
-	if (error instanceof OperationValidationError) {
+	if (error instanceof UseCaseValidationError) {
 		return NextResponse.json(
 			{
 				error: error.message,
@@ -24,23 +24,23 @@ export function mapOperationErrorToResponse(error: unknown): NextResponse {
 		);
 	}
 
-	if (error instanceof OperationBadRequestError) {
+	if (error instanceof UseCaseBadRequestError) {
 		return NextResponse.json({ error: error.message }, { status: 400 });
 	}
 
-	if (error instanceof OperationUnauthorizedError) {
+	if (error instanceof UseCaseUnauthorizedError) {
 		return NextResponse.json({ error: error.message }, { status: 401 });
 	}
 
-	if (error instanceof OperationForbiddenError) {
+	if (error instanceof UseCaseForbiddenError) {
 		return NextResponse.json({ error: error.message }, { status: 403 });
 	}
 
-	if (error instanceof OperationNotFoundError) {
+	if (error instanceof UseCaseNotFoundError) {
 		return NextResponse.json({ error: error.message }, { status: 404 });
 	}
 
-	if (error instanceof OperationConflictError) {
+	if (error instanceof UseCaseConflictError) {
 		return NextResponse.json({ error: error.message }, { status: 409 });
 	}
 

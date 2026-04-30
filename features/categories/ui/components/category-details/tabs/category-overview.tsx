@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import EditableInput from "@/components/editable-input";
 import { Controller, useForm } from "react-hook-form";
@@ -14,11 +14,9 @@ import { useGetCategoryByIdQueryOptions } from "../../../hooks/use-get-category-
 import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect-handler";
 import { createApiClient } from "@/lib/api-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import {
-  editCategoryBody,
-  EditCategoryBody,
-} from "@/features/categories/domain/schemas/edit-category-body.schema";
+import { editCategorySchema } from "@/features/specifications/interface/schema/category/edit-category.schema";
 import { Textarea } from "@/components/ui/textarea";
+import { EditCategoryInputDTO as EditCategoryForm } from "@/features/specifications/interface/dto/category/edit-category-input.dto";
 
 type CategoryOverviewProps = {
   categoryId: string;
@@ -36,8 +34,8 @@ export default function CategoryOverview(props: CategoryOverviewProps) {
     ),
   );
 
-  const form = useForm<EditCategoryBody>({
-    resolver: zodResolver(editCategoryBody),
+  const form = useForm<EditCategoryForm>({
+    resolver: zodResolver(editCategorySchema),
     defaultValues: {
       id: category?.id,
       name: category?.name ?? "",
@@ -51,9 +49,6 @@ export default function CategoryOverview(props: CategoryOverviewProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle id="overview-tab">Overview</CardTitle>
-      </CardHeader>
       <CardContent>
         {/* Name section with proper heading hierarchy */}
         <section

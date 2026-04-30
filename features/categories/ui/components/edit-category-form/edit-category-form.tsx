@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
-	editCategoryBody,
-	EditCategoryBody,
-} from "@/features/categories/domain/schemas/edit-category-body.schema";
+	editCategorySchema,
+	EditCategoryInputDTO,
+} from "@/features/specifications/interface/schema/category/edit-category.schema";
 import { createApiClient } from "@/lib/api-client";
 import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect-handler";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,8 +32,8 @@ function EditCategoryForm(props: EditCategoryFormProps) {
 		isPending: isMutateEditCategoryPending,
 	} = useEditCategoryMutation(apiClient);
 
-	const form = useForm<EditCategoryBody>({
-		resolver: zodResolver(editCategoryBody),
+	const form = useForm<EditCategoryInputDTO>({
+		resolver: zodResolver(editCategorySchema),
 		defaultValues: {
 			id: categoryId,
 			name: "",
@@ -45,7 +45,7 @@ function EditCategoryForm(props: EditCategoryFormProps) {
 		form.setValue("name", category.name);
 	}, [category, form]);
 
-	const handleEditCategory = (formData: EditCategoryBody) => {
+	const handleEditCategory = (formData: EditCategoryInputDTO) => {
 		mutateEditCategory(formData, {
 			onSuccess: () =>
 				toast.success(

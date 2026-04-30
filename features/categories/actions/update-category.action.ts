@@ -1,29 +1,23 @@
 "use server";
 
-import { Category } from "@/app/generated/prisma/client";
 import { requireSsrAuth } from "@/features/auth";
-import { buildUpdateCategoryOperation } from "@/features/categories/application/operations/update-category.operation";
-import { buildCategoryRepository } from "@/features/categories/domain/repositories/categories.repository";
 import {
 	ActionResult,
 	actionSuccess,
 	mapOperationErrorToActionResult,
 } from "@/features/shared/adapters/action/map-operation-error-to-action-result";
-import { runOperation } from "@/features/shared/application/run-operation";
-import prisma from "@/lib/prisma";
-
-const categoryRepository = buildCategoryRepository(prisma);
-const updateCategoryOperation = buildUpdateCategoryOperation({
-	updateCategory: categoryRepository.update,
-});
+import { runUseCase } from "@/features/shared/application/run-use-case";
+import { updateCategoryUsecase } from "../application/operations/update-category.operation";
+import { EditCategoryInputDTO } from "@/features/specifications/interface/dto/category/edit-category-input.dto";
+import { CategoryDTO } from "@/features/specifications/interface/dto/category/category.dto";
 
 export async function updateCategoryAction(
-	rawInput: unknown,
-): Promise<ActionResult<Category>> {
+	rawInput: EditCategoryInputDTO,
+): Promise<ActionResult<CategoryDTO>> {
 	try {
 		const authContext = await requireSsrAuth(['categories:update']);
-		const updatedCategory = await runOperation({
-			operation: updateCategoryOperation,
+		const updatedCategory = await runUseCase({
+			useCase: updateCategoryUsecase,
 			input: rawInput,
 			authContext,
 		});

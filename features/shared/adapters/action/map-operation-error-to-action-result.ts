@@ -3,13 +3,13 @@ import { UnauthenticatedError } from "@/features/auth/domain/errors/unauthentica
 import { UnauthorizedError } from "@/features/auth/domain/errors/unauthorized.error";
 import z from "zod";
 import {
-	OperationBadRequestError,
-	OperationConflictError,
-	OperationForbiddenError,
-	OperationNotFoundError,
-	OperationUnauthorizedError,
-	OperationValidationError,
-} from "@/features/shared/application/errors/operation-errors";
+	UseCaseBadRequestError,
+	UseCaseConflictError,
+	UseCaseForbiddenError,
+	UseCaseNotFoundError,
+	UseCaseUnauthorizedError,
+	UseCaseValidationError,
+} from "@/features/shared/application/errors/use-case-errors";
 
 export type ActionErrorCode =
 	| "validation"
@@ -46,7 +46,7 @@ export const actionSuccess = <TData>(data: TData): ActionSuccessResult<TData> =>
 export function mapOperationErrorToActionResult(
 	error: unknown,
 ): ActionFailureResult {
-	if (error instanceof OperationValidationError) {
+	if (error instanceof UseCaseValidationError) {
 		return {
 			ok: false,
 			error: {
@@ -57,7 +57,7 @@ export function mapOperationErrorToActionResult(
 		};
 	}
 
-	if (error instanceof OperationBadRequestError) {
+	if (error instanceof UseCaseBadRequestError) {
 		return {
 			ok: false,
 			error: { code: "bad_request", message: error.message },
@@ -65,7 +65,7 @@ export function mapOperationErrorToActionResult(
 	}
 
 	if (
-		error instanceof OperationUnauthorizedError ||
+		error instanceof UseCaseUnauthorizedError ||
 		error instanceof UnauthorizedError ||
 		error instanceof UnauthenticatedError
 	) {
@@ -75,21 +75,21 @@ export function mapOperationErrorToActionResult(
 		};
 	}
 
-	if (error instanceof OperationForbiddenError || error instanceof ForbiddenError) {
+	if (error instanceof UseCaseForbiddenError || error instanceof ForbiddenError) {
 		return {
 			ok: false,
 			error: { code: "forbidden", message: error.message },
 		};
 	}
 
-	if (error instanceof OperationNotFoundError) {
+	if (error instanceof UseCaseNotFoundError) {
 		return {
 			ok: false,
 			error: { code: "not_found", message: error.message },
 		};
 	}
 
-	if (error instanceof OperationConflictError) {
+	if (error instanceof UseCaseConflictError) {
 		return {
 			ok: false,
 			error: { code: "conflict", message: error.message },

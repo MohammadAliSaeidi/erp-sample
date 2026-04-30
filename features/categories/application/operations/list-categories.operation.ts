@@ -1,18 +1,18 @@
-import { Category } from "@/app/generated/prisma/client";
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { defineAuthenticatedOperation } from "@/features/shared/application/operation";
+import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
+import { Category } from "@/features/specifications/domain/category/category.entity";
 import z from "zod";
 
 const listCategoriesInputSchema = z.object({});
 
-export interface ListCategoriesOperationDeps {
+export interface ListCategoriesUseCaseDeps {
 	getListByStoreId: (storeId: string) => Promise<Category[]>;
 }
 
-export const buildListCategoriesOperation = (
-	deps: ListCategoriesOperationDeps,
+export const makeListCategoriesUseCase = (
+	deps: ListCategoriesUseCaseDeps,
 ) =>
-	defineAuthenticatedOperation({
+	authenticatedUsecaseFactory({
 		key: "categories.list",
 		auth: "required",
 		requiredPermissions: [PERMISSIONS.CATEGORIES.READ],

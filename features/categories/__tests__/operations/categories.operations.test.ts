@@ -1,27 +1,27 @@
 import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
-import { CategoryNotFoundForStoreError } from "@/features/categories/domain/errors/category-not-found-for-store.error";
+import { CategoryNotFoundForStoreError } from "@/features/specifications/domain/category/errors/category-not-found-for-store.error";
 import {
-	buildCreateCategoryOperation,
-	CreateCategoryOperationDeps,
+	buildCreateCategoryUsecase,
+	CreateCategoryUsecaseDeps,
 } from "@/features/categories/application/operations/create-category.operation";
 import {
-	buildGetCategoryByIdOperation,
-	GetCategoryByIdOperationDeps,
-} from "@/features/categories/application/operations/get-category-by-id.operation";
+	buildGetCategoryByIdUsecase,
+	GetCategoryByIdUsecaseDeps,
+} from "@/features/specifications/application/category/usecase/get-category-by-id.usecase";
 import {
-	buildListCategoriesOperation,
-	ListCategoriesOperationDeps,
+	makeListCategoriesUseCase,
+	ListCategoriesUseCaseDeps,
 } from "@/features/categories/application/operations/list-categories.operation";
 import {
-	buildUpdateCategoryOperation,
+	buildUpdateCategoryUsecase,
 	UpdateCategoryOperationDeps,
 } from "@/features/categories/application/operations/update-category.operation";
 import {
-	OperationForbiddenError,
-	OperationNotFoundError,
-	OperationValidationError,
-} from "@/features/shared/application/errors/operation-errors";
-import { runOperation } from "@/features/shared/application/run-operation";
+	UseCaseForbiddenError,
+	UseCaseNotFoundError,
+	UseCaseValidationError,
+} from "@/features/shared/application/errors/use-case-errors";
+import { runUseCase } from "@/features/shared/application/run-use-case";
 
 const STORE_ID = "store-1";
 const CATEGORY_ID = "11111111-1111-4111-8111-111111111111";
@@ -42,15 +42,15 @@ const AUTH_CONTEXT: AuthContext = {
 
 describe("categories operations", () => {
 	it("lists categories for the authenticated store", async () => {
-		const deps: ListCategoriesOperationDeps = {
+		const deps: ListCategoriesUseCaseDeps = {
 			getListByStoreId: jest.fn().mockResolvedValue([
 				{ id: CATEGORY_ID, name: "Phones", storeId: STORE_ID },
 			]),
 		};
-		const operation = buildListCategoriesOperation(deps);
+		const operation = makeListCategoriesUseCase(deps);
 
-		const result = await runOperation({
-			operation,
+		const result = await runUseCase({
+			useCase: operation,
 			input: {},
 			authContext: AUTH_CONTEXT,
 		});
@@ -60,48 +60,48 @@ describe("categories operations", () => {
 	});
 
 	it("fails with OperationForbiddenError when permission is missing", async () => {
-		const deps: ListCategoriesOperationDeps = {
+		const deps: ListCategoriesUseCaseDeps = {
 			getListByStoreId: jest.fn(),
 		};
-		const operation = buildListCategoriesOperation(deps);
+		const operation = makeListCategoriesUseCase(deps);
 
 		await expect(
-			runOperation({
-				operation,
+			runUseCase({
+				useCase: operation,
 				input: {},
 				authContext: { ...AUTH_CONTEXT, permissions: [] },
 			}),
-		).rejects.toBeInstanceOf(OperationForbiddenError);
+		).rejects.toBeInstanceOf(UseCaseForbiddenError);
 	});
 
 	it("validates create input using the operation schema", async () => {
-		const deps: CreateCategoryOperationDeps = {
+		const deps: CreateCategoryUsecaseDeps = {
 			createCategory: jest.fn(),
 		};
-		const operation = buildCreateCategoryOperation(deps);
+		const operation = buildCreateCategoryUsecase(deps);
 
 		await expect(
-			runOperation({
-				operation,
+			runUseCase({
+				useCase: operation,
 				input: { name: "" },
 				authContext: AUTH_CONTEXT,
 			}),
-		).rejects.toBeInstanceOf(OperationValidationError);
+		).rejects.toBeInstanceOf(UseCaseValidationError);
 	});
 
 	it("returns not found when get by id misses", async () => {
-		const deps: GetCategoryByIdOperationDeps = {
+		const deps: GetCategoryByIdUsecaseDeps = {
 			getByIdAndStoreId: jest.fn().mockResolvedValue(null),
 		};
-		const operation = buildGetCategoryByIdOperation(deps);
+		const operation = buildGetCategoryByIdUsecase(deps);
 
 		await expect(
-			runOperation({
-				operation,
+			runUseCase({
+				useCase: operation,
 				input: { categoryId: CATEGORY_ID },
 				authContext: AUTH_CONTEXT,
 			}),
-		).rejects.toBeInstanceOf(OperationNotFoundError);
+		).rejects.toBeInstanceOf(UseCaseNotFoundError);
 	});
 
 	it("maps repository not-found during update into OperationNotFoundError", async () => {
@@ -110,17 +110,17 @@ describe("categories operations", () => {
 				.fn()
 				.mockRejectedValue(new CategoryNotFoundForStoreError(CATEGORY_ID)),
 		};
-		const operation = buildUpdateCategoryOperation(deps);
+		const operation = buildUpdateCategoryUsecase(deps);
 
 		await expect(
-			runOperation({
-				operation,
+			runUseCase({
+				useCase: operation,
 				input: {
 					id: CATEGORY_ID,
 					name: "Updated",
 				},
 				authContext: AUTH_CONTEXT,
 			}),
-		).rejects.toBeInstanceOf(OperationNotFoundError);
+		).rejects.toBeInstanceOf(UseCaseNotFoundError);
 	});
 });

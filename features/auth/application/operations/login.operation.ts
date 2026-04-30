@@ -3,10 +3,10 @@ import { getAdminAccessTokenCookieName } from "@/constants/token-names";
 import { Role } from "@/features/admin/domain/role";
 import { loginInputSchema } from "@/features/auth/domain/schemas/login-body.schema";
 import {
-	OperationNotFoundError,
-	OperationUnauthorizedError,
-} from "@/features/shared/application/errors/operation-errors";
-import { definePublicOperation } from "@/features/shared/application/operation";
+	UseCaseNotFoundError,
+	UseCaseUnauthorizedError,
+} from "@/features/shared/application/errors/use-case-errors";
+import { publicUsecaseFactory } from "@/features/shared/application/use-case";
 import { AdminAccessTokenPayload } from "@/features/shared/types/admin-access-token-payload";
 import { LoginInput } from "@/features/auth/domain/types/login-body.type";
 
@@ -31,7 +31,7 @@ export interface LoginOperationResult {
 }
 
 export const buildLoginOperation = (deps: LoginOperationDeps) =>
-	definePublicOperation({
+	publicUsecaseFactory({
 		key: "auth.login",
 		auth: "public",
 		inputSchema: loginInputSchema,
@@ -42,7 +42,7 @@ export const buildLoginOperation = (deps: LoginOperationDeps) =>
 		}): Promise<LoginOperationResult> => {
 			const store = await deps.findStoreBySlug(input.storeSlug);
 			if (!store) {
-				throw new OperationNotFoundError("Store Not Found");
+				throw new UseCaseNotFoundError("Store Not Found");
 			}
 
 			const storeUser = await deps.findStoreUserByStoreAndUsername(
@@ -51,7 +51,7 @@ export const buildLoginOperation = (deps: LoginOperationDeps) =>
 			);
 
 			if(!storeUser) {
-				throw new OperationUnauthorizedError(
+				throw new UseCaseUnauthorizedError(
 					"Incorrect username or password",
 				);
 			}
@@ -64,7 +64,7 @@ export const buildLoginOperation = (deps: LoginOperationDeps) =>
 				));
 
 			if (!isValidCredentials) {
-				throw new OperationUnauthorizedError(
+				throw new UseCaseUnauthorizedError(
 					"Incorrect username or password",
 				);
 			}

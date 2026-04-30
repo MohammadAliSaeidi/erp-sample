@@ -9,7 +9,7 @@ import {
   actionSuccess,
   mapOperationErrorToActionResult,
 } from "@/features/shared/adapters/action/map-operation-error-to-action-result";
-import { runOperation } from "@/features/shared/application/run-operation";
+import { runUseCase } from "@/features/shared/application/run-use-case";
 import prisma from "@/lib/prisma";
 import { setTokenCookie } from "@/lib/token";
 import { isHashMatch } from "@/lib/utils/hash/hash";
@@ -59,8 +59,8 @@ export async function loginAction(
   loginInput: LoginInput,
 ): Promise<ActionResult<null>> {
   try {
-    const loginResult = await runOperation({
-      operation: loginOperation,
+    const loginResult = await runUseCase({
+      useCase: loginOperation,
       input: loginInput,
     });
 

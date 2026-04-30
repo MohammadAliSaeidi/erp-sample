@@ -5,7 +5,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { EditCategoryBody } from "../../domain/schemas/edit-category-body.schema";
+import { EditCategoryInputDTO } from "../../../specifications/interface/schema/category/edit-category.schema";
 import { CATEGORY_QUERY_KEYS } from "../constants/query-keys";
 import { updateCategory } from "../services/api/update-category";
 
@@ -17,7 +17,7 @@ export const buildEditCategoryMutationOptions = ({
   apiClient: ApiClient;
 }) => {
   return mutationOptions({
-    mutationFn: (body: EditCategoryBody) => updateCategory(body, apiClient),
+    mutationFn: (body: EditCategoryInputDTO) => updateCategory(body, apiClient),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({
         queryKey: CATEGORY_QUERY_KEYS.detail(id),

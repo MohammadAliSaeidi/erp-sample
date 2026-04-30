@@ -1,10 +1,10 @@
 import { buildLoginOperation } from "@/features/auth/application/operations/login.operation";
 import {
-	OperationNotFoundError,
-	OperationUnauthorizedError,
-	OperationValidationError,
-} from "@/features/shared/application/errors/operation-errors";
-import { runOperation } from "@/features/shared/application/run-operation";
+	UseCaseNotFoundError,
+	UseCaseUnauthorizedError,
+	UseCaseValidationError,
+} from "@/features/shared/application/errors/use-case-errors";
+import { runUseCase } from "@/features/shared/application/run-use-case";
 
 describe("login operation", () => {
 	it("validates required input fields", async () => {
@@ -15,14 +15,14 @@ describe("login operation", () => {
 		});
 
 		await expect(
-			runOperation({
-				operation,
+			runUseCase({
+				useCase: operation,
 				input: {
 					username: "admin",
 					password: "1234",
 				},
 			}),
-		).rejects.toBeInstanceOf(OperationValidationError);
+		).rejects.toBeInstanceOf(UseCaseValidationError);
 	});
 
 	it("throws OperationNotFoundError when store does not exist", async () => {
@@ -33,15 +33,15 @@ describe("login operation", () => {
 		});
 
 		await expect(
-			runOperation({
-				operation,
+			runUseCase({
+				useCase: operation,
 				input: {
 					storeSlug: "missing-store",
 					username: "admin",
 					password: "1234",
 				},
 			}),
-		).rejects.toBeInstanceOf(OperationNotFoundError);
+		).rejects.toBeInstanceOf(UseCaseNotFoundError);
 	});
 
 	it("throws OperationUnauthorizedError for invalid credentials", async () => {
@@ -63,15 +63,15 @@ describe("login operation", () => {
 		});
 
 		await expect(
-			runOperation({
-				operation,
+			runUseCase({
+				useCase: operation,
 				input: {
 					storeSlug: "store-1",
 					username: "admin",
 					password: "bad-pass",
 				},
 			}),
-		).rejects.toBeInstanceOf(OperationUnauthorizedError);
+		).rejects.toBeInstanceOf(UseCaseUnauthorizedError);
 	});
 
 	it("returns token payload and cookie name when credentials are valid", async () => {
@@ -93,8 +93,8 @@ describe("login operation", () => {
 		});
 
 		await expect(
-			runOperation({
-				operation,
+			runUseCase({
+				useCase: operation,
 				input: {
 					storeSlug: "store-1",
 					username: "admin",

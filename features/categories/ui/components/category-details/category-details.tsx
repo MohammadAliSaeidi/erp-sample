@@ -40,7 +40,6 @@ export default function CategoryDetails(props: CategoryDetailsProps) {
       {
         tabs: categoryTabsConfig,
         defaultTab: CategoryTab.Overview,
-        onTabChange: (tab) => console.log(`Tab changed to ${tab}`),
       },
       tabProps,
     );

@@ -1,13 +1,14 @@
 import { resolveStoreSlugFromRequest } from "@/adapters/http/resolve-store-slug-from-request";
 import { buildLoginOperation } from "@/features/auth/application/operations/login.operation";
 import { mapOperationErrorToResponse } from "@/features/shared/adapters/http/map-operation-error-to-response";
-import { runOperation } from "@/features/shared/application/run-operation";
+import { runUseCase } from "@/features/shared/application/run-use-case";
 import prisma from "@/lib/prisma";
 import { validateRequestJsonBody } from "@/lib/validate-request-json-body";
 import { setTokenCookie } from "@/lib/token";
 import { isHashMatch } from "@/lib/utils/hash/hash";
 import { RouteHandler } from "@/features/shared/types/route-handler.type";
 import { NextRequest, NextResponse } from "next/server";
+import { UseCaseBadRequestError } from "@/features/shared/application/errors/use-case-errors";
 
 const loginOperation = buildLoginOperation({
 	findStoreBySlug: async (storeSlug) => {
@@ -35,7 +36,7 @@ const loginOperation = buildLoginOperation({
 				},
 			},
 		});
-		
+
 		return storeUser
 			? {
 					id: storeUser.id,
@@ -55,9 +56,17 @@ export const POST: RouteHandler = async (request: NextRequest) => {
 	try {
 		const rawBody = await validateRequestJsonBody(request);
 		const storeSlug = resolveStoreSlugFromRequest(request);
-		const loginResult = await runOperation({
-			operation: loginOperation,
-			input: { ...((rawBody as object) ?? {}), storeSlug },
+
+		if (!storeSlug)
+			return mapOperationErrorToResponse(new UseCaseBadRequestError());
+
+		const loginResult = await runUseCase({
+			useCase: loginOperation,
+			input: rawBody as {
+				username: string;
+				password: string;
+				storeSlug: string;
+			},
 		});
 
 		await setTokenCookie(loginResult.cookieName, loginResult.tokenPayload);

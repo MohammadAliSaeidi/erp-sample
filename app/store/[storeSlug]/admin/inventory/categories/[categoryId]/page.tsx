@@ -1,13 +1,10 @@
 import CategoryDetails from "@/features/categories/ui/components/category-details/category-details";
 import { requireSsrAuth } from "@/features/auth";
-import { buildGetCategoryByIdOperation } from "@/features/categories/application/operations/get-category-by-id.operation";
-import { buildCategoryRepository } from "@/features/categories/domain/repositories/categories.repository";
+import { getCategoryByIdUsecase } from "@/features/specifications/application/category/usecase/get-category-by-id.usecase";
 import { CATEGORY_QUERY_KEYS } from "@/features/categories/ui/constants/query-keys";
-import { runOperation } from "@/features/shared/application/run-operation";
+import { runUseCase } from "@/features/shared/application/run-use-case";
 import { getQueryClient } from "@/lib/get-query-client";
-import prisma from "@/lib/prisma";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import Breadcrumb from "../../../../../../../features/categories/ui/components/category-details/breadcrumb";
 
 type CategoryDetailsProps = {
 	params: Promise<{
@@ -24,12 +21,8 @@ export default async function CategoryDetailsPage(props: CategoryDetailsProps) {
 		storeSlug,
 	});
 
-	const categoryRepository = buildCategoryRepository(prisma);
-	const getCategoryByIdOperation = buildGetCategoryByIdOperation({
-		getByIdAndStoreId: categoryRepository.getById,
-	});
-	const category = await runOperation({
-		operation: getCategoryByIdOperation,
+	const category = await runUseCase({
+		useCase: getCategoryByIdUsecase,
 		input: { categoryId },
 		authContext,
 	});

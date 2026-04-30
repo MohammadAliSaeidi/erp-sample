@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { createCategoryBody } from "@/features/categories/domain/schemas/create-category-body.schema";
-import { CreateCategoryBody } from "@/features/categories/domain/types/create-category-body.type";
+import { createCategorySchema } from "@/features/specifications/interface/schema/category/create-category.schema";
+import { CreateCategoryInputDTO } from "@/features/categories/domain/types/create-category-input.dto";
 import { createApiClient } from "@/lib/api-client";
 import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect-handler";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/tooltip";
 
 function CreateCategoryForm() {
-  const form = useForm<CreateCategoryBody>({
-    resolver: zodResolver(createCategoryBody),
+  const form = useForm<CreateCategoryInputDTO>({
+    resolver: zodResolver(createCategorySchema),
     defaultValues: {
       name: "",
       description: "",
@@ -36,7 +36,7 @@ function CreateCategoryForm() {
     createApiClient({ redirectHandler: new ClientRedirectHandler() }),
   );
 
-  const handleCreateCategory = (formData: CreateCategoryBody) => {
+  const handleCreateCategory = (formData: CreateCategoryInputDTO) => {
     mutateCreateCategory(formData, {
       onSuccess: () => {
         toast.success(`Category "${formData.name}" has been successfully`);

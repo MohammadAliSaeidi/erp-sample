@@ -1,29 +1,28 @@
 import { withAuthContext } from "@/features/auth";
-import { buildCreateCategoryOperation } from "@/features/categories/application/operations/create-category.operation";
-import { buildListCategoriesOperation } from "@/features/categories/application/operations/list-categories.operation";
-import { buildCategoryRepository } from "@/features/categories/domain/repositories/categories.repository";
+import { buildCreateCategoryUsecase } from "@/features/categories/application/operations/create-category.operation";
+import { makeListCategoriesUseCase } from "@/features/categories/application/operations/list-categories.operation";
 import { mapOperationErrorToResponse } from "@/features/shared/adapters/http/map-operation-error-to-response";
-import { runOperation } from "@/features/shared/application/run-operation";
-import prisma from "@/lib/prisma";
+import { runUseCase } from "@/features/shared/application/run-use-case";
 import { validateRequestJsonBody } from "@/lib/validate-request-json-body";
 import { WithAuthContext } from "@/features/shared/types/next-request-with-auth-context.type";
 import { RouteHandler } from "@/features/shared/types/route-handler.type";
 import { NextResponse } from "next/server";
+import { categoryRepositoryAdapter } from "@/features/specifications/infrastructure/database/adapters/category/category-repository.adapter";
 
-const categoryRepository = buildCategoryRepository(prisma);
-const listCategoriesOperation = buildListCategoriesOperation({
-	getListByStoreId: categoryRepository.getList,
+const listCategoriesOperation = makeListCategoriesUseCase({
+	getListByStoreId: categoryRepositoryAdapter.getList,
 });
-const createCategoryOperation = buildCreateCategoryOperation({
-	createCategory: categoryRepository.create,
+
+const createCategoryOperation = buildCreateCategoryUsecase({
+	createCategory: categoryRepositoryAdapter.create,
 });
 
 const getCategoriesHandler: RouteHandler = async (request) => {
 	const { authContext } = request as WithAuthContext;
 
 	try {
-		const categories = await runOperation({
-			operation: listCategoriesOperation,
+		const categories = await runUseCase({
+			useCase: listCategoriesOperation,
 			input: {},
 			authContext,
 		});
@@ -39,8 +38,8 @@ const createCategoryHandler: RouteHandler = async (request) => {
 
 	try {
 		const rawBody = await validateRequestJsonBody(request);
-		const createdCategory = await runOperation({
-			operation: createCategoryOperation,
+		const createdCategory = await runUseCase({
+			useCase: createCategoryOperation,
 			input: rawBody,
 			authContext,
 		});
