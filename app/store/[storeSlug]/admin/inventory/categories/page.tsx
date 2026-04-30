@@ -1,7 +1,7 @@
 import { SpinnerCustom } from "@/components/ui/spinner";
 import CategoriesList from "@/interface/ui/category/components/categories-list/categories-list";
 import { requireSsrAuth } from "@/features/auth";
-import { buildListCategoriesUsecase } from "@/application/category/usecase/list-categories.operation";
+import { buildListCategoriesUsecase } from "@/application/category/usecase/list-categories.usecase";
 import { CATEGORY_QUERY_KEYS } from "@/interface/ui/category/constants/query-keys";
 import { runUseCase } from "@/features/shared/application/run-use-case";
 import { getQueryClient } from "@/lib/get-query-client";

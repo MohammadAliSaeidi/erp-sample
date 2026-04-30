@@ -1,6 +1,6 @@
 import { IdGeneratorPort } from "./id-generator.port";
-import { v7 as uuidV7 } from "uuid";
+import { uuidv7 } from "uuidv7";
 
 export const uuid7GeneratorAdapter: IdGeneratorPort = {
-  generate: () => uuidV7(),
+  generate: () => uuidv7(),
 };

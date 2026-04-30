@@ -11,7 +11,7 @@ import {
 import {
   buildListCategoriesUsecase,
   ListCategoriesUsecaseDeps,
-} from "@/application/category/usecase/list-categories.operation";
+} from "@/application/category/usecase/list-categories.usecase";
 import {
   buildUpdateCategoryUsecase,
   UpdateCategoryOperationDeps,
@@ -45,7 +45,7 @@ const AUTH_CONTEXT: AuthContext = {
   iat: 0,
 };
 
-describe("categories operations", () => {
+describe("categories usecases", () => {
   it("lists categories for the authenticated store", async () => {
     const mockedCategoryDTO: CategoryDTO = {
       id: CATEGORY_ID,
@@ -56,10 +56,10 @@ describe("categories operations", () => {
     const deps: ListCategoriesUsecaseDeps = {
       getListByStoreId: jest.fn().mockResolvedValue([mockedCategoryDTO]),
     };
-    const operation = buildListCategoriesUsecase(deps);
+    const usecase = buildListCategoriesUsecase(deps);
 
     const result = await runUseCase({
-      useCase: operation,
+      useCase: usecase,
       input: {},
       authContext: AUTH_CONTEXT,
     });
@@ -72,26 +72,26 @@ describe("categories operations", () => {
     const deps: ListCategoriesUsecaseDeps = {
       getListByStoreId: jest.fn(),
     };
-    const operation = buildListCategoriesUsecase(deps);
+    const usecase = buildListCategoriesUsecase(deps);
 
     await expect(
       runUseCase({
-        useCase: operation,
+        useCase: usecase,
         input: {},
         authContext: { ...AUTH_CONTEXT, permissions: [] },
       }),
     ).rejects.toBeInstanceOf(UseCaseForbiddenError);
   });
 
-  it("validates create input using the operation schema", async () => {
+  it("validates create input using the usecase schema", async () => {
     const deps: CreateCategoryUsecaseDeps = {
       createCategory: jest.fn(),
     };
-    const operation = buildCreateCategoryUsecase(deps);
+    const usecase = buildCreateCategoryUsecase(deps);
 
     await expect(
       runUseCase({
-        useCase: operation,
+        useCase: usecase,
         input: { name: "" },
         authContext: AUTH_CONTEXT,
       }),
@@ -102,11 +102,11 @@ describe("categories operations", () => {
     const deps: GetCategoryByIdUsecaseDeps = {
       getByIdAndStoreId: jest.fn().mockResolvedValue(null),
     };
-    const operation = buildGetCategoryByIdUsecase(deps);
+    const usecase = buildGetCategoryByIdUsecase(deps);
 
     await expect(
       runUseCase({
-        useCase: operation,
+        useCase: usecase,
         input: { categoryId: CATEGORY_ID },
         authContext: AUTH_CONTEXT,
       }),
@@ -119,11 +119,11 @@ describe("categories operations", () => {
         .fn()
         .mockRejectedValue(new CategoryNotFoundForStoreError(CATEGORY_ID)),
     };
-    const operation = buildUpdateCategoryUsecase(deps);
+    const usecase = buildUpdateCategoryUsecase(deps);
 
     await expect(
       runUseCase({
-        useCase: operation,
+        useCase: usecase,
         input: {
           id: CATEGORY_ID,
           name: "Updated",

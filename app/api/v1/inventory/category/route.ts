@@ -1,6 +1,6 @@
 import { withAuthContext } from "@/features/auth";
 import { buildCreateCategoryUsecase } from "@/application/category/usecase/create-category.usecase";
-import { buildListCategoriesUsecase } from "@/application/category/usecase/list-categories.operation";
+import { buildListCategoriesUsecase } from "@/application/category/usecase/list-categories.usecase";
 import { mapOperationErrorToResponse } from "@/features/shared/adapters/http/map-operation-error-to-response";
 import { runUseCase } from "@/features/shared/application/run-use-case";
 import { validateRequestJsonBody } from "@/lib/validate-request-json-body";

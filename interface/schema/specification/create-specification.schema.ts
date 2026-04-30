@@ -1,10 +1,10 @@
 import z from "zod";
 import { SpecificationValueType } from "../../domain/specification/specification-value-type.enum";
-import { CategoryId, StoreId } from "@/features/shared/domain/ids";
+import { categoryIdSchema, StoreId } from "@/features/shared/domain/ids";
 
 export const createSpecificationSchema = z.object({
   name: z.string().trim().min(1, "Specification name is required"),
-  categoryId: CategoryId,
+  categoryId: categoryIdSchema,
   storeId: StoreId,
   type: z.enum(SpecificationValueType),
   isRequired: z.boolean(),

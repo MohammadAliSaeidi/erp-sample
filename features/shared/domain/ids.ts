@@ -1,11 +1,12 @@
-import z from "zod";
+export type Brand<T, TBrand extends string | symbol> = T & {
+  readonly __brand: TBrand;
+};
 
-export const StoreUserId = z.uuidv7().brand("StoreUserId");
-export const RoleId = z.uuidv7().brand("RoleId");
-export const AddressId = z.uuidv7().brand("AddressId");
-export const StoreId = z.uuidv7().brand("StoreId");
-export const CategoryId = z.uuidv7().brand("CategoryId");
-export type CategoryId = z.infer<typeof CategoryId>;
-export const ItemId = z.uuidv7().brand("ItemId");
-export const SpecificationId = z.uuidv7().brand("SpecificationId");
-export const SpecificationValueId = z.uuidv7().brand("SpecificationValueId");
+export type StoreUserId = Brand<string, "StoreUserId">;
+export type RoleId = Brand<string, "RoleId">;
+export type AddressId = Brand<string, "AddressId">;
+export type ItemId = Brand<string, "ItemId">;
+export type SpecificationId = Brand<string, "SpecificationId">;
+export type SpecificationValueId = Brand<string, "SpecificationValueId">;
+export type CategoryId = Brand<string, "CategoryId">;
+export type StoreId = Brand<string, "StoreId">;
