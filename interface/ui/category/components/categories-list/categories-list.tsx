@@ -1,6 +1,5 @@
 "use client";
 
-import { Category } from "@/app/generated/prisma/client";
 import AgGridReact from "@/components/ag-grid-react";
 import { Button } from "@/components/ui/button";
 import { createApiClient } from "@/lib/api-client";
@@ -10,13 +9,14 @@ import { ColDef, ICellRendererParams } from "ag-grid-community";
 import { EyeIcon } from "lucide-react";
 import Link from "next/link";
 import { buildGetCategoriesQueryOptions } from "../../hooks/use-get-category-query";
+import { CategoryDTO } from "@/interface/dto/category/category.dto";
 
-const columns: ColDef<Category>[] = [
+const columns: ColDef<CategoryDTO>[] = [
 	{
 		sortable: false,
 		resizable: false,
 		width: 57,
-		cellRenderer: (params: ICellRendererParams<Category>) => (
+		cellRenderer: (params: ICellRendererParams<CategoryDTO>) => (
 			<Button size="icon-xs" variant={"ghost"} disabled={!params.data}>
 				<Link
 					href={

@@ -1,8 +1,8 @@
 import { SpinnerCustom } from "@/components/ui/spinner";
-import CategoriesList from "@/features/categories/ui/components/categories-list/categories-list";
+import CategoriesList from "@/interface/ui/category/components/categories-list/categories-list";
 import { requireSsrAuth } from "@/features/auth";
-import { makeListCategoriesUseCase } from "@/features/categories/application/operations/list-categories.operation";
-import { CATEGORY_QUERY_KEYS } from "@/features/categories/ui/constants/query-keys";
+import { buildListCategoriesUsecase } from "@/application/category/usecase/list-categories.operation";
+import { CATEGORY_QUERY_KEYS } from "@/interface/ui/category/constants/query-keys";
 import { runUseCase } from "@/features/shared/application/run-use-case";
 import { getQueryClient } from "@/lib/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
@@ -28,7 +28,7 @@ export default async function CategoryPage(props: CategoryPageProps) {
 		storeSlug,
 	});
 
-	const listCategoriesOperation = makeListCategoriesUseCase({
+	const listCategoriesOperation = buildListCategoriesUsecase({
 		getListByStoreId: categoryRepositoryAdapter.getList,
 	});
 

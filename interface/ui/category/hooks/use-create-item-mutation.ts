@@ -1,6 +1,6 @@
 import { ApiClient } from "@/lib/api-client";
 import { mutationOptions, QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CreateCategoryInputDTO } from "../../domain/types/create-category-input.dto";
+import { CreateCategoryInputDTO } from "../../../dto/category/create-category-input.dto";
 import { createCategory } from "../services/api/create-category";
 import { CATEGORY_QUERY_KEYS } from "../constants/query-keys";
 

@@ -1,7 +1,7 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
-import { createCategorySchema } from "../../../../interface/schema/category/create-category.schema";
-import { CreateCategoryInputDTO } from "../../domain/types/create-category-input.dto";
+import { createCategorySchema } from "../../../interface/schema/category/create-category.schema";
+import { CreateCategoryInputDTO } from "../../../interface/dto/category/create-category-input.dto";
 import { CategoryDTO } from "@/interface/dto/category/category.dto";
 import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";
 import { createCategory } from "@/domain/category/category.entity";

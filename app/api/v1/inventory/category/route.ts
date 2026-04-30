@@ -1,6 +1,6 @@
 import { withAuthContext } from "@/features/auth";
-import { buildCreateCategoryUsecase } from "@/features/categories/application/operations/create-category.operation";
-import { makeListCategoriesUseCase } from "@/features/categories/application/operations/list-categories.operation";
+import { buildCreateCategoryUsecase } from "@/application/category/usecase/create-category.usecase";
+import { buildListCategoriesUsecase } from "@/application/category/usecase/list-categories.operation";
 import { mapOperationErrorToResponse } from "@/features/shared/adapters/http/map-operation-error-to-response";
 import { runUseCase } from "@/features/shared/application/run-use-case";
 import { validateRequestJsonBody } from "@/lib/validate-request-json-body";
@@ -9,7 +9,7 @@ import { RouteHandler } from "@/features/shared/types/route-handler.type";
 import { NextResponse } from "next/server";
 import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";
 
-const listCategoriesOperation = makeListCategoriesUseCase({
+const listCategoriesOperation = buildListCategoriesUsecase({
 	getListByStoreId: categoryRepositoryAdapter.getList,
 });
 

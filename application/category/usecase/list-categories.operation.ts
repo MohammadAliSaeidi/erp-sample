@@ -5,12 +5,12 @@ import z from "zod";
 
 const listCategoriesInputSchema = z.object({});
 
-export interface ListCategoriesUseCaseDeps {
+export interface ListCategoriesUsecaseDeps {
 	getListByStoreId: (storeId: string) => Promise<Category[]>;
 }
 
-export const makeListCategoriesUseCase = (
-	deps: ListCategoriesUseCaseDeps,
+export const buildListCategoriesUsecase = (
+	deps: ListCategoriesUsecaseDeps,
 ) =>
 	authenticatedUsecaseFactory({
 		key: "categories.list",

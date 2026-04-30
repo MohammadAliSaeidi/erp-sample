@@ -2,7 +2,7 @@ import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import { CategoryNotFoundForStoreError } from "@/domain/category/errors/category-not-found-for-store.error";
 import { UseCaseNotFoundError } from "@/features/shared/application/errors/use-case-errors";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
-import { editCategorySchema } from "../../../../interface/schema/category/edit-category.schema";
+import { editCategorySchema } from "../../../interface/schema/category/edit-category.schema";
 import { EditCategoryInputDTO } from "@/interface/dto/category/edit-category-input.dto";
 import { CategoryDTO } from "@/interface/dto/category/category.dto";
 import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";

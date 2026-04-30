@@ -7,7 +7,7 @@ import {
 	mapOperationErrorToActionResult,
 } from "@/features/shared/adapters/action/map-operation-error-to-action-result";
 import { runUseCase } from "@/features/shared/application/run-use-case";
-import { updateCategoryUsecase } from "../application/operations/update-category.operation";
+import { updateCategoryUsecase } from "../../../application/category/usecase/update-category.usecase";
 import { EditCategoryInputDTO } from "@/interface/dto/category/edit-category-input.dto";
 import { CategoryDTO } from "@/interface/dto/category/category.dto";
 

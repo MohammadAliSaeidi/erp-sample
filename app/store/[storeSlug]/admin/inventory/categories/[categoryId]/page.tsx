@@ -1,7 +1,7 @@
-import CategoryDetails from "@/features/categories/ui/components/category-details/category-details";
+import CategoryDetails from "@/interface/ui/category/components/category-details/category-details";
 import { requireSsrAuth } from "@/features/auth";
 import { getCategoryByIdUsecase } from "@/application/category/usecase/get-category-by-id.usecase";
-import { CATEGORY_QUERY_KEYS } from "@/features/categories/ui/constants/query-keys";
+import { CATEGORY_QUERY_KEYS } from "@/interface/ui/category/constants/query-keys";
 import { runUseCase } from "@/features/shared/application/run-use-case";
 import { getQueryClient } from "@/lib/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
