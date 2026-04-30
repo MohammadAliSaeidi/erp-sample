@@ -12,7 +12,7 @@ import { URLS } from "@/constants/urls";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
-import { categoryRepositoryAdapter } from "@/features/specifications/infrastructure/database/adapters/category/category-repository.adapter";
+import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";
 
 type CategoryPageProps = {
 	params: Promise<{

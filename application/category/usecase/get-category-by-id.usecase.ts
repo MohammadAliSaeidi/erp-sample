@@ -1,8 +1,8 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import { UseCaseNotFoundError } from "@/features/shared/application/errors/use-case-errors";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
-import { Category } from "@/features/specifications/domain/category/category.entity";
-import { categoryRepositoryAdapter } from "@/features/specifications/infrastructure/database/adapters/category/category-repository.adapter";
+import { Category } from "@/domain/category/category.entity";
+import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";
 import z from "zod";
 
 const getCategoryByIdInputSchema = z.object({

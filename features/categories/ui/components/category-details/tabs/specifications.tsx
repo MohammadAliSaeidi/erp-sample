@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { SpecificationValueType } from "@/features/specifications/domain/specification/specification-value-type.enum";
-import { SpecificationDTO } from "@/features/specifications/interface/dto/specification/specification.dto";
+import { SpecificationValueType } from "@/domain/specification/specification-value-type.enum";
+import { SpecificationDTO } from "@/interface/dto/specification/specification.dto";
 
 const specs: SpecificationDTO[] = [
   {
@@ -81,7 +81,11 @@ export default function CategoryDetailsSpecifications() {
   return (
     <Card>
       <CardContent>
-
+        {
+          specs.map((spec) =>(<div key={spec.id}>
+            {spec.name}
+          </div>))
+        }
       </CardContent>
     </Card>
   );

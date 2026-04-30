@@ -1,6 +1,6 @@
 import CategoryDetails from "@/features/categories/ui/components/category-details/category-details";
 import { requireSsrAuth } from "@/features/auth";
-import { getCategoryByIdUsecase } from "@/features/specifications/application/category/usecase/get-category-by-id.usecase";
+import { getCategoryByIdUsecase } from "@/application/category/usecase/get-category-by-id.usecase";
 import { CATEGORY_QUERY_KEYS } from "@/features/categories/ui/constants/query-keys";
 import { runUseCase } from "@/features/shared/application/run-use-case";
 import { getQueryClient } from "@/lib/get-query-client";

@@ -7,7 +7,7 @@ import { validateRequestJsonBody } from "@/lib/validate-request-json-body";
 import { WithAuthContext } from "@/features/shared/types/next-request-with-auth-context.type";
 import { RouteHandler } from "@/features/shared/types/route-handler.type";
 import { NextResponse } from "next/server";
-import { categoryRepositoryAdapter } from "@/features/specifications/infrastructure/database/adapters/category/category-repository.adapter";
+import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";
 
 const listCategoriesOperation = makeListCategoriesUseCase({
 	getListByStoreId: categoryRepositoryAdapter.getList,

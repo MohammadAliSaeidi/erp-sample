@@ -1,5 +1,5 @@
 import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
-import { CategoryNotFoundForStoreError } from "@/features/specifications/domain/category/errors/category-not-found-for-store.error";
+import { CategoryNotFoundForStoreError } from "@/domain/category/errors/category-not-found-for-store.error";
 import {
 	buildCreateCategoryUsecase,
 	CreateCategoryUsecaseDeps,
@@ -7,7 +7,7 @@ import {
 import {
 	buildGetCategoryByIdUsecase,
 	GetCategoryByIdUsecaseDeps,
-} from "@/features/specifications/application/category/usecase/get-category-by-id.usecase";
+} from "@/application/category/usecase/get-category-by-id.usecase";
 import {
 	makeListCategoriesUseCase,
 	ListCategoriesUseCaseDeps,

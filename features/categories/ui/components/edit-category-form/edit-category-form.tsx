@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import {
 	editCategorySchema,
 	EditCategoryInputDTO,
-} from "@/features/specifications/interface/schema/category/edit-category.schema";
+} from "@/interface/schema/category/edit-category.schema";
 import { createApiClient } from "@/lib/api-client";
 import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect-handler";
 import { zodResolver } from "@hookform/resolvers/zod";

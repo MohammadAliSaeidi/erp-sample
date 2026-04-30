@@ -1,10 +1,10 @@
 import { PrismaClient } from "@/app/generated/prisma/client";
 import { SpecificationValueCreateManyInput } from "@/app/generated/prisma/models";
-import { ISpecificationRepositoryPort } from "@/features/specifications/domain/specification/specification-repository.port";
+import { ISpecificationRepositoryPort } from "@/domain/specification/specification-repository.port";
 import {
   createSpecification,
   Specification,
-} from "@/features/specifications/domain/specification/specification.aggregate";
+} from "@/domain/specification/specification.aggregate";
 import { mapToDomainType, mapToPrismaType } from "./specification.mapper";
 import prisma from "@/lib/prisma";
 

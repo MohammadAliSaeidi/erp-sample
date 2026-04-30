@@ -5,7 +5,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { EditCategoryInputDTO } from "../../../specifications/interface/schema/category/edit-category.schema";
+import { EditCategoryInputDTO } from "../../../../interface/schema/category/edit-category.schema";
 import { CATEGORY_QUERY_KEYS } from "../constants/query-keys";
 import { updateCategory } from "../services/api/update-category";
 

@@ -1,5 +1,5 @@
 import { Category as PrismaCategory } from "@/app/generated/prisma/client";
-import { Category as DomainCategory } from "@/features/specifications/domain/category/category.entity";
+import { Category as DomainCategory } from "@/domain/category/category.entity";
 
 export const mapToDomainCategory = (
   category: PrismaCategory,

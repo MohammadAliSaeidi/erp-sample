@@ -1,5 +1,5 @@
 import { Category } from "@/app/generated/prisma/client";
-import { EditCategoryInputDTO } from "@/features/specifications/interface/schema/category/edit-category.schema";
+import { EditCategoryInputDTO } from "@/interface/schema/category/edit-category.schema";
 import { ApiClient } from "@/lib/api-client";
 
 export const updateCategory = async (

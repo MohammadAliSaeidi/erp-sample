@@ -8,8 +8,8 @@ import {
 } from "@/features/shared/adapters/action/map-operation-error-to-action-result";
 import { runUseCase } from "@/features/shared/application/run-use-case";
 import { updateCategoryUsecase } from "../application/operations/update-category.operation";
-import { EditCategoryInputDTO } from "@/features/specifications/interface/dto/category/edit-category-input.dto";
-import { CategoryDTO } from "@/features/specifications/interface/dto/category/category.dto";
+import { EditCategoryInputDTO } from "@/interface/dto/category/edit-category-input.dto";
+import { CategoryDTO } from "@/interface/dto/category/category.dto";
 
 export async function updateCategoryAction(
 	rawInput: EditCategoryInputDTO,

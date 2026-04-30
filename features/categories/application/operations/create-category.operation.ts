@@ -1,10 +1,10 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
-import { createCategorySchema } from "../../../specifications/interface/schema/category/create-category.schema";
+import { createCategorySchema } from "../../../../interface/schema/category/create-category.schema";
 import { CreateCategoryInputDTO } from "../../domain/types/create-category-input.dto";
-import { CategoryDTO } from "@/features/specifications/interface/dto/category/category.dto";
-import { categoryRepositoryAdapter } from "@/features/specifications/infrastructure/database/adapters/category/category-repository.adapter";
-import { createCategory } from "@/features/specifications/domain/category/category.entity";
+import { CategoryDTO } from "@/interface/dto/category/category.dto";
+import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";
+import { createCategory } from "@/domain/category/category.entity";
 import { uuid7GeneratorAdapter } from "@/lib/id-generator/uuid-generator.adapter";
 
 export interface CreateCategoryUsecaseDeps {

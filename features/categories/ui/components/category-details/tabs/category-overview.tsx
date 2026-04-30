@@ -14,9 +14,9 @@ import { useGetCategoryByIdQueryOptions } from "../../../hooks/use-get-category-
 import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect-handler";
 import { createApiClient } from "@/lib/api-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { editCategorySchema } from "@/features/specifications/interface/schema/category/edit-category.schema";
+import { editCategorySchema } from "@/interface/schema/category/edit-category.schema";
 import { Textarea } from "@/components/ui/textarea";
-import { EditCategoryInputDTO as EditCategoryForm } from "@/features/specifications/interface/dto/category/edit-category-input.dto";
+import { EditCategoryInputDTO as EditCategoryForm } from "@/interface/dto/category/edit-category-input.dto";
 
 type CategoryOverviewProps = {
   categoryId: string;

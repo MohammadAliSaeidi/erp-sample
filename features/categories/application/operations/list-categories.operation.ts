@@ -1,6 +1,6 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
-import { Category } from "@/features/specifications/domain/category/category.entity";
+import { Category } from "@/domain/category/category.entity";
 import z from "zod";
 
 const listCategoriesInputSchema = z.object({});

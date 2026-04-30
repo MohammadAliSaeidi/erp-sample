@@ -1,7 +1,7 @@
 import { PrismaClient } from "@/app/generated/prisma/client";
-import { CategoryNotFoundForStoreError } from "@/features/specifications/domain/category/errors/category-not-found-for-store.error";
-import { ICategoryRepositoryPort } from "@/features/specifications/domain/category/category-repository.port";
-import { Category } from "@/features/specifications/domain/category/category.entity";
+import { CategoryNotFoundForStoreError } from "@/domain/category/errors/category-not-found-for-store.error";
+import { ICategoryRepositoryPort } from "@/domain/category/category-repository.port";
+import { Category } from "@/domain/category/category.entity";
 import { mapToDomainCategory } from "./mappers/map-to-domain-category";
 import prisma from "@/lib/prisma";
 
