@@ -12,7 +12,6 @@ import {
   mapToDomainSpecification,
   PrismaSpecificationWithValues,
 } from "./mappers/map-to-domain-specification.mapper";
-import { mapToDomainType } from "./mappers/map-to-domain-type.mapper";
 
 export interface ISpecificationRepositoryAdapterBuilder {
   (prisma: PrismaClient): ISpecificationRepositoryPort;
@@ -51,7 +50,7 @@ export const buildSpecificationRepositoryAdapter: ISpecificationRepositoryAdapte
         mapToDomainSpecification(createdSpecification),
       );
     },
-    
+
     getList: async (categoryId: CategoryId): Promise<Specification[]> => {
       const prismaSpecifications: PrismaSpecificationWithValues[] =
         await prisma.specification.findMany({
