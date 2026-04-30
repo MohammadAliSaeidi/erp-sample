@@ -49,6 +49,7 @@ function CreateCategoryForm() {
     <Card>
       <CardContent>
         <form
+          id="store-create-category-form"
           onSubmit={form.handleSubmit(handleCreateCategory)}
           className="flex flex-col items-end gap-4"
         >
@@ -94,7 +95,11 @@ function CreateCategoryForm() {
         </form>
       </CardContent>
       <CardFooter>
-        <Button type="submit" loading={isMutateCreateCategoryPending}>
+        <Button
+          type="submit"
+          form="store-create-category-form"
+          loading={isMutateCreateCategoryPending}
+        >
           Create Category
         </Button>
       </CardFooter>

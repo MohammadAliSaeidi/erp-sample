@@ -17,6 +17,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { editCategorySchema } from "@/interface/schema/category/edit-category.schema";
 import { Textarea } from "@/components/ui/textarea";
 import { EditCategoryInputDTO as EditCategoryForm } from "@/interface/dto/category/edit-category-input.dto";
+import { toast } from "sonner";
 
 type CategoryOverviewProps = {
   categoryId: string;
@@ -44,7 +45,10 @@ export default function CategoryOverview(props: CategoryOverviewProps) {
 
   useEffect(() => {
     if (!category) return;
-    form.setValue("name", category.name);
+    form.reset({
+      name: category.name,
+      description: category.description
+    });
   }, [category, categoryId, form]);
 
   return (
@@ -71,7 +75,7 @@ export default function CategoryOverview(props: CategoryOverviewProps) {
               editLayout="horizontal"
               viewLayout="horizontal"
               onSave={() => {
-                console.log("save");
+                toast.error("Save Name Has Not Been Implemented")
               }}
               renderEditInput={() => (
                 <Controller
@@ -122,7 +126,7 @@ export default function CategoryOverview(props: CategoryOverviewProps) {
               viewLayout="horizontal"
               className="w-full"
               onSave={() => {
-                console.log("save");
+                toast.error("Save Description Has Not Been Implemented")
               }}
               renderEditInput={() => (
                 <Controller
