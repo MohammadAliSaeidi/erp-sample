@@ -1,6 +1,6 @@
 import { resolveStoreSlugFromRequest } from "@/adapters/http/resolve-store-slug-from-request";
 import { buildLoginOperation } from "@/features/auth/application/operations/login.operation";
-import { mapOperationErrorToResponse } from "@/features/shared/adapters/http/map-operation-error-to-response";
+import { mapUsecaseErrorToResponse } from "@/features/shared/adapters/http/map-usecase-error-to-response";
 import { runUseCase } from "@/features/shared/application/run-use-case";
 import prisma from "@/lib/prisma";
 import { validateRequestJsonBody } from "@/lib/validate-request-json-body";
@@ -58,7 +58,7 @@ export const POST: RouteHandler = async (request: NextRequest) => {
 		const storeSlug = resolveStoreSlugFromRequest(request);
 
 		if (!storeSlug)
-			return mapOperationErrorToResponse(new UseCaseBadRequestError());
+			return mapUsecaseErrorToResponse(new UseCaseBadRequestError());
 
 		const loginResult = await runUseCase({
 			useCase: loginOperation,
@@ -76,6 +76,6 @@ export const POST: RouteHandler = async (request: NextRequest) => {
 			statusText: "logged in successfully",
 		});
 	} catch (error) {
-		return mapOperationErrorToResponse(error);
+		return mapUsecaseErrorToResponse(error);
 	}
 };

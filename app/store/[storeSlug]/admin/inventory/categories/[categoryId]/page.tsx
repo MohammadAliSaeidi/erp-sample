@@ -5,6 +5,8 @@ import { CATEGORY_QUERY_KEYS } from "@/interface/ui/category/constants/query-key
 import { runUseCase } from "@/features/shared/application/run-use-case";
 import { getQueryClient } from "@/lib/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { CATEGORY_SPECIFICATIONS_QUERY_KEYS } from "@/interface/ui/specification/constants/query-keys";
+import { getCategorySpecificationsUsecase } from "@/application/specification/usecase/get-category-specifications.usecase";
 
 type CategoryDetailsProps = {
 	params: Promise<{
@@ -27,8 +29,20 @@ export default async function CategoryDetailsPage(props: CategoryDetailsProps) {
 		authContext,
 	});
 
+	const specifications = await runUseCase({
+		useCase: getCategorySpecificationsUsecase,
+		input: categoryId,
+		authContext,
+	});
+	
 	const queryClient = getQueryClient();
+
 	queryClient.setQueryData(CATEGORY_QUERY_KEYS.detail(categoryId), category);
+
+	queryClient.setQueryData(
+		CATEGORY_SPECIFICATIONS_QUERY_KEYS.list(),
+		specifications,
+	);
 
 	return (
 		<>

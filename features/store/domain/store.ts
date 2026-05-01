@@ -1,5 +1,5 @@
 import { StoreUser } from "@/features/admin/domain/store-user";
-import { AddressId, StoreId } from "@/features/shared/domain/ids";
+import { addressIdSchema, storeIdSchema } from "@/features/shared/domain/ids";
 import { z } from "zod";
 
 export const StoreSlug = z
@@ -9,9 +9,9 @@ export const StoreSlug = z
   .regex(/^[a-zA-Z0-9_-]+$/);
 
 export const Store = z.object({
-  id: StoreId,
+  id: storeIdSchema,
   name: z.string(),
-  addressId: AddressId,
+  addressId: addressIdSchema,
   users: z.array(StoreUser),
   slug: StoreSlug,
 });

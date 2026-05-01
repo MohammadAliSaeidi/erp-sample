@@ -1,20 +1,20 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
 import { SpecificationDTO } from "../../../interface/dto/specification/specification.dto";
-import { uuid7GeneratorAdapter } from "@/lib/id-generator/uuid-generator.adapter";
-import { createSpecification } from "../../../domain/specification/specification.aggregate";
-import {
-  createSpecificationValue,
-  SpecificationValue,
-} from "../../../domain/specification/specification-value.entity";
 import { specificationRepositoryAdapter } from "../../../infrastructure/database/adapters/specification/specification-repository.adapter";
-import { categoryId, categoryIdSchema } from "@/features/shared/domain/ids";
+import {
+  CategoryId,
+  categoryIdSchema,
+  StoreId,
+  storeIdSchema,
+} from "@/features/shared/domain/ids";
+import { BadRequestError } from "@/features/shared/errors/bad-request.error";
 
 export interface GetCategorySpecificationsUsecaseDeps {
   getCategorySpecifications: (
-    categoryId: categoryId,
-    storeId: string,
-  ) => Promise<SpecificationDTO>;
+    categoryId: CategoryId,
+    storeId: StoreId,
+  ) => Promise<SpecificationDTO[]>;
 }
 
 export const buildGetSpecificationUsecase = (
@@ -26,24 +26,26 @@ export const buildGetSpecificationUsecase = (
     requiredPermissions: [PERMISSIONS.SPECIFICATION.CREATE],
     inputSchema: categoryIdSchema,
     execute: async ({ input: categoryId, authContext }) => {
-      return deps.getCategorySpecifications(categoryId, authContext.storeId);
+      const { success, data: validatedStoreId } = storeIdSchema.safeParse(
+        authContext.storeId,
+      );
+
+      if (!success) throw new BadRequestError();
+
+      return deps.getCategorySpecifications(categoryId, validatedStoreId);
     },
   });
 
-export const createSpecificationUsecase = buildGetSpecificationUsecase({
+export const getCategorySpecificationsUsecase = buildGetSpecificationUsecase({
   getCategorySpecifications: async (
-    categoryId: categoryId,
-  ): Promise<SpecificationDTO> => {
-
-    const specification = await specificationRepositoryAdapter.getList(
-      createSpecificationInput,
-      createSpecificationInput.storeId,
+    categoryId: CategoryId,
+    storeId: StoreId,
+  ): Promise<SpecificationDTO[]> => {
+    const specifications = await specificationRepositoryAdapter.getList(
+      categoryId,
+      storeId,
     );
 
-    const specificationDTO: SpecificationDTO = {
-      ...specification,
-    };
-
-    return specificationDTO;
+    return specifications;
   },
 });

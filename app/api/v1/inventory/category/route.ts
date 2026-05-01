@@ -1,7 +1,7 @@
 import { withAuthContext } from "@/features/auth";
 import { buildCreateCategoryUsecase } from "@/application/category/usecase/create-category.usecase";
 import { buildListCategoriesUsecase } from "@/application/category/usecase/list-categories.usecase";
-import { mapOperationErrorToResponse } from "@/features/shared/adapters/http/map-operation-error-to-response";
+import { mapUsecaseErrorToResponse } from "@/features/shared/adapters/http/map-usecase-error-to-response";
 import { runUseCase } from "@/features/shared/application/run-use-case";
 import { validateRequestJsonBody } from "@/lib/validate-request-json-body";
 import { WithAuthContext } from "@/features/shared/types/next-request-with-auth-context.type";
@@ -29,7 +29,7 @@ const getCategoriesHandler: RouteHandler = async (request) => {
 
 		return NextResponse.json(categories);
 	} catch (error) {
-		return mapOperationErrorToResponse(error);
+		return mapUsecaseErrorToResponse(error);
 	}
 };
 
@@ -46,7 +46,7 @@ const createCategoryHandler: RouteHandler = async (request) => {
 
 		return NextResponse.json(createdCategory, { status: 201 });
 	} catch (error) {
-		return mapOperationErrorToResponse(error);
+		return mapUsecaseErrorToResponse(error);
 	}
 };
 

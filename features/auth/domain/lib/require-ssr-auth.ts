@@ -6,7 +6,6 @@ import { resolveAuthContext } from "./resolve-auth-context";
 
 export interface SsrAuthContextSource {
   storeSlug?: string;
-  cookieName?: string;
 }
 
 export interface IBuildRequireSsrAuthDeps {
