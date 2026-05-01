@@ -1,7 +1,7 @@
 // features/categories/tabs/category-tabs.config.ts
 import { TabConfig } from "@/lib/tabs/types";
 import CategoryOverview from "./tabs/category-overview";
-import CategoryDetailsSpecifications from "./tabs/specifications";
+import CategoryDetailsSpecificationsTab from "./tabs/specifications";
 
 export enum CategoryTab {
   Overview = "overview",
@@ -28,8 +28,7 @@ export const categoryTabsConfig: Record<
   [CategoryTab.Specifications]: {
     value: CategoryTab.Specifications,
     label: "Specifications",
-
-    component: CategoryDetailsSpecifications,
+    component: CategoryDetailsSpecificationsTab,
   },
   [CategoryTab.Items]: {
     value: CategoryTab.Items,
