@@ -13,7 +13,7 @@ import {
 	UseCaseValidationError,
 } from "@/features/shared/application/errors/use-case-errors";
 
-export function mapOperationErrorToResponse(error: unknown): NextResponse {
+export function mapUsecaseErrorToResponse(error: unknown): NextResponse {
 	if (error instanceof UseCaseValidationError) {
 		return NextResponse.json(
 			{
