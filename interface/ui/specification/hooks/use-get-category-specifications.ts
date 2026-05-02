@@ -9,7 +9,7 @@ export const buildGetCategorySpecificationsQueryOptions = (
 ) => {
   return queryOptions({
     queryFn: () => getCategorySpecifications(apiClient, categoryId),
-    queryKey: CATEGORY_SPECIFICATIONS_QUERY_KEYS.list(),
+    queryKey: CATEGORY_SPECIFICATIONS_QUERY_KEYS.list(categoryId),
   });
 };
 

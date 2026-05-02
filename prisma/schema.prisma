@@ -181,7 +181,7 @@ enum SpecificationValueType {
 }
 
 model Specification {
-  id         String  @id @default(uuid(7))
+  id         String  @id
   name       String
   categoryId String?
   storeId    String
@@ -200,7 +200,7 @@ model Specification {
 }
 
 model SpecificationValue {
-  id              String        @id @default(uuid(7))
+  id              String        @id
   value           String
   specificationId String
   specification   Specification @relation(fields: [specificationId], references: [id], onDelete: Cascade)

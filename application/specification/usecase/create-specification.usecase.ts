@@ -34,6 +34,7 @@ export const buildCreateSpecificationUsecase = (
 export const createSpecificationUsecase = buildCreateSpecificationUsecase({
   createSpecification: async (
     input: CreateSpecificationInputDTO,
+    storeId: string,
   ): Promise<SpecificationDTO> => {
     const generatedUUID = uuid7GeneratorAdapter.generate();
 
@@ -54,11 +55,11 @@ export const createSpecificationUsecase = buildCreateSpecificationUsecase({
       id: generatedUUID,
       specificationValues: values,
       isActive: true,
+      storeId: storeId,
     });
 
     const specification = await specificationRepositoryAdapter.create(
       createSpecificationInput,
-      createSpecificationInput.storeId,
     );
 
     const specificationDTO: SpecificationDTO = {

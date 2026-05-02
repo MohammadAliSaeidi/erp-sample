@@ -1,25 +1,25 @@
-import { getCategoryByIdUsecase } from "@/application/category/usecase/get-category-by-id.usecase";
+import { getCategorySpecificationsUsecase } from "@/application/specification/usecase/get-category-specifications.usecase";
+import { withAuthContext } from "@/features/auth";
 import { mapUsecaseErrorToResponse } from "@/features/shared/adapters/http/map-usecase-error-to-response";
 import { runUseCase } from "@/features/shared/application/run-use-case";
 import { WithAuthContext } from "@/features/shared/types/next-request-with-auth-context.type";
 import { RouteHandler } from "@/features/shared/types/route-handler.type";
 import { NextResponse } from "next/server";
 
-type CategoryRouteContext = {
+type CategorySpecificationsRouteContext = {
 	params: Promise<{ categoryId: string }>;
 };
 
-const getCategoryByIdHandler: RouteHandler<CategoryRouteContext> = async (
-	request,
-	context,
-) => {
+const getCategorySpecificationsHandler: RouteHandler<
+	CategorySpecificationsRouteContext
+> = async (request, context) => {
 	try {
 		const { authContext } = request as WithAuthContext;
 		const { categoryId } = await context.params;
 
 		const category = await runUseCase({
-			useCase: getCategoryByIdUsecase,
-			input: { categoryId },
+			useCase: getCategorySpecificationsUsecase,
+			input: categoryId,
 			authContext,
 		});
 
@@ -29,4 +29,5 @@ const getCategoryByIdHandler: RouteHandler<CategoryRouteContext> = async (
 	}
 };
 
-export const GET = getCategoryByIdHandler;
+export const GET: RouteHandler<CategorySpecificationsRouteContext> =
+	withAuthContext(getCategorySpecificationsHandler);
