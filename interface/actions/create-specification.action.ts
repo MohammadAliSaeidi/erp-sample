@@ -16,7 +16,7 @@ export async function createSpecificationAction(
   rawInput: CreateSpecificationInputDTO,
 ): Promise<ActionResult<SpecificationDTO>> {
   try {
-    const authContext = await requireSsrAuth(["specifications:create"]);
+    const authContext = await requireSsrAuth();
 
     const createdCategory: Specification = await runUseCase({
       useCase: createSpecificationUsecase,

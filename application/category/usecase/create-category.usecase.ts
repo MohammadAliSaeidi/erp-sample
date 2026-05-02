@@ -1,5 +1,8 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
+import {
+	AuthenticatedUsecaseDefinition,
+	authenticatedUsecaseFactory,
+} from "@/features/shared/application/use-case";
 import { createCategorySchema } from "../../../interface/schema/category/create-category.schema";
 import { CreateCategoryInputDTO } from "../../../interface/dto/category/create-category-input.dto";
 import { CategoryDTO } from "@/interface/dto/category/category.dto";
@@ -14,7 +17,9 @@ export interface CreateCategoryUsecaseDeps {
   ) => Promise<CategoryDTO>;
 }
 
-export const buildCreateCategoryUsecase = (deps: CreateCategoryUsecaseDeps) =>
+export const buildCreateCategoryUsecase = (
+  deps: CreateCategoryUsecaseDeps,
+): AuthenticatedUsecaseDefinition<typeof createCategorySchema, CategoryDTO> =>
   authenticatedUsecaseFactory({
     key: "categories.create",
     auth: "required",

@@ -15,7 +15,7 @@ export async function updateCategoryAction(
 	rawInput: EditCategoryInputDTO,
 ): Promise<ActionResult<CategoryDTO>> {
 	try {
-		const authContext = await requireSsrAuth(['categories:update']);
+		const authContext = await requireSsrAuth();
 		const updatedCategory = await runUseCase({
 			useCase: updateCategoryUsecase,
 			input: rawInput,

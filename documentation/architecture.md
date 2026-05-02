@@ -44,8 +44,8 @@ flowchart TD
 
 Auth context is resolved in transport adapters and passed into `runOperation`.
 
-- HTTP: `withAuthContext`
-- SSR/server actions: `requireSsrAuth([])` then operation-level permission check in `runOperation`
+- HTTP: `resolveAuthContextFromRequest` then `runUseCase` (permissions enforced in the use-case runner)
+- SSR/server actions: `requireSsrAuth` (login only) then `runUseCase` for permission checks
 
 ## Golden path for a new feature operation
 

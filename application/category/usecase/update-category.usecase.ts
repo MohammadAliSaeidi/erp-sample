@@ -1,20 +1,25 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import { CategoryNotFoundForStoreError } from "@/domain/category/errors/category-not-found-for-store.error";
 import { UseCaseNotFoundError } from "@/features/shared/application/errors/use-case-errors";
-import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
+import {
+	AuthenticatedUsecaseDefinition,
+	authenticatedUsecaseFactory,
+} from "@/features/shared/application/use-case";
 import { editCategorySchema } from "../../../interface/schema/category/edit-category.schema";
 import { EditCategoryInputDTO } from "@/interface/dto/category/edit-category-input.dto";
 import { CategoryDTO } from "@/interface/dto/category/category.dto";
 import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";
 
-export interface UpdateCategoryOperationDeps {
+export interface UpdateCategoryUsecaseDeps {
   updateCategory: (
     input: EditCategoryInputDTO,
     storeId: string,
   ) => Promise<CategoryDTO>;
 }
 
-export const buildUpdateCategoryUsecase = (deps: UpdateCategoryOperationDeps) =>
+export const buildUpdateCategoryUsecase = (
+  deps: UpdateCategoryUsecaseDeps,
+): AuthenticatedUsecaseDefinition<typeof editCategorySchema, CategoryDTO> =>
   authenticatedUsecaseFactory({
     key: "categories.update",
     auth: "required",

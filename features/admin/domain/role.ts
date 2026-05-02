@@ -1,10 +1,10 @@
-import { RoleId, StoreId } from "@/features/shared/domain/ids";
+import { roleIdSchema, storeIdSchema } from "@/features/shared/domain/ids";
 import z from "zod";
 
 export const Role = z.object({
-	id: RoleId,
-	name: z.string,
-	storeId: StoreId,
+	id: roleIdSchema,
+	name: z.string(),
+	storeId: storeIdSchema,
 	grantsAll: z.boolean(),
 });
 

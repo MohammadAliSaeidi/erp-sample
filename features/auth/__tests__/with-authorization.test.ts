@@ -1,11 +1,9 @@
 import { buildWithAuthorization } from "../adapters/route/with-authorization/build-with-authorization";
-import { IJwtService } from "../domain/services/jwt.service";
-import { IPermissionService } from "../domain/services/permission.service";
+import { ResolveAuthContext } from "@/application/auth/resolve-auth-context";
 import { AuthContext } from "../domain/types/auth-context.type";
 import { Permission } from "../domain/types/permission.type";
 
 const VALID_PAYLOAD = {
-	storeUserId: "11111111-1111-4111-8111-111111111111",
 	adminId: "admin-1",
 	storeId: "store-1",
 	storeSlug: "store-1",
@@ -13,6 +11,8 @@ const VALID_PAYLOAD = {
 	roleId: "role-1",
 	iat: 0,
 	exp: 9999999999,
+	grantsAll: false,
+	sub: "admin-1",
 } as const;
 
 const VALID_PERMISSIONS: Permission[] = ["items:read", "items:create"];
@@ -38,126 +38,73 @@ const makeRequest = (token: string | null = "valid-token") =>
 				return null;
 			}),
 		},
-	}) as unknown as Parameters<IJwtService["extractFromRequest"]>[0];
-
-const makeMockJwtService = (result: unknown): IJwtService => ({
-	extractFromRequest: jest.fn(),
-	sign: jest.fn(),
-	verify: jest.fn().mockResolvedValue(result),
-});
-
-const makeMockPermissionService = (
-	permissions: Permission[] = VALID_PERMISSIONS,
-): IPermissionService => ({
-	getPermissionsByRoleId: jest.fn().mockResolvedValue(permissions),
-	getCachedPermissionsByRoleId: jest.fn().mockResolvedValue(permissions),
-	invalidatePermissionsCache: jest.fn(),
-	invalidateAllPermissionsCache: jest.fn(),
-});
+	}) as unknown as import("next/server").NextRequest;
 
 describe("buildWithAuthorization", () => {
-	beforeAll(() => {
-		(
-			globalThis as unknown as {
-				Response: {
-					json: (...args: unknown[]) => { status: number };
-				};
-			}
-		).Response = {
-			json: (...args: unknown[]) => {
-				const init = args[1] as { status?: number } | undefined;
-				return {
-					status: init?.status ?? 200,
-				};
-			},
-		};
-	});
+	it("invokes handler with authContext from resolver (permissions arg ignored)", async () => {
+		const resolveAuthContext: ResolveAuthContext = jest.fn().mockResolvedValue({
+			...VALID_PAYLOAD,
+			permissions: VALID_PERMISSIONS,
+		});
+		const innerHandler = jest
+			.fn()
+			.mockResolvedValue({ status: 200 } as Response);
+		const handler = buildWithAuthorization(resolveAuthContext)([
+			"items:create",
+		])(innerHandler);
 
-	describe("when token is missing or invalid", () => {
-		it("returns 401 without hitting permission service", async () => {
-			const jwtService = makeMockJwtService(null);
-			const permissionService = makeMockPermissionService();
-			const handler = buildWithAuthorization(
-				jwtService,
-				permissionService,
-			)(["items:read"])(jest.fn());
+		const res = await handler(makeRequest(), {});
 
-			const res = await handler(makeRequest(null), {});
-
-			expect(res.status).toBe(401);
-			expect(
-				permissionService.getPermissionsByRoleId,
-			).not.toHaveBeenCalled();
+		expect(innerHandler).toHaveBeenCalledTimes(1);
+		expect(res.status).toBe(200);
+		expect(resolveAuthContext).toHaveBeenCalledWith({
+			storeSlug: "store-1",
+			token: "valid-token",
 		});
 	});
 
-	describe("when role lacks required permissions", () => {
-		it("returns 403", async () => {
-			const jwtService = makeMockJwtService(VALID_PAYLOAD);
-			const permissionService = makeMockPermissionService([
-				"items:read",
-			]);
-			const handler = buildWithAuthorization(
-				jwtService,
-				permissionService,
-			)(["items:create"])(jest.fn());
+	it("forwards resolved auth context on request.authContext", async () => {
+		const resolveAuthContext: ResolveAuthContext = jest.fn().mockResolvedValue({
+			...VALID_PAYLOAD,
+			permissions: VALID_PERMISSIONS,
+		});
+		let capturedAuth: AuthContext | null = null;
 
-			const res = await handler(makeRequest(), {});
+		const innerHandler = jest.fn().mockImplementation((req) => {
+			capturedAuth =
+				(req as { authContext?: AuthContext }).authContext ?? null;
+			return { status: 200 } as Response;
+		});
 
-			expect(res.status).toBe(403);
-			expect(
-				permissionService.getPermissionsByRoleId,
-			).toHaveBeenCalledWith(VALID_PAYLOAD.roleId);
+		const handler = buildWithAuthorization(resolveAuthContext)(["items:read"])(
+			innerHandler,
+		);
+
+		await handler(makeRequest(), {});
+
+		expect(capturedAuth).toMatchObject({
+			adminId: VALID_PAYLOAD.adminId,
+			storeId: VALID_PAYLOAD.storeId,
+			storeSlug: VALID_PAYLOAD.storeSlug,
+			username: VALID_PAYLOAD.username,
+			roleId: VALID_PAYLOAD.roleId,
+			permissions: VALID_PERMISSIONS,
 		});
 	});
 
-	describe("when authorization succeeds", () => {
-		it("lets the inner handler run", async () => {
-			const jwtService = makeMockJwtService(VALID_PAYLOAD);
-			const permissionService =
-				makeMockPermissionService(VALID_PERMISSIONS);
-			const innerHandler = jest
-				.fn()
-				.mockResolvedValue({ status: 200 } as Response);
-			const handler = buildWithAuthorization(
-				jwtService,
-				permissionService,
-			)(VALID_PERMISSIONS)(innerHandler);
-
-			const res = await handler(makeRequest(), {});
-
-			expect(innerHandler).toHaveBeenCalledTimes(1);
-			expect(res.status).toBe(200);
+	it("passes null authContext when resolver returns null", async () => {
+		const resolveAuthContext: ResolveAuthContext = jest
+			.fn()
+			.mockResolvedValue(null);
+		let capturedAuth: AuthContext | null | undefined;
+		const innerHandler = jest.fn().mockImplementation((req) => {
+			capturedAuth = (req as { authContext?: AuthContext | null }).authContext;
+			return { status: 200 } as Response;
 		});
+		const handler = buildWithAuthorization(resolveAuthContext)([])(innerHandler);
 
-		it("forwards resolved auth context on request.authContext", async () => {
-			const jwtService = makeMockJwtService(VALID_PAYLOAD);
-			const permissionService =
-				makeMockPermissionService(VALID_PERMISSIONS);
-			let capturedAuth: AuthContext | null = null;
+		await handler(makeRequest(null), {});
 
-			const innerHandler = jest.fn().mockImplementation((req) => {
-				capturedAuth =
-					(req as { authContext?: AuthContext }).authContext ??
-					null;
-				return { status: 200 } as Response;
-			});
-
-			const handler = buildWithAuthorization(
-				jwtService,
-				permissionService,
-			)(["items:read"])(innerHandler);
-
-			await handler(makeRequest(), {});
-
-			expect(capturedAuth).toMatchObject({
-				adminId: VALID_PAYLOAD.adminId,
-				storeId: VALID_PAYLOAD.storeId,
-				storeSlug: VALID_PAYLOAD.storeSlug,
-				username: VALID_PAYLOAD.username,
-				roleId: VALID_PAYLOAD.roleId,
-				permissions: VALID_PERMISSIONS,
-			});
-		});
+		expect(capturedAuth).toBeNull();
 	});
 });

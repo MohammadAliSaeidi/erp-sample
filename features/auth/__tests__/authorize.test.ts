@@ -5,12 +5,13 @@ import { IJwtService } from "../domain/services/jwt.service";
 import { Permission } from "../domain/types/permission.type";
 
 const VALID_PAYLOAD = {
-	storeUserId: "11111111-1111-4111-8111-111111111111",
 	adminId: "admin-1",
 	storeId: "store-1",
 	storeSlug: "store-1",
 	username: "admin-user",
 	roleId: "role-1",
+	grantsAll: false,
+	sub: "admin-1",
 	iat: 0,
 	exp: 9999999999,
 } as const;

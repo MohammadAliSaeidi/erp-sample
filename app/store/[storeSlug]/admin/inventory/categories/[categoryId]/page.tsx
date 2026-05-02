@@ -19,9 +19,7 @@ export default async function CategoryDetailsPage(props: CategoryDetailsProps) {
 	const { params } = props;
 	const { categoryId, storeSlug } = await params;
 
-	const authContext = await requireSsrAuth(["categories:read-details"], {
-		storeSlug,
-	});
+	const authContext = await requireSsrAuth({ storeSlug });
 
 	const category = await runUseCase({
 		useCase: getCategoryByIdUsecase,
@@ -40,7 +38,7 @@ export default async function CategoryDetailsPage(props: CategoryDetailsProps) {
 	queryClient.setQueryData(CATEGORY_QUERY_KEYS.detail(categoryId), category);
 
 	queryClient.setQueryData(
-		CATEGORY_SPECIFICATIONS_QUERY_KEYS.list(),
+		CATEGORY_SPECIFICATIONS_QUERY_KEYS.list(categoryId),
 		specifications,
 	);
 

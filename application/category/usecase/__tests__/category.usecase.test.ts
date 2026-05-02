@@ -14,7 +14,7 @@ import {
 } from "@/application/category/usecase/list-categories.usecase";
 import {
   buildUpdateCategoryUsecase,
-  UpdateCategoryOperationDeps,
+  UpdateCategoryUsecaseDeps,
 } from "@/application/category/usecase/update-category.usecase";
 import {
   UseCaseForbiddenError,
@@ -25,7 +25,7 @@ import { runUseCase } from "@/features/shared/application/run-use-case";
 import { CategoryDTO } from "@/interface/dto/category/category.dto";
 
 const STORE_ID = "store-1";
-const CATEGORY_ID = "11111111-1111-4111-8111-111111111111";
+const CATEGORY_ID = "019de80a-e153-7c81-aac2-1c13a6c55324";
 
 const AUTH_CONTEXT: AuthContext = {
   adminId: "admin-1",
@@ -68,7 +68,7 @@ describe("categories usecases", () => {
     expect(deps.getListByStoreId).toHaveBeenCalledWith(STORE_ID);
   });
 
-  it("fails with OperationForbiddenError when permission is missing", async () => {
+  it("fails with UseCaseForbiddenError when permission is missing", async () => {
     const deps: ListCategoriesUsecaseDeps = {
       getListByStoreId: jest.fn(),
     };
@@ -78,7 +78,11 @@ describe("categories usecases", () => {
       runUseCase({
         useCase: usecase,
         input: {},
-        authContext: { ...AUTH_CONTEXT, permissions: [] },
+        authContext: {
+          ...AUTH_CONTEXT,
+          grantsAll: false,
+          permissions: [],
+        },
       }),
     ).rejects.toBeInstanceOf(UseCaseForbiddenError);
   });
@@ -113,8 +117,8 @@ describe("categories usecases", () => {
     ).rejects.toBeInstanceOf(UseCaseNotFoundError);
   });
 
-  it("maps repository not-found during update into OperationNotFoundError", async () => {
-    const deps: UpdateCategoryOperationDeps = {
+  it("maps repository not-found during update into UseCaseNotFoundError", async () => {
+    const deps: UpdateCategoryUsecaseDeps = {
       updateCategory: jest
         .fn()
         .mockRejectedValue(new CategoryNotFoundForStoreError(CATEGORY_ID)),

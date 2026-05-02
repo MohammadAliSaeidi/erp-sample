@@ -1,24 +1,18 @@
-import { withAuthContext } from "@/features/auth";
-import { buildCreateCategoryUsecase } from "@/application/category/usecase/create-category.usecase";
+import { createCategoryUsecase } from "@/application/category/usecase/create-category.usecase";
 import { buildListCategoriesUsecase } from "@/application/category/usecase/list-categories.usecase";
+import { resolveAuthContextFromRequest } from "@/interface/auth/resolve-auth-context-from-request";
 import { mapUsecaseErrorToResponse } from "@/features/shared/adapters/http/map-usecase-error-to-response";
 import { runUseCase } from "@/features/shared/application/run-use-case";
 import { validateRequestJsonBody } from "@/lib/validate-request-json-body";
-import { WithAuthContext } from "@/features/shared/types/next-request-with-auth-context.type";
-import { RouteHandler } from "@/features/shared/types/route-handler.type";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";
 
 const listCategoriesOperation = buildListCategoriesUsecase({
 	getListByStoreId: categoryRepositoryAdapter.getList,
 });
 
-const createCategoryOperation = buildCreateCategoryUsecase({
-	createCategory: categoryRepositoryAdapter.create,
-});
-
-const getCategoriesHandler: RouteHandler = async (request) => {
-	const { authContext } = request as WithAuthContext;
+const getCategoriesHandler = async (request: NextRequest) => {
+	const authContext = await resolveAuthContextFromRequest(request);
 
 	try {
 		const categories = await runUseCase({
@@ -33,13 +27,13 @@ const getCategoriesHandler: RouteHandler = async (request) => {
 	}
 };
 
-const createCategoryHandler: RouteHandler = async (request) => {
-	const { authContext } = request as WithAuthContext;
+const createCategoryHandler = async (request: NextRequest) => {
+	const authContext = await resolveAuthContextFromRequest(request);
 
 	try {
 		const rawBody = await validateRequestJsonBody(request);
 		const createdCategory = await runUseCase({
-			useCase: createCategoryOperation,
+			useCase: createCategoryUsecase,
 			input: rawBody,
 			authContext,
 		});
@@ -50,5 +44,5 @@ const createCategoryHandler: RouteHandler = async (request) => {
 	}
 };
 
-export const GET: RouteHandler = withAuthContext(getCategoriesHandler);
-export const POST: RouteHandler = withAuthContext(createCategoryHandler);
+export const GET = getCategoriesHandler;
+export const POST = createCategoryHandler;

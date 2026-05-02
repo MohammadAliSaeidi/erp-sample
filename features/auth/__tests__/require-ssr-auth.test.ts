@@ -1,61 +1,53 @@
-import { buildRequireSsrAuth } from "../domain/lib/require-ssr-auth";
-import { ForbiddenError } from "../domain/errors/forbidden.error";
-import { UnauthorizedError } from "../domain/errors/unauthorized.error";
-import { IJwtService } from "../domain/services/jwt.service";
+import { buildRequireSsrAuth } from "@/application/auth/required-ssr-auth";
+import { ResolveAuthContext } from "@/application/auth/resolve-auth-context";
+import { UseCaseUnauthorizedError } from "@/features/shared/application/errors/use-case-errors";
 import { Permission } from "../domain/types/permission.type";
 
 const VALID_PAYLOAD = {
-  storeUserId: "11111111-1111-4111-8111-111111111111",
-  adminId: "admin-1",
-  storeId: "store-1",
-  storeSlug: "store-1",
-  username: "admin-user",
-  roleId: "role-1",
-  iat: 0,
-  exp: 9999999999,
+	adminId: "admin-1",
+	storeId: "store-1",
+	storeSlug: "store-1",
+	username: "admin-user",
+	roleId: "role-1",
+	iat: 0,
+	exp: 9999999999,
+	grantsAll: false,
+	sub: "admin-1",
 } as const;
 
 const VALID_PERMISSIONS: Permission[] = ["items:read", "items:create"];
 
-const makeJwtService = (payload: unknown): Pick<IJwtService, "verify"> => ({
-  verify: jest.fn().mockResolvedValue(payload),
-});
-
 describe("buildRequireSsrAuth", () => {
-  it("throws UnauthorizedError when token does not exist", async () => {
-    const requireSsrAuth = buildRequireSsrAuth({
-      jwtService: makeJwtService(VALID_PAYLOAD),
-      getPermissionsByRoleId: async () => VALID_PERMISSIONS,
-      getToken: async () => null,
-    });
+	it("throws UseCaseUnauthorizedError when resolver returns null", async () => {
+		const resolveAuthContext: ResolveAuthContext = async () => null;
+		const requireSsrAuth = buildRequireSsrAuth(resolveAuthContext);
 
-    await expect(requireSsrAuth(["items:read"])).rejects.toBeInstanceOf(
-      UnauthorizedError,
-    );
-  });
+		await expect(requireSsrAuth()).rejects.toBeInstanceOf(
+			UseCaseUnauthorizedError,
+		);
+	});
 
-  it("throws ForbiddenError when role misses permission", async () => {
-    const requireSsrAuth = buildRequireSsrAuth({
-      jwtService: makeJwtService(VALID_PAYLOAD),
-      getPermissionsByRoleId: async () => ["items:read"],
-      getToken: async () => "valid-token",
-    });
+	it("returns auth context when resolver succeeds", async () => {
+		const resolveAuthContext: ResolveAuthContext = async () => ({
+			...VALID_PAYLOAD,
+			permissions: VALID_PERMISSIONS,
+		});
+		const requireSsrAuth = buildRequireSsrAuth(resolveAuthContext);
 
-    await expect(requireSsrAuth(["items:create"])).rejects.toBeInstanceOf(
-      ForbiddenError,
-    );
-  });
+		await expect(requireSsrAuth()).resolves.toMatchObject({
+			...VALID_PAYLOAD,
+			permissions: VALID_PERMISSIONS,
+		});
+	});
 
-  it("returns auth context when successful", async () => {
-    const requireSsrAuth = buildRequireSsrAuth({
-      jwtService: makeJwtService(VALID_PAYLOAD),
-      getPermissionsByRoleId: async () => VALID_PERMISSIONS,
-      getToken: async () => "valid-token",
-    });
+	it("forwards storeSlug to resolver", async () => {
+		const resolveAuthContext: ResolveAuthContext = jest
+			.fn()
+			.mockResolvedValue({ ...VALID_PAYLOAD, permissions: [] });
+		const requireSsrAuth = buildRequireSsrAuth(resolveAuthContext);
 
-    await expect(requireSsrAuth(["items:read"])).resolves.toMatchObject({
-      ...VALID_PAYLOAD,
-      permissions: VALID_PERMISSIONS,
-    });
-  });
+		await requireSsrAuth({ storeSlug: "acme" });
+
+		expect(resolveAuthContext).toHaveBeenCalledWith({ storeSlug: "acme" });
+	});
 });

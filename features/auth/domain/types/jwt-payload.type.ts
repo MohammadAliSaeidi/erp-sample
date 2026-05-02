@@ -1,14 +1,18 @@
 import z from "zod";
-import { StoreUserId, StoreId, RoleId } from "@/features/shared/domain/ids";
+import {
+  roleIdSchema,
+  storeIdSchema,
+  storeUserIdSchema,
+} from "@/features/shared/domain/ids";
 import { StoreSlug } from "@/features/store/domain/store";
 import { Username } from "@/features/shared/domain/username";
 
 export const JwtPayload = z.object({
-  storeUserId: StoreUserId,
-  storeId: StoreId,
+  storeUserId: storeUserIdSchema,
+  storeId: storeIdSchema,
   storeSlug: StoreSlug,
   username: Username,
-  roleId: RoleId,
+  roleId: roleIdSchema,
   iat: z.number(),
   exp: z.number(),
 });

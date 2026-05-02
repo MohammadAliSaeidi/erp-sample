@@ -1,9 +1,13 @@
-import { Middleware } from "../shared/types/middleware.type";
-import { buildWithAuthorization } from "./adapters/route/with-authorization/build-with-authorization";
 import {
 	buildRequireSsrAuth,
-	IRequireSsrAuth,
-} from "./domain/lib/require-ssr-auth";
+	RequireSsrAuth,
+} from "@/application/auth/required-ssr-auth";
+import {
+	buildResolveAuthContext,
+	ResolveAuthContext,
+} from "@/application/auth/resolve-auth-context";
+import { Middleware } from "../shared/types/middleware.type";
+import { buildWithAuthorization } from "./adapters/route/with-authorization/build-with-authorization";
 import {
 	buildRolePermissionRepository,
 	IRolePermissionRepository,
@@ -20,8 +24,8 @@ export interface IAuthModuleBuilder {
 
 export interface IAuthModule {
 	withAuthorization: (requiredPermissions: Permission[]) => Middleware;
-	withAuthContext: Middleware;
-	requireSsrAuth: IRequireSsrAuth;
+	resolveAuthContext: ResolveAuthContext;
+	requireSsrAuth: RequireSsrAuth;
 	jwtService: IJwtService;
 	rolePermissionRepository: IRolePermissionRepository;
 }
@@ -41,21 +45,18 @@ export const buildAuthModule: IAuthModuleBuilder = (
 		cacheTtlMs,
 	);
 
-	const withAuthorization = buildWithAuthorization(
-		jwtService,
-		permissionService,
-	);
-	
-	const withAuthContext = withAuthorization([]);
-
-	const requireSsrAuth = buildRequireSsrAuth({
+	const resolveAuthContext = buildResolveAuthContext({
 		jwtService,
 		getPermissionsByRoleId: permissionService.getPermissionsByRoleId,
 	});
 
+	const requireSsrAuth = buildRequireSsrAuth(resolveAuthContext);
+
+	const withAuthorization = buildWithAuthorization(resolveAuthContext);
+
 	return {
 		withAuthorization,
-		withAuthContext,
+		resolveAuthContext,
 		requireSsrAuth,
 		jwtService,
 		rolePermissionRepository,

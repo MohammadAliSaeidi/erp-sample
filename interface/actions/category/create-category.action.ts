@@ -12,13 +12,13 @@ import { CreateCategoryInputDTO } from "../../dto/category/create-category-input
 import { CategoryDTO } from "@/interface/dto/category/category.dto";
 
 export async function createCategoryAction(
-  rawInput: CreateCategoryInputDTO,
+  input: CreateCategoryInputDTO,
 ): Promise<ActionResult<CategoryDTO>> {
   try {
-    const authContext = await requireSsrAuth(["categories:create"]);
+    const authContext = await requireSsrAuth();
     const createdCategory = await runUseCase({
       useCase: createCategoryUsecase,
-      input: rawInput,
+      input,
       authContext,
     });
 

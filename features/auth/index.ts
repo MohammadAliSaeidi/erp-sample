@@ -13,9 +13,11 @@ import prisma from "@/lib/prisma";
  * services and utilities. This module follows the singleton pattern and is instantiated
  * once per process lifecycle.
  *
- * @property {function} withAuthorization - Middleware/handler wrapper for authorization checks
+ * @property {function} resolveAuthContext - Server-only: JWT verify + role permissions (no permission gate)
+ * @property {function} requireSsrAuth - Ensures a logged-in user; use `runUseCase` for permission checks
+ * @property {function} withAuthorization - Attaches `authContext` to the request; permission args are ignored
  * @property {object} jwtService - JWT token operations service
- * @property {object} rolePermissionRepo - Role-permission repository with caching layer
+ * @property {object} rolePermissionRepository - Role-permission repository with caching layer
  *
  * @param {object} config - Module configuration
  * @param {import('@prisma/client').PrismaClient} config.prisma - Prisma client instance
@@ -23,7 +25,7 @@ import prisma from "@/lib/prisma";
  * @param {number} config.cacheTtlMs - Cache TTL in milliseconds (default: 60_000). Adjust based on
  *   your data consistency requirements vs performance needs
  *
- * @returns {{withAuthorization, jwtService, rolePermissionRepo}} Destructured auth utilities
+ * @returns Auth utilities including `resolveAuthContext`, `requireSsrAuth`, and `jwtService`
  *
  * @example
  * // In route handlers:
@@ -42,7 +44,7 @@ import prisma from "@/lib/prisma";
  */
 export const {
 	withAuthorization,
-	withAuthContext,
+	resolveAuthContext,
 	requireSsrAuth,
 	jwtService,
 	rolePermissionRepository,

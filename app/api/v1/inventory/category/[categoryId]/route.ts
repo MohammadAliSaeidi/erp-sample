@@ -1,22 +1,20 @@
-import { withAuthContext } from "@/features/auth";
 import { getCategoryByIdUsecase } from "@/application/category/usecase/get-category-by-id.usecase";
 import { updateCategoryUsecase } from "@/application/category/usecase/update-category.usecase";
+import { resolveAuthContextFromRequest } from "@/interface/auth/resolve-auth-context-from-request";
 import { mapUsecaseErrorToResponse } from "@/features/shared/adapters/http/map-usecase-error-to-response";
 import { runUseCase } from "@/features/shared/application/run-use-case";
 import { validateRequestJsonBody } from "@/lib/validate-request-json-body";
-import { WithAuthContext } from "@/features/shared/types/next-request-with-auth-context.type";
-import { RouteHandler } from "@/features/shared/types/route-handler.type";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 type CategoryRouteContext = {
 	params: Promise<{ categoryId: string }>;
 };
 
-const getCategoryByIdHandler: RouteHandler<CategoryRouteContext> = async (
-	request,
-	context,
+const getCategoryByIdHandler = async (
+	request: NextRequest,
+	context: CategoryRouteContext,
 ) => {
-	const { authContext } = request as WithAuthContext;
+	const authContext = await resolveAuthContextFromRequest(request);
 
 	try {
 		const { categoryId } = await context.params;
@@ -32,11 +30,11 @@ const getCategoryByIdHandler: RouteHandler<CategoryRouteContext> = async (
 	}
 };
 
-const updateCategoryHandler: RouteHandler<CategoryRouteContext> = async (
-	request,
-	context,
+const updateCategoryHandler = async (
+	request: NextRequest,
+	context: CategoryRouteContext,
 ) => {
-	const { authContext } = request as WithAuthContext;
+	const authContext = await resolveAuthContextFromRequest(request);
 
 	try {
 		const { categoryId } = await context.params;
@@ -58,10 +56,6 @@ const updateCategoryHandler: RouteHandler<CategoryRouteContext> = async (
 	}
 };
 
-export const GET: RouteHandler<CategoryRouteContext> = withAuthContext(
-	getCategoryByIdHandler,
-);
+export const GET = getCategoryByIdHandler;
 
-export const PUT: RouteHandler<CategoryRouteContext> = withAuthContext(
-	updateCategoryHandler,
-);
+export const PUT = updateCategoryHandler;

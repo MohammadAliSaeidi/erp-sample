@@ -1,5 +1,5 @@
 import { Actor } from "@/features/auth/domain/actor";
-import { RoleId, StoreUserId } from "@/features/shared/domain/ids";
+import { roleIdSchema, storeUserIdSchema } from "@/features/shared/domain/ids";
 import { resolveAdminAccessTokenCookieName } from "@/features/auth/domain/lib/resolve-admin-access-token-cookie-name";
 import { UnauthenticatedError } from "@/features/auth/domain/errors/unauthenticated.error";
 import { IJwtService } from "@/features/auth/domain/services/jwt.service";
@@ -39,8 +39,8 @@ export const extractActorFromCookie = async (
   if (typeof rawStoreUserId !== "string") return null;
 
   return {
-    storeUserId: StoreUserId.parse(rawStoreUserId),
-    roleId: RoleId.parse(payload.roleId),
+    storeUserId: storeUserIdSchema.parse(rawStoreUserId),
+    roleId: roleIdSchema.parse(payload.roleId),
   };
 };
 

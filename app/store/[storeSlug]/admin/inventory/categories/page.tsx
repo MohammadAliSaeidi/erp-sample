@@ -24,9 +24,7 @@ export default async function CategoryPage(props: CategoryPageProps) {
 	const { params } = props;
 	const { storeSlug } = await params;
 
-	const authContext = await requireSsrAuth(["categories:read"], {
-		storeSlug,
-	});
+	const authContext = await requireSsrAuth({ storeSlug });
 
 	const listCategoriesOperation = buildListCategoriesUsecase({
 		getListByStoreId: categoryRepositoryAdapter.getList,

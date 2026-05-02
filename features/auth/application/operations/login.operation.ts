@@ -6,7 +6,10 @@ import {
 	UseCaseNotFoundError,
 	UseCaseUnauthorizedError,
 } from "@/features/shared/application/errors/use-case-errors";
-import { publicUsecaseFactory } from "@/features/shared/application/use-case";
+import {
+	publicUsecaseFactory,
+	PublicUsecaseDefinition,
+} from "@/features/shared/application/use-case";
 import { AdminAccessTokenPayload } from "@/features/shared/types/admin-access-token-payload";
 import { LoginInput } from "@/features/auth/domain/types/login-body.type";
 
@@ -30,7 +33,9 @@ export interface LoginOperationResult {
 	tokenPayload: AdminAccessTokenPayload;
 }
 
-export const buildLoginOperation = (deps: LoginOperationDeps) =>
+export const buildLoginOperation = (
+	deps: LoginOperationDeps,
+): PublicUsecaseDefinition<typeof loginInputSchema, LoginOperationResult> =>
 	publicUsecaseFactory({
 		key: "auth.login",
 		auth: "public",

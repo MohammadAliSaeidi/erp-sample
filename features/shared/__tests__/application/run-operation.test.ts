@@ -20,6 +20,10 @@ const AUTH_CONTEXT: AuthContext = {
 	storeSlug: "store-1",
 	username: "admin-user",
 	roleId: "role-1",
+	grantsAll: false,
+	sub: "admin-1",
+	exp: 9999999999,
+	iat: 0,
 	permissions: [READ_PERMISSION],
 };
 

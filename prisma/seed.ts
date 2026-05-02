@@ -45,23 +45,27 @@ async function main() {
 		];
 
 		await Promise.all(
-			catNames.map((name) =>
-				prisma.category.upsert({
+			catNames.map(async (name) => {
+				const existing = await prisma.category.findFirst({
 					where: {
-						storeId_name: {
-							storeId: store.id,
-							name,
-						},
-						// storeId: store.id,
-						// name: name,
+						storeId: store.id,
+						name,
+						parentId: null,
 					},
-					update: {},
-					create: {
+				});
+				if (existing) {
+					return prisma.category.update({
+						where: { id: existing.id },
+						data: {},
+					});
+				}
+				return prisma.category.create({
+					data: {
 						name,
 						storeId: store.id,
 					},
-				}),
-			),
+				});
+			}),
 		);
 
 		console.log(`→ ${catNames.length} categories`);
