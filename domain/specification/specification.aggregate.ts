@@ -14,20 +14,6 @@ export type Specification = {
 };
 
 export const createSpecification = (input: Specification): Specification => {
-  if (!input.name || input.name.trim().length === 0) {
-    throw new Error("Specification name is required");
-  }
-
-  if (input.storeId.trim().length === 0)
-    throw new Error("Specifciation StoreId is required");
-
-  if (input.categoryId && input.categoryId.trim().length === 0)
-    throw new Error("Specifciation categoryId is required");
-
-  if (input.specificationValues?.length === 0) {
-    throw new Error("Specification must have at least one value");
-  }
-
   if (input.type === SpecificationValueType.BOOLEAN) {
     input.specificationValues.forEach((specValue) => {
       if (typeof specValue.value !== "boolean")

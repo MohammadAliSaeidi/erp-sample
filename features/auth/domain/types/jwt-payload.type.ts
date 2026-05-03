@@ -4,14 +4,14 @@ import {
   storeIdSchema,
   storeUserIdSchema,
 } from "@/features/shared/domain/ids";
-import { StoreSlug } from "@/features/store/domain/store";
-import { Username } from "@/features/shared/domain/username";
+import { storeSlugSchema } from "@/features/store/domain/store";
+import { usernameSchema } from "@/interface/schema/username.schema";
 
 export const JwtPayload = z.object({
   storeUserId: storeUserIdSchema,
   storeId: storeIdSchema,
-  storeSlug: StoreSlug,
-  username: Username,
+  storeSlug: storeSlugSchema,
+  username: usernameSchema,
   roleId: roleIdSchema,
   iat: z.number(),
   exp: z.number(),

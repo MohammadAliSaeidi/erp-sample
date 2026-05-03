@@ -1,5 +1,5 @@
 import z from "zod";
-import { addressIdSchema } from "./ids";
+import { addressIdSchema } from "../../features/shared/domain/ids";
 
 export const Address = z.object({
 	id: addressIdSchema,

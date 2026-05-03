@@ -1,5 +1,4 @@
 import z from "zod";
-import { categoryIdSchema } from "@/features/shared/domain/ids";
 import { SpecificationValueType } from "@/domain/specification/specification-value-type.enum";
 
 export const createSpecificationSchema = z.object({
@@ -7,7 +6,7 @@ export const createSpecificationSchema = z.object({
     .string({ error: "Specification name is required" })
     .trim()
     .min(1, "Specification name is required"),
-  categoryId: categoryIdSchema,
+  categoryId: z.uuidv7(),
   type: z.enum(SpecificationValueType, { error: "Type is required" }),
   isRequired: z.boolean(),
   isPrimary: z.boolean(),
