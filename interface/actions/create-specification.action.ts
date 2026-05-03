@@ -4,9 +4,9 @@ import { requireSsrAuth } from "@/features/auth";
 import {
   ActionResult,
   actionSuccess,
-  mapOperationErrorToActionResult,
-} from "@/features/shared/adapters/action/map-operation-error-to-action-result";
-import { runUseCase } from "@/features/shared/application/run-use-case";
+  mapUsecaseErrorToActionResult,
+} from "@/features/shared/adapters/action/map-usecase-error-to-action-result";
+import { runUsecase } from "@/features/shared/application/run-use-case";
 import { CreateSpecificationInputDTO } from "../dto/specification/create-specification-input.dto";
 import { SpecificationDTO } from "../dto/specification/specification.dto";
 import { Specification } from "../../domain/specification/specification.aggregate";
@@ -18,7 +18,7 @@ export async function createSpecificationAction(
   try {
     const authContext = await requireSsrAuth();
 
-    const createdCategory: Specification = await runUseCase({
+    const createdCategory: Specification = await runUsecase({
       useCase: createSpecificationUsecase,
       input: rawInput,
       authContext,
@@ -26,6 +26,6 @@ export async function createSpecificationAction(
 
     return actionSuccess({ ...createdCategory });
   } catch (error) {
-    return mapOperationErrorToActionResult(error);
+    return mapUsecaseErrorToActionResult(error);
   }
 }

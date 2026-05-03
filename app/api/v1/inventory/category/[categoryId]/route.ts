@@ -1,9 +1,9 @@
 import { getCategoryByIdUsecase } from "@/application/category/usecase/get-category-by-id.usecase";
 import { updateCategoryUsecase } from "@/application/category/usecase/update-category.usecase";
-import { resolveAuthContextFromRequest } from "@/interface/auth/resolve-auth-context-from-request";
+import { resolveAuthContextFromRequest } from "@/interface/http/resolve-auth-context-from-request";
 import { mapUsecaseErrorToResponse } from "@/features/shared/adapters/http/map-usecase-error-to-response";
-import { runUseCase } from "@/features/shared/application/run-use-case";
-import { validateRequestJsonBody } from "@/lib/validate-request-json-body";
+import { runUsecase } from "@/features/shared/application/run-use-case";
+import { validateRequestJsonBody } from "@/interface/http/validate-request-json-body";
 import { NextRequest, NextResponse } from "next/server";
 
 type CategoryRouteContext = {
@@ -18,7 +18,7 @@ const getCategoryByIdHandler = async (
 
 	try {
 		const { categoryId } = await context.params;
-		const category = await runUseCase({
+		const category = await runUsecase({
 			useCase: getCategoryByIdUsecase,
 			input: { categoryId },
 			authContext,
@@ -44,7 +44,7 @@ const updateCategoryHandler = async (
 			id: categoryId,
 		};
 
-		const updatedCategory = await runUseCase({
+		const updatedCategory = await runUsecase({
 			useCase: updateCategoryUsecase,
 			input: rawInput,
 			authContext,

@@ -3,8 +3,8 @@ import {
 	UseCaseNotFoundError,
 	UseCaseUnauthorizedError,
 	UseCaseValidationError,
-} from "@/features/shared/application/errors/use-case-errors";
-import { runUseCase } from "@/features/shared/application/run-use-case";
+} from "@/application/errors/use-case-errors";
+import { runUsecase } from "@/features/shared/application/run-use-case";
 
 describe("login operation", () => {
 	it("validates required input fields", async () => {
@@ -15,7 +15,7 @@ describe("login operation", () => {
 		});
 
 		await expect(
-			runUseCase({
+			runUsecase({
 				useCase: operation,
 				input: {
 					username: "admin",
@@ -33,7 +33,7 @@ describe("login operation", () => {
 		});
 
 		await expect(
-			runUseCase({
+			runUsecase({
 				useCase: operation,
 				input: {
 					storeSlug: "missing-store",
@@ -63,7 +63,7 @@ describe("login operation", () => {
 		});
 
 		await expect(
-			runUseCase({
+			runUsecase({
 				useCase: operation,
 				input: {
 					storeSlug: "store-1",
@@ -93,7 +93,7 @@ describe("login operation", () => {
 		});
 
 		await expect(
-			runUseCase({
+			runUsecase({
 				useCase: operation,
 				input: {
 					storeSlug: "store-1",

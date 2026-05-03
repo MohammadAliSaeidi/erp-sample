@@ -1,6 +1,6 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import { CategoryNotFoundForStoreError } from "@/domain/category/errors/category-not-found-for-store.error";
-import { UseCaseNotFoundError } from "@/features/shared/application/errors/use-case-errors";
+import { UseCaseNotFoundError } from "@/application/errors/use-case-errors";
 import {
   AuthenticatedUsecaseDefinition,
   authenticatedUsecaseFactory,

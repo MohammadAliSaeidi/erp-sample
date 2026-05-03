@@ -1,7 +1,7 @@
 import { getCategorySpecificationsUsecase } from "@/application/specification/usecase/get-category-specifications.usecase";
-import { resolveAuthContextFromRequest } from "@/interface/auth/resolve-auth-context-from-request";
+import { resolveAuthContextFromRequest } from "@/interface/http/resolve-auth-context-from-request";
 import { mapUsecaseErrorToResponse } from "@/features/shared/adapters/http/map-usecase-error-to-response";
-import { runUseCase } from "@/features/shared/application/run-use-case";
+import { runUsecase } from "@/features/shared/application/run-use-case";
 import { NextRequest, NextResponse } from "next/server";
 
 type CategorySpecificationsRouteContext = {
@@ -17,7 +17,7 @@ const getCategorySpecificationsHandler = async (
 	try {
 		const { categoryId } = await context.params;
 
-		const category = await runUseCase({
+		const category = await runUsecase({
 			useCase: getCategorySpecificationsUsecase,
 			input: categoryId,
 			authContext,

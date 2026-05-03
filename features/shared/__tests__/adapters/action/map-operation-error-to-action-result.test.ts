@@ -1,8 +1,8 @@
 import {
 	UseCaseForbiddenError,
 	UseCaseValidationError,
-} from "@/features/shared/application/errors/use-case-errors";
-import { mapOperationErrorToActionResult } from "@/features/shared/adapters/action/map-operation-error-to-action-result";
+} from "@/application/errors/use-case-errors";
+import { mapUsecaseErrorToActionResult } from "@/features/shared/adapters/action/map-usecase-error-to-action-result";
 import z from "zod";
 
 describe("mapOperationErrorToActionResult", () => {
@@ -15,7 +15,7 @@ describe("mapOperationErrorToActionResult", () => {
 			throw new Error("Expected parse to fail for validation test");
 		}
 
-		const result = mapOperationErrorToActionResult(
+		const result = mapUsecaseErrorToActionResult(
 			new UseCaseValidationError(parseResult.error),
 		);
 
@@ -27,7 +27,7 @@ describe("mapOperationErrorToActionResult", () => {
 	});
 
 	it("maps forbidden errors into forbidden action failures", () => {
-		const result = mapOperationErrorToActionResult(
+		const result = mapUsecaseErrorToActionResult(
 			new UseCaseForbiddenError("forbidden"),
 		);
 

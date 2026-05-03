@@ -1,6 +1,6 @@
 import { resolveAuthContext } from "@/features/auth";
 import { resolveCookieNameFromRequest } from "@/features/auth/adapters/route/with-authorization/resolve-cookie-name-from-request";
-import { resolveStoreSlugFromRequest } from "@/adapters/http/resolve-store-slug-from-request";
+import { resolveStoreSlugFromRequest } from "@/interface/http/resolve-store-slug-from-request";
 import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
 import type { NextRequest } from "next/server";
 

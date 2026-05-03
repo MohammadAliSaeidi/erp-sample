@@ -5,7 +5,7 @@ import { loginInputSchema } from "@/features/auth/domain/schemas/login-body.sche
 import {
 	UseCaseNotFoundError,
 	UseCaseUnauthorizedError,
-} from "@/features/shared/application/errors/use-case-errors";
+} from "@/application/errors/use-case-errors";
 import {
 	publicUsecaseFactory,
 	PublicUsecaseDefinition,

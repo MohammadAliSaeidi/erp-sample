@@ -20,8 +20,8 @@ import {
   UseCaseForbiddenError,
   UseCaseNotFoundError,
   UseCaseValidationError,
-} from "@/features/shared/application/errors/use-case-errors";
-import { runUseCase } from "@/features/shared/application/run-use-case";
+} from "@/application/errors/use-case-errors";
+import { runUsecase } from "@/features/shared/application/run-use-case";
 import { CategoryDTO } from "@/interface/dto/category/category.dto";
 import { uuid7GeneratorAdapter } from "@/lib/id-generator/uuid-generator.adapter";
 import { brand } from "@/lib/brand";
@@ -48,6 +48,42 @@ const AUTH_CONTEXT: AuthContext = {
 };
 
 describe("categories usecases", () => {
+  it("throws error after trying to update a category and the category is not for the store", async () => {
+    const usecase = buildUpdateCategoryUsecase({
+      updateCategory: jest
+        .fn()
+        .mockRejectedValue(
+          new CategoryNotFoundForStoreError(CATEGORY_ID, STORE_ID),
+        ),
+    });
+
+    await expect(
+      runUsecase({
+        useCase: usecase,
+        input: { id: CATEGORY_ID, name: "Updated" },
+        authContext: AUTH_CONTEXT,
+      }),
+    ).rejects.toThrow(CategoryNotFoundForStoreError);
+  });
+
+  it("throws error after trying to get a category by id and the category is not for the store", async () => {
+    const usecase = buildGetCategoryByIdUsecase({
+      getByIdAndStoreId: jest
+        .fn()
+        .mockRejectedValue(
+          new CategoryNotFoundForStoreError(CATEGORY_ID, STORE_ID),
+        ),
+    });
+
+    await expect(
+      runUsecase({
+        useCase: usecase,
+        input: { categoryId: CATEGORY_ID },
+        authContext: AUTH_CONTEXT,
+      }),
+    ).rejects.toThrow(CategoryNotFoundForStoreError);
+  });
+
   it("lists categories for the authenticated store", async () => {
     const mockedCategoryDTO: CategoryDTO = {
       id: brand(CATEGORY_ID),
@@ -58,10 +94,10 @@ describe("categories usecases", () => {
     const deps: ListCategoriesUsecaseDeps = {
       getListByStoreId: jest.fn().mockResolvedValue([mockedCategoryDTO]),
     };
-    
+
     const usecase = buildListCategoriesUsecase(deps);
 
-    const result = await runUseCase({
+    const result = await runUsecase({
       useCase: usecase,
       input: {},
       authContext: AUTH_CONTEXT,
@@ -71,6 +107,26 @@ describe("categories usecases", () => {
     expect(deps.getListByStoreId).toHaveBeenCalledWith(STORE_ID);
   });
 
+  it("calls repository with storeId from authContext", async () => {
+    const updateCategory = jest.fn().mockResolvedValue({
+      id: brand(CATEGORY_ID),
+      name: "Updated",
+    });
+
+    const usecase = buildUpdateCategoryUsecase({ updateCategory });
+
+    await runUsecase({
+      useCase: usecase,
+      input: { id: CATEGORY_ID, name: "Updated" },
+      authContext: AUTH_CONTEXT,
+    });
+
+    expect(updateCategory).toHaveBeenCalledWith(
+      { id: CATEGORY_ID, name: "Updated" },
+      STORE_ID,
+    );
+  });
+
   it("fails with UseCaseForbiddenError when permission is missing", async () => {
     const deps: ListCategoriesUsecaseDeps = {
       getListByStoreId: jest.fn(),
@@ -78,7 +134,7 @@ describe("categories usecases", () => {
     const usecase = buildListCategoriesUsecase(deps);
 
     await expect(
-      runUseCase({
+      runUsecase({
         useCase: usecase,
         input: {},
         authContext: {
@@ -90,6 +146,66 @@ describe("categories usecases", () => {
     ).rejects.toBeInstanceOf(UseCaseForbiddenError);
   });
 
+  it("fails when name is empty", async () => {
+    const usecase = buildUpdateCategoryUsecase({
+      updateCategory: jest.fn(),
+    });
+  
+    await expect(
+      runUsecase({
+        useCase: usecase,
+        input: { id: CATEGORY_ID, name: "" },
+        authContext: AUTH_CONTEXT,
+      }),
+    ).rejects.toBeInstanceOf(UseCaseValidationError);
+  });
+
+  it("fails when id is invalid", async () => {
+    const usecase = buildUpdateCategoryUsecase({
+      updateCategory: jest.fn(),
+    });
+
+    await expect(
+      runUsecase({
+        useCase: usecase,
+        input: { id: "invalid", name: "Updated" },
+        authContext: AUTH_CONTEXT,
+      }),
+    ).rejects.toBeInstanceOf(UseCaseValidationError);
+  });
+  
+  it('fails when id is uuidv4', async () => {
+    const usecase = buildUpdateCategoryUsecase({
+      updateCategory: jest.fn(),
+    });
+
+    const uuidv4 = "f47ac10b-58cc-4372-a567-0e02b2c3d479";
+
+    await expect(
+      runUsecase({
+        useCase: usecase,
+        input: { id: uuidv4, name: "Updated" },
+        authContext: AUTH_CONTEXT,
+      }),
+    ).rejects.toBeInstanceOf(UseCaseValidationError);
+  })
+
+  it('accepts uuidv7', async () => {
+    const usecase = buildUpdateCategoryUsecase({
+      updateCategory: jest.fn(),
+    });
+
+    const uuidv7 = uuid7GeneratorAdapter.generate();
+    
+    await expect(
+      runUsecase({
+        useCase: usecase,
+        input: { id: uuidv7, name: "Updated" },
+        authContext: AUTH_CONTEXT,
+      }),
+    ).resolves.not.toThrow();
+  })
+  
   it("validates create input using the usecase schema", async () => {
     const deps: CreateCategoryUsecaseDeps = {
       createCategory: jest.fn(),
@@ -97,7 +213,7 @@ describe("categories usecases", () => {
     const usecase = buildCreateCategoryUsecase(deps);
 
     await expect(
-      runUseCase({
+      runUsecase({
         useCase: usecase,
         input: { name: "" },
         authContext: AUTH_CONTEXT,
@@ -112,7 +228,7 @@ describe("categories usecases", () => {
     const usecase = buildGetCategoryByIdUsecase(deps);
 
     await expect(
-      runUseCase({
+      runUsecase({
         useCase: usecase,
         input: { categoryId: CATEGORY_ID },
         authContext: AUTH_CONTEXT,
@@ -124,12 +240,15 @@ describe("categories usecases", () => {
     const deps: UpdateCategoryUsecaseDeps = {
       updateCategory: jest
         .fn()
-        .mockRejectedValue(new CategoryNotFoundForStoreError(CATEGORY_ID)),
+        .mockRejectedValue(
+          new CategoryNotFoundForStoreError(CATEGORY_ID, STORE_ID),
+        ),
     };
+
     const usecase = buildUpdateCategoryUsecase(deps);
 
     await expect(
-      runUseCase({
+      runUsecase({
         useCase: usecase,
         input: {
           id: CATEGORY_ID,
@@ -137,6 +256,6 @@ describe("categories usecases", () => {
         },
         authContext: AUTH_CONTEXT,
       }),
-    ).rejects.toBeInstanceOf(UseCaseNotFoundError);
+    ).rejects.toThrow(CategoryNotFoundForStoreError);
   });
 });

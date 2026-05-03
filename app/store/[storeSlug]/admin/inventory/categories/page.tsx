@@ -3,7 +3,7 @@ import CategoriesList from "@/interface/ui/category/components/categories-list/c
 import { requireSsrAuth } from "@/features/auth";
 import { buildListCategoriesUsecase } from "@/application/category/usecase/list-categories.usecase";
 import { CATEGORY_QUERY_KEYS } from "@/interface/ui/category/constants/query-keys";
-import { runUseCase } from "@/features/shared/application/run-use-case";
+import { runUsecase } from "@/features/shared/application/run-use-case";
 import { getQueryClient } from "@/lib/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
@@ -30,7 +30,7 @@ export default async function CategoryPage(props: CategoryPageProps) {
 		getListByStoreId: categoryRepositoryAdapter.getList,
 	});
 
-	const categories = await runUseCase({
+	const categories = await runUsecase({
 		useCase: listCategoriesOperation,
 		input: {},
 		authContext,

@@ -9,7 +9,7 @@ import {
 	UseCaseNotFoundError,
 	UseCaseUnauthorizedError,
 	UseCaseValidationError,
-} from "@/features/shared/application/errors/use-case-errors";
+} from "@/application/errors/use-case-errors";
 
 export type ActionErrorCode =
 	| "validation"
@@ -43,7 +43,7 @@ export const actionSuccess = <TData>(data: TData): ActionSuccessResult<TData> =>
 	data,
 });
 
-export function mapOperationErrorToActionResult(
+export function mapUsecaseErrorToActionResult(
 	error: unknown,
 ): ActionFailureResult {
 	if (error instanceof UseCaseValidationError) {

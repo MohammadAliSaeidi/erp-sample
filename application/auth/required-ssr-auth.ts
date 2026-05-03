@@ -1,5 +1,5 @@
 import { ResolveAuthContext, AuthContextSource } from "./resolve-auth-context";
-import { UseCaseUnauthorizedError } from "@/features/shared/application/errors/use-case-errors";
+import { UseCaseUnauthorizedError } from "@/application/errors/use-case-errors";
 import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
 
 export type RequireSsrAuth = (

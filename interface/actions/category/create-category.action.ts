@@ -5,9 +5,9 @@ import { createCategoryUsecase } from "@/application/category/usecase/create-cat
 import {
   ActionResult,
   actionSuccess,
-  mapOperationErrorToActionResult,
-} from "@/features/shared/adapters/action/map-operation-error-to-action-result";
-import { runUseCase } from "@/features/shared/application/run-use-case";
+  mapUsecaseErrorToActionResult,
+} from "@/features/shared/adapters/action/map-usecase-error-to-action-result";
+import { runUsecase } from "@/features/shared/application/run-use-case";
 import { CreateCategoryInputDTO } from "../../dto/category/create-category-input.dto";
 import { CategoryDTO } from "@/interface/dto/category/category.dto";
 
@@ -16,7 +16,7 @@ export async function createCategoryAction(
 ): Promise<ActionResult<CategoryDTO>> {
   try {
     const authContext = await requireSsrAuth();
-    const createdCategory = await runUseCase({
+    const createdCategory = await runUsecase({
       useCase: createCategoryUsecase,
       input,
       authContext,
@@ -24,6 +24,6 @@ export async function createCategoryAction(
 
     return actionSuccess(createdCategory);
   } catch (error) {
-    return mapOperationErrorToActionResult(error);
+    return mapUsecaseErrorToActionResult(error);
   }
 }

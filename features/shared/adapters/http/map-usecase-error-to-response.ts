@@ -11,7 +11,7 @@ import {
 	UseCaseNotFoundError,
 	UseCaseUnauthorizedError,
 	UseCaseValidationError,
-} from "@/features/shared/application/errors/use-case-errors";
+} from "@/application/errors/use-case-errors";
 
 export function mapUsecaseErrorToResponse(error: unknown): NextResponse {
 	if (error instanceof UseCaseValidationError) {

@@ -23,7 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeClosedIcon, EyeIcon } from "lucide-react";
 import React, { useActionState, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { ActionResult } from "@/features/shared/adapters/action/map-operation-error-to-action-result";
+import { ActionResult } from "@/features/shared/adapters/action/map-usecase-error-to-action-result";
 import { loginAction } from "../../actions/login.action";
 import type { LoginInput as LoginInputType } from "../../domain/types/login-body.type";
 import { Prettify } from "@/features/shared/types/prettify.type";

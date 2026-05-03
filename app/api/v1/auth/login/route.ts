@@ -1,14 +1,14 @@
-import { resolveStoreSlugFromRequest } from "@/adapters/http/resolve-store-slug-from-request";
+import { resolveStoreSlugFromRequest } from "@/interface/http/resolve-store-slug-from-request";
 import { buildLoginOperation } from "@/features/auth/application/operations/login.operation";
 import { mapUsecaseErrorToResponse } from "@/features/shared/adapters/http/map-usecase-error-to-response";
-import { runUseCase } from "@/features/shared/application/run-use-case";
+import { runUsecase } from "@/features/shared/application/run-use-case";
 import prisma from "@/lib/prisma";
-import { validateRequestJsonBody } from "@/lib/validate-request-json-body";
+import { validateRequestJsonBody } from "@/interface/http/validate-request-json-body";
 import { setTokenCookie } from "@/lib/token";
 import { isHashMatch } from "@/lib/utils/hash/hash";
 import { RouteHandler } from "@/features/shared/types/route-handler.type";
 import { NextRequest, NextResponse } from "next/server";
-import { UseCaseBadRequestError } from "@/features/shared/application/errors/use-case-errors";
+import { UseCaseBadRequestError } from "@/application/errors/use-case-errors";
 
 const loginOperation = buildLoginOperation({
 	findStoreBySlug: async (storeSlug) => {
@@ -60,7 +60,7 @@ export const POST: RouteHandler = async (request: NextRequest) => {
 		if (!storeSlug)
 			return mapUsecaseErrorToResponse(new UseCaseBadRequestError());
 
-		const loginResult = await runUseCase({
+		const loginResult = await runUsecase({
 			useCase: loginOperation,
 			input: rawBody as {
 				username: string;

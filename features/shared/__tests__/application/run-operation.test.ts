@@ -4,12 +4,12 @@ import {
 	UseCaseForbiddenError,
 	UseCaseUnauthorizedError,
 	UseCaseValidationError,
-} from "@/features/shared/application/errors/use-case-errors";
+} from "@/application/errors/use-case-errors";
 import {
 	authenticatedUsecaseFactory,
 	publicUsecaseFactory,
 } from "@/features/shared/application/use-case";
-import { runUseCase } from "@/features/shared/application/run-use-case";
+import { runUsecase } from "@/features/shared/application/run-use-case";
 import z from "zod";
 
 const READ_PERMISSION = "items:read" as Permission;
@@ -37,7 +37,7 @@ describe("runOperation", () => {
 		});
 
 		await expect(
-			runUseCase({
+			runUsecase({
 				useCase: operation,
 				input: { value: "not-a-number" },
 			}),
@@ -54,7 +54,7 @@ describe("runOperation", () => {
 		});
 
 		await expect(
-			runUseCase({
+			runUsecase({
 				useCase: operation,
 				input: { value: 2 },
 			}),
@@ -71,7 +71,7 @@ describe("runOperation", () => {
 		});
 
 		await expect(
-			runUseCase({
+			runUsecase({
 				useCase: operation,
 				input: { value: 2 },
 				authContext: {
@@ -95,7 +95,7 @@ describe("runOperation", () => {
 		});
 
 		await expect(
-			runUseCase({
+			runUsecase({
 				useCase: operation,
 				input: { value: 4 },
 				authContext: AUTH_CONTEXT,

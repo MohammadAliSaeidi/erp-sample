@@ -4,9 +4,9 @@ import { requireSsrAuth } from "@/features/auth";
 import {
 	ActionResult,
 	actionSuccess,
-	mapOperationErrorToActionResult,
-} from "@/features/shared/adapters/action/map-operation-error-to-action-result";
-import { runUseCase } from "@/features/shared/application/run-use-case";
+	mapUsecaseErrorToActionResult,
+} from "@/features/shared/adapters/action/map-usecase-error-to-action-result";
+import { runUsecase } from "@/features/shared/application/run-use-case";
 import { updateCategoryUsecase } from "../../../application/category/usecase/update-category.usecase";
 import { EditCategoryInputDTO } from "@/interface/dto/category/edit-category-input.dto";
 import { CategoryDTO } from "@/interface/dto/category/category.dto";
@@ -16,7 +16,7 @@ export async function updateCategoryAction(
 ): Promise<ActionResult<CategoryDTO>> {
 	try {
 		const authContext = await requireSsrAuth();
-		const updatedCategory = await runUseCase({
+		const updatedCategory = await runUsecase({
 			useCase: updateCategoryUsecase,
 			input: rawInput,
 			authContext,
@@ -24,6 +24,6 @@ export async function updateCategoryAction(
 
 		return actionSuccess(updatedCategory);
 	} catch (error) {
-		return mapOperationErrorToActionResult(error);
+		return mapUsecaseErrorToActionResult(error);
 	}
 }

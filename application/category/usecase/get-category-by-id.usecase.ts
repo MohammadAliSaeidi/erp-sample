@@ -1,5 +1,5 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { UseCaseNotFoundError } from "@/features/shared/application/errors/use-case-errors";
+import { UseCaseNotFoundError } from "@/application/errors/use-case-errors";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
 import { Category } from "@/domain/category/category.entity";
 import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";

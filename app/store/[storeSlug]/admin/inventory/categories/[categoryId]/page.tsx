@@ -2,7 +2,7 @@ import CategoryDetails from "@/interface/ui/category/components/category-details
 import { requireSsrAuth } from "@/features/auth";
 import { getCategoryByIdUsecase } from "@/application/category/usecase/get-category-by-id.usecase";
 import { CATEGORY_QUERY_KEYS } from "@/interface/ui/category/constants/query-keys";
-import { runUseCase } from "@/features/shared/application/run-use-case";
+import { runUsecase } from "@/features/shared/application/run-use-case";
 import { getQueryClient } from "@/lib/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { CATEGORY_SPECIFICATIONS_QUERY_KEYS } from "@/interface/ui/specification/constants/query-keys";
@@ -21,13 +21,13 @@ export default async function CategoryDetailsPage(props: CategoryDetailsProps) {
 
 	const authContext = await requireSsrAuth({ storeSlug });
 
-	const category = await runUseCase({
+	const category = await runUsecase({
 		useCase: getCategoryByIdUsecase,
 		input: { categoryId },
 		authContext,
 	});
 
-	const specifications = await runUseCase({
+	const specifications = await runUsecase({
 		useCase: getCategorySpecificationsUsecase,
 		input: categoryId,
 		authContext,
