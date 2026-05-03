@@ -34,7 +34,6 @@ model Category {
   description String?
   deletedAt   DateTime?
   updatedAt   DateTime?  @updatedAt
-  items       Item[]
 
   @@unique([storeId, parentId, name])
 }
@@ -42,11 +41,10 @@ model Category {
 model Item {
   id          String   @id @default(uuid(7))
   name        String
-  number      String // required, not optional
-  description String
+  number      String
+  description String?
   price       Float
-  categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  String?
   storeId     String
   store       Store    @relation(fields: [storeId], references: [id])
   vendors     Vendor[]

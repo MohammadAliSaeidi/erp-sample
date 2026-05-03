@@ -12,9 +12,9 @@ export type Item = {
   id: ItemId;
   name: string;
   number: string;
-  description: string;
+  description?: string;
   price: number;
-  categoryId: CategoryId;
+  categoryId?: CategoryId;
   specificationAssignments: ItemSpecificationAssignment[];
 };
 

@@ -1,7 +1,7 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import {
-	AuthenticatedUsecaseDefinition,
-	authenticatedUsecaseFactory,
+  AuthenticatedUsecaseDefinition,
+  authenticatedUsecaseFactory,
 } from "@/features/shared/application/use-case";
 import { createCategorySchema } from "../../../interface/schema/category/create-category.schema";
 import { CreateCategoryInputDTO } from "../../../interface/dto/category/create-category-input.dto";
@@ -9,6 +9,8 @@ import { CategoryDTO } from "@/interface/dto/category/category.dto";
 import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";
 import { createCategory } from "@/domain/category/category.entity";
 import { uuid7GeneratorAdapter } from "@/lib/id-generator/uuid-generator.adapter";
+import { brand } from "@/lib/brand";
+import { createCategoryDTOToEntityMapper } from "./mappers/create-category-dto-to-entity.mapper";
 
 export interface CreateCategoryUsecaseDeps {
   createCategory: (
@@ -37,15 +39,16 @@ export const createCategoryUsecase = buildCreateCategoryUsecase({
   ) => {
     const categoryUUID = uuid7GeneratorAdapter.generate();
 
-    const category = createCategory({
-      id: categoryUUID,
-      name: categoryInput.name,
-      description: categoryInput.description,
+    const mappedCategory = createCategoryDTOToEntityMapper.map({
+      ...categoryInput,
+      id: brand(categoryUUID),
     });
+
+    const category = createCategory(mappedCategory);
 
     const createdCategory = await categoryRepositoryAdapter.create(
       category,
-      storeId,
+      brand(storeId),
     );
 
     const categoryDTO: CategoryDTO = {

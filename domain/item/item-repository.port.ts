@@ -1,6 +1,6 @@
-import { StoreId } from "@/features/shared/domain/ids";
 import { ItemId } from "./item-id";
 import { Item } from "./item.entity";
+import { StoreId } from "../store/store-id";
 
 export interface IItemRepositoryPort {
   getList: (storeId: StoreId) => Promise<Item[]>;

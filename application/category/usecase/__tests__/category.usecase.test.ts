@@ -23,9 +23,11 @@ import {
 } from "@/features/shared/application/errors/use-case-errors";
 import { runUseCase } from "@/features/shared/application/run-use-case";
 import { CategoryDTO } from "@/interface/dto/category/category.dto";
+import { uuid7GeneratorAdapter } from "@/lib/id-generator/uuid-generator.adapter";
+import { brand } from "@/lib/brand";
 
 const STORE_ID = "store-1";
-const CATEGORY_ID = "019de80a-e153-7c81-aac2-1c13a6c55324";
+const CATEGORY_ID = uuid7GeneratorAdapter.generate();
 
 const AUTH_CONTEXT: AuthContext = {
   adminId: "admin-1",
@@ -48,7 +50,7 @@ const AUTH_CONTEXT: AuthContext = {
 describe("categories usecases", () => {
   it("lists categories for the authenticated store", async () => {
     const mockedCategoryDTO: CategoryDTO = {
-      id: CATEGORY_ID,
+      id: brand(CATEGORY_ID),
       name: "Phones",
       description: "description",
     };
@@ -56,6 +58,7 @@ describe("categories usecases", () => {
     const deps: ListCategoriesUsecaseDeps = {
       getListByStoreId: jest.fn().mockResolvedValue([mockedCategoryDTO]),
     };
+    
     const usecase = buildListCategoriesUsecase(deps);
 
     const result = await runUseCase({

@@ -4,6 +4,8 @@ import { ICategoryRepositoryPort } from "@/domain/category/category-repository.p
 import { Category } from "@/domain/category/category.entity";
 import { mapToDomainCategory } from "./mappers/map-to-domain-category";
 import prisma from "@/lib/prisma";
+import { CategoryId } from "@/domain/category/category-id";
+import { StoreId } from "@/domain/store/store-id";
 
 export interface ICategoryRepositoryAdapterBuilder {
   (prismaDB: PrismaClient): ICategoryRepositoryPort;
@@ -12,14 +14,10 @@ export interface ICategoryRepositoryAdapterBuilder {
 export const buildCategoryRepositoryAdapter: ICategoryRepositoryAdapterBuilder =
   (prismaDB: PrismaClient) => {
     return {
-      getById: async (
-        itemId: string,
-        storeId: string,
-      ): Promise<Category | null> => {
+      getById: async (categoryId: CategoryId): Promise<Category | null> => {
         const category = await prismaDB.category.findFirst({
           where: {
-            id: itemId,
-            storeId: storeId,
+            id: categoryId,
           },
         });
 
@@ -28,7 +26,7 @@ export const buildCategoryRepositoryAdapter: ICategoryRepositoryAdapterBuilder =
         return mapToDomainCategory(category);
       },
 
-      getList: async (storeId: string): Promise<Category[]> => {
+      getList: async (storeId: StoreId): Promise<Category[]> => {
         const categories = await prismaDB.category.findMany({
           where: { storeId },
           orderBy: { name: "asc" },
@@ -39,7 +37,7 @@ export const buildCategoryRepositoryAdapter: ICategoryRepositoryAdapterBuilder =
 
       create: async (
         category: Category,
-        storeId: string,
+        storeId: StoreId,
       ): Promise<Category> => {
         const createdCategory = await prismaDB.category.create({
           data: {
@@ -54,17 +52,18 @@ export const buildCategoryRepositoryAdapter: ICategoryRepositoryAdapterBuilder =
 
       update: async (
         category: Category,
-        storeId: string,
+        storeId: StoreId,
       ): Promise<Category> => {
         const existingCategory = await prismaDB.category.findFirst({
           where: {
             id: category.id,
-            storeId: storeId,
+            storeId: String(storeId),
           },
         });
 
         if (!existingCategory)
           throw new CategoryNotFoundForStoreError(category.id);
+
         const updatedCategory = await prismaDB.category.update({
           data: {
             name: category.name,

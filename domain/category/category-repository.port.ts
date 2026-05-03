@@ -1,8 +1,10 @@
+import { CategoryId } from "./category-id";
 import { Category } from "./category.entity";
+import { StoreId } from "../store/store-id";
 
 export interface ICategoryRepositoryPort {
-  getList: (storeId: string) => Promise<Category[]>;
-  getById: (categoryId: string, storeId: string) => Promise<Category | null>;
-  create: (category: Category, storeId: string) => Promise<Category>;
-  update: (category: Category, storeId: string) => Promise<Category>;
+  getList: (storeId: StoreId) => Promise<Category[]>;
+  getById: (categoryId: CategoryId) => Promise<Category | null>;
+  create: (category: Category, storeId: StoreId) => Promise<Category>;
+  update: (category: Category, storeId: StoreId) => Promise<Category>;
 }
