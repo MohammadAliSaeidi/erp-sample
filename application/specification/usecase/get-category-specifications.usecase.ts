@@ -1,51 +1,33 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
-import { SpecificationDTO } from "../../../interface/dto/specification/specification.dto";
 import { specificationRepositoryAdapter } from "../../../infrastructure/database/adapters/specification/specification-repository.adapter";
-import {
-  CategoryId,
-  categoryIdSchema,
-  StoreId,
-  storeIdSchema,
-} from "@/features/shared/domain/ids";
-import { BadRequestError } from "@/features/shared/errors/bad-request.error";
+
+import { CategoryId } from "@/domain/category/category-id";
+import { ISpecificationRepositoryPort } from "@/domain/specification/specification-repository.port";
+import { StoreId } from "@/domain/store/store-id";
+import z from "zod";
 
 export interface GetCategorySpecificationsUsecaseDeps {
-  getCategorySpecifications: (
-    categoryId: CategoryId,
-    storeId: StoreId,
-  ) => Promise<SpecificationDTO[]>;
+	specificationRepository: Pick<ISpecificationRepositoryPort, "getList">;
 }
 
-export const buildGetSpecificationUsecase = (
-  deps: GetCategorySpecificationsUsecaseDeps,
+export const buildGetCategorySpecificationsUsecase = (
+	deps: GetCategorySpecificationsUsecaseDeps
 ) =>
-  authenticatedUsecaseFactory({
-    key: "specifications.create",
-    auth: "required",
-    requiredPermissions: [PERMISSIONS.SPECIFICATION.CREATE],
-    inputSchema: categoryIdSchema,
-    execute: async ({ input: categoryId, authContext }) => {
-      const { success, data: validatedStoreId } = storeIdSchema.safeParse(
-        authContext.storeId,
-      );
+	authenticatedUsecaseFactory({
+		key: "category-specifications.get-list",
+		auth: "required",
+		requiredPermissions: [PERMISSIONS.SPECIFICATION.READ],
+		inputSchema: z.uuid(),
+		execute: async ({ input: categoryId, authContext: { storeId } }) => {
+			const specifications = deps.specificationRepository.getList(
+				categoryId as CategoryId,
+				storeId as StoreId
+			);
+		},
+	});
 
-      if (!success) throw new BadRequestError();
-
-      return deps.getCategorySpecifications(categoryId, validatedStoreId);
-    },
-  });
-
-export const getCategorySpecificationsUsecase = buildGetSpecificationUsecase({
-  getCategorySpecifications: async (
-    categoryId: CategoryId,
-    storeId: StoreId,
-  ): Promise<SpecificationDTO[]> => {
-    const specifications = await specificationRepositoryAdapter.getList(
-      categoryId,
-      storeId,
-    );
-
-    return specifications;
-  },
-});
+export const getCategorySpecificationsUsecase =
+	buildGetCategorySpecificationsUsecase({
+		specificationRepository: specificationRepositoryAdapter,
+	});
