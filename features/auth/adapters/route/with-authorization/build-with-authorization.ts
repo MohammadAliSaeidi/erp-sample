@@ -1,6 +1,5 @@
 import { ResolveAuthContext } from "@/application/auth/resolve-auth-context";
 import { Middleware } from "@/features/shared/types/middleware.type";
-import { RouteHandler } from "@/features/shared/types/route-handler.type";
 import type { NextRequest } from "next/server";
 import { Permission } from "../../../domain/types/permission.type";
 import { resolveCookieNameFromRequest } from "./resolve-cookie-name-from-request";

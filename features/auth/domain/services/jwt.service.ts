@@ -1,12 +1,7 @@
 import { jwtVerify, SignJWT } from "jose";
-import { NextRequest } from "next/server";
 import { JwtPayload } from "../types/jwt-payload.type";
 
 export interface IJwtService {
-  extractFromRequest(
-    req: NextRequest,
-    cookieName?: string,
-  ): Promise<JwtPayload | null>;
   sign(payload: Omit<JwtPayload, "iat" | "exp">): Promise<string>;
   verify(input: string): Promise<JwtPayload | null>;
 }
@@ -14,8 +9,6 @@ export interface IJwtService {
 export interface IJwtServiceBuilder {
   (secret: Uint8Array): IJwtService;
 }
-
-const DEFAULT_COOKIE_NAME = "auth_token";
 
 // Helper function to verify and cast the JWT payload
 const verifyAndCast = async (
@@ -40,14 +33,7 @@ export const buildJwtService: IJwtServiceBuilder = (secret: Uint8Array) => ({
     return signJWT.sign(secret);
   },
 
-  extractFromRequest: async (
-    req: NextRequest,
-    cookieName: string = DEFAULT_COOKIE_NAME,
-  ): Promise<JwtPayload | null> => {
-    const token = req.cookies.get(cookieName)?.value;
-    if (!token) return null;
-    return verifyAndCast(token, secret);
-  },
+  
 
   verify: async (input: string): Promise<JwtPayload | null> => {
     return verifyAndCast(input, secret);

@@ -44,5 +44,5 @@ const createCategoryHandler = async (request: NextRequest) => {
 	}
 };
 
-export const GET = getCategoriesHandler;
 export const POST = createCategoryHandler;
+export const GET = getCategoriesHandler;
