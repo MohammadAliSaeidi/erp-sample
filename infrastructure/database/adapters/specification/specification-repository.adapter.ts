@@ -1,5 +1,4 @@
 import { PrismaClient } from "@/app/generated/prisma/client";
-import { SpecificationValueCreateManyInput } from "@/app/generated/prisma/models";
 import { ISpecificationRepositoryPort } from "@/domain/specification/specification-repository.port";
 import {
   createSpecification,
@@ -7,11 +6,11 @@ import {
 } from "@/domain/specification/specification.aggregate";
 import { mapToPrismaType } from "./mappers/specification.mapper";
 import prisma from "@/lib/prisma";
-import { CategoryId } from "@/features/shared/domain/ids";
 import {
   mapToDomainSpecification,
   PrismaSpecificationWithValues,
 } from "./mappers/map-to-domain-specification.mapper";
+import { CategoryId } from "@/domain/category/category-id";
 
 export interface ISpecificationRepositoryAdapterBuilder {
   (prisma: PrismaClient): ISpecificationRepositoryPort;

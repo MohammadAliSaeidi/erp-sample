@@ -1,64 +1,46 @@
+import { IPermissionRepositoryPort } from "@/domain/permission/permission-repository.port";
 import { Permission } from "../types/permission.type";
 
-const DEFAULT_TTL_MS = 60_000;
-
 export interface IPermissionService {
-  getPermissionsByRoleId(roleId: string): Promise<Permission[]>;
-  getCachedPermissionsByRoleId(
-    roleId: string,
-    ttlMs?: number,
-  ): Promise<Permission[]>;
-  invalidatePermissionsCache(roleId: string): void;
-  invalidateAllPermissionsCache(): void;
+  getPermissions(roleId: string): Promise<Permission[]>;
+
+  invalidate(roleId: string): void;
 }
 
-export interface IPermissionServiceDeps {
-  fetchPermissionsByRoleId: (roleId: string) => Promise<Permission[]>;
-}
+export function buildPermissionService(
+  permissionRepository: IPermissionRepositoryPort,
+  ttlMs = 60_000,
+): IPermissionService {
+  const cache = new Map<
+    string,
+    {
+      expires: number;
+      value: Permission[];
+    }
+  >();
 
-export interface ICache<T> {
-  get(key: string): { value: T; expiresAt: number } | undefined;
-  set(key: string, value: T, expiresAt: number): void;
-  delete(key: string): void;
-  clear(): void;
-}
+  async function getPermissions(roleId: string) {
+    const now = Date.now();
 
-export interface IAuthServiceBuilder {
-  (
-    deps: IPermissionServiceDeps,
-    cache: ICache<Permission[]>,
-    defaultTtlMs?: number,
-  ): IPermissionService;
-}
+    const entry = cache.get(roleId);
 
-export const buildPermissionService: IAuthServiceBuilder = (
-  deps,
-  cache,
-  defaultTtlMs = DEFAULT_TTL_MS,
-): IPermissionService => ({
-  getPermissionsByRoleId: (roleId: string) =>
-    deps.fetchPermissionsByRoleId(roleId),
-
-  getCachedPermissionsByRoleId: async (
-    roleId: string,
-    ttlMs = defaultTtlMs,
-  ): Promise<Permission[]> => {
-    const cached = cache.get(roleId);
-
-    if (cached && cached.expiresAt > Date.now()) {
-      return cached.value;
+    if (entry && entry.expires > now) {
+      return entry.value;
     }
 
-    const permissions = await deps.fetchPermissionsByRoleId(roleId);
-    cache.set(roleId, permissions, Date.now() + ttlMs);
-    return permissions;
-  },
+    const perms = await permissionRepository.getByRoleId(roleId);
 
-  invalidatePermissionsCache: (roleId: string): void => {
+    cache.set(roleId, {
+      value: perms,
+      expires: now + ttlMs,
+    });
+
+    return perms;
+  }
+
+  function invalidate(roleId: string) {
     cache.delete(roleId);
-  },
+  }
 
-  invalidateAllPermissionsCache: (): void => {
-    cache.clear();
-  },
-});
+  return { getPermissions, invalidate };
+}

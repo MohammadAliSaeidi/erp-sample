@@ -1,17 +1,18 @@
-import { ResolveAuthContext, AuthContextSource } from "./resolve-auth-context";
+import { ResolveAuthContext } from "./resolve-auth-context";
 import { UseCaseUnauthorizedError } from "@/application/errors/use-case-errors";
 import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
 
-export type RequireSsrAuth = (
-  source?: Pick<AuthContextSource, "storeSlug">,
-) => Promise<AuthContext>;
+export type RequireSsrAuth = () => Promise<AuthContext>;
 
-export const buildRequireSsrAuth =
-  (resolveAuthContext: ResolveAuthContext): RequireSsrAuth =>
-  async (source) => {
-    const authContext = await resolveAuthContext(source);
+export const buildRequireSsrAuth = (
+  resolveAuthContext: ResolveAuthContext,
+  getToken: () => Promise<string | null>,
+): RequireSsrAuth => {
+  return async () => {
+    const authContext = await resolveAuthContext(await getToken());
     if (!authContext) {
       throw new UseCaseUnauthorizedError("Authentication required");
     }
     return authContext;
   };
+};

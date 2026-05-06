@@ -1,5 +1,4 @@
 import { Permission } from "../types/permission.type";
-import { ICache } from "./permission.service";
 
 export const permissionCacheBuilder = (): ICache<Permission[]> => {
   const cacheMap = new Map<

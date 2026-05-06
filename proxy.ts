@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { resolveAdminAccessTokenCookieName } from "./features/auth/domain/lib/resolve-admin-access-token-cookie-name";
-import { buildJwtService } from "./features/auth/domain/services/jwt.service";
+import { buildJwtService } from "./application/auth/jwt.service";
 import { getStoreSlugFromPath } from "./lib/utils/get-store-slug-from-path";
 
 export async function proxy(request: NextRequest) {
@@ -34,10 +34,8 @@ export async function proxy(request: NextRequest) {
 
         const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
         const jwtService = buildJwtService(secret);
-        const payload = await jwtService.extractFromRequest(
-          request,
-          cookieName,
-        );
+        const token = request.cookies.get(cookieName)?.value ?? null;
+        const payload = token ? await jwtService.verify(token) : null;
 
         if (!payload) {
           return NextResponse.redirect(

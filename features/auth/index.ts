@@ -1,55 +1,44 @@
+import { buildJwtService } from "@/application/auth/jwt.service";
+import { buildResolveAuthContext } from "@/application/auth/resolve-auth-context";
+import { UseCaseUnauthorizedError } from "@/application/errors/use-case-errors";
+import { resolveAdminAccessTokenCookieName } from "@/features/auth/domain/lib/resolve-admin-access-token-cookie-name";
+import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
+import { permissionService } from "@/features/auth/permission-service";
+
 export { can } from "./domain/lib/can";
 export { hasPermissions } from "./domain/lib/has-permissions";
 export { useAuthStore } from "./ui/auth-store";
 export { Gate } from "./ui/components/gate";
 export { ProtectedRoute } from "./ui/components/protected-route";
-import { buildAuthModule } from "@/features/auth/build-auth-module";
-import prisma from "@/lib/prisma";
 
-/**
- * Authentication Dependency Injection Module
- *
- * Centralized dependency container that wires together all authentication-related
- * services and utilities. This module follows the singleton pattern and is instantiated
- * once per process lifecycle.
- *
- * @property {function} resolveAuthContext - Server-only: JWT verify + role permissions (no permission gate)
- * @property {function} requireSsrAuth - Ensures a logged-in user; use `runUseCase` for permission checks
- * @property {function} withAuthorization - Attaches `authContext` to the request; permission args are ignored
- * @property {object} jwtService - JWT token operations service
- * @property {object} rolePermissionRepository - Role-permission repository with caching layer
- *
- * @param {object} config - Module configuration
- * @param {import('@prisma/client').PrismaClient} config.prisma - Prisma client instance
- * @param {string} config.jwtSecret - Secret key for JWT signing and verification
- * @param {number} config.cacheTtlMs - Cache TTL in milliseconds (default: 60_000). Adjust based on
- *   your data consistency requirements vs performance needs
- *
- * @returns Auth utilities including `resolveAuthContext`, `requireSsrAuth`, and `jwtService`
- *
- * @example
- * // In route handlers:
- * import { withAuthorization } from "@/lib/di"
- *
- * @example
- * // After updating role permissions:
- * rolePermissionRepo.invalidate(roleId)
- *
- * @remarks
- * **Cache Invalidation**: The `rolePermissionRepo` maintains an internal cache for performance.
- * You must call `.invalidate(roleId)` after any role permission modifications to prevent stale
- * authorization decisions.
- *
- * @module lib/di
- */
-export const {
-	withAuthorization,
-	resolveAuthContext,
-	requireSsrAuth,
-	jwtService,
-	rolePermissionRepository,
-} = buildAuthModule({
-	prismaClient: prisma,
-	jwtSecret: new TextEncoder().encode(process.env.JWT_SECRET!),
-	cacheTtlMs: 60_000,
-});
+const jwtSecret = new TextEncoder().encode(process.env.JWT_SECRET ?? "");
+
+export const jwtService = buildJwtService(jwtSecret);
+export const resolveAuthContext = buildResolveAuthContext(
+  jwtService,
+  permissionService,
+);
+
+type RequireSsrAuthSource = {
+  storeSlug?: string;
+};
+
+export async function requireSsrAuth(
+  source: RequireSsrAuthSource = {},
+): Promise<AuthContext> {
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+
+  const cookieName = resolveAdminAccessTokenCookieName(
+    source,
+    cookieStore.getAll().map((cookie) => cookie.name),
+  );
+  const token = cookieName ? (cookieStore.get(cookieName)?.value ?? null) : null;
+  const authContext = await resolveAuthContext(token);
+
+  if (!authContext) {
+    throw new UseCaseUnauthorizedError("Authentication required");
+  }
+
+  return authContext;
+}

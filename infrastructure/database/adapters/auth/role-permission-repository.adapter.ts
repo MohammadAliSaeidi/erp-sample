@@ -1,5 +1,5 @@
-import { buildRolePermissionRepository } from "@/domain/permission/permission-repository.port";
+import { buildPermissionRepositoryAdapter } from "@/infrastructure/database/adapters/permission/permission-repository.adapter";
 import prisma from "@/lib/prisma";
 
 export const rolePermissionRepositoryAdapter =
-		buildRolePermissionRepository(prisma);
+		buildPermissionRepositoryAdapter(prisma);

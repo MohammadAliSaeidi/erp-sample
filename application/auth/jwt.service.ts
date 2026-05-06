@@ -1,5 +1,5 @@
 import { jwtVerify, SignJWT } from "jose";
-import { JwtPayload } from "../types/jwt-payload.type";
+import { JwtPayload } from "@/features/auth/domain/types/jwt-payload.type";
 
 export interface IJwtService {
   sign(payload: Omit<JwtPayload, "iat" | "exp">): Promise<string>;
