@@ -1,8 +1,5 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
-import { SpecificationDTO } from "../../../interface/dto/specification/specification.dto";
-import { specificationRepositoryAdapter } from "../../../infrastructure/database/adapters/specification/specification-repository.adapter";
-import { BadRequestError } from "@/features/shared/errors/bad-request.error";
 import { Item } from "@/domain/item/item.entity";
 import { ItemDTO } from "@/interface/dto/item/item.dto";
 import { createItemSchema } from "@/interface/schema/item/create-item.schema";

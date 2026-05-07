@@ -1,5 +1,9 @@
 import { IMapper } from "@/application/map-dto-to-entity";
-import { createItem, Item } from "@/domain/item/item.entity";
+import {
+  createItem,
+  Item,
+  ItemSpecificationAssignment,
+} from "@/domain/item/item.entity";
 import { ItemDTO } from "@/interface/dto/item/item.dto";
 import { brand } from "@/lib/brand";
 
@@ -11,8 +15,13 @@ export const createItemDTOToEntityMapper: IMapper<ItemDTO, Item> = {
       number: itemDTO.number,
       description: itemDTO.description,
       price: itemDTO.price,
-      categoryId: itemDTO.categoryId,
-      specificationAssignments: itemDTO.specificationAssignments,
+      categoryId: brand(itemDTO.categoryId),
+      specificationAssignments: itemDTO.specificationAssignments.map(
+        (assignment): ItemSpecificationAssignment => ({
+          specificationId: brand(assignment.specification.id),
+          specificationValueId: brand(assignment.specificationValue.id),
+        }),
+      ),
     });
   },
 };

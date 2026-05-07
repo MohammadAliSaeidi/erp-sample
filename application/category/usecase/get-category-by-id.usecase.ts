@@ -37,5 +37,4 @@ export const buildGetCategoryByIdUsecase = () =>
     },
   });
 
-
-export const getCategoryByIdUsecase = buildGetCategoryByIdUsecase()
+export const getCategoryByIdUsecase = buildGetCategoryByIdUsecase();

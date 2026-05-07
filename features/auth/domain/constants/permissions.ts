@@ -8,6 +8,7 @@ import { Permission } from "../types/permission.type";
 export const PERMISSIONS = {
   ITEMS: {
     READ: "items:read" as Permission,
+    READ_DETAILS: "items:read-details" as Permission,
     CREATE: "items:create" as Permission,
     UPDATE: "items:update" as Permission,
     DELETE: "items:delete" as Permission,

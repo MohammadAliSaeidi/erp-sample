@@ -1,7 +1,7 @@
 import { SpinnerCustom } from "@/components/ui/spinner";
 import CategoriesList from "@/interface/ui/category/components/categories-list/categories-list";
 import { requireSsrAuth } from "@/features/auth";
-import { buildListCategoriesUsecase } from "@/application/category/usecase/list-categories.usecase";
+import { listCategoriesUsecase } from "@/application/category/usecase/list-categories.usecase";
 import { CATEGORY_QUERY_KEYS } from "@/interface/ui/category/constants/query-keys";
 import { runUsecase } from "@/features/shared/application/run-use-case";
 import { getQueryClient } from "@/lib/get-query-client";
@@ -12,7 +12,6 @@ import { URLS } from "@/constants/urls";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
-import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";
 
 type CategoryPageProps = {
 	params: Promise<{
@@ -26,12 +25,8 @@ export default async function CategoryPage(props: CategoryPageProps) {
 
 	const authContext = await requireSsrAuth({ storeSlug });
 
-	const listCategoriesOperation = buildListCategoriesUsecase({
-		getListByStoreId: categoryRepositoryAdapter.getList,
-	});
-
 	const categories = await runUsecase({
-		useCase: listCategoriesOperation,
+		useCase: listCategoriesUsecase,
 		input: {},
 		authContext,
 	});
