@@ -36,3 +36,6 @@ export const buildGetCategoryByIdUsecase = () =>
       return categoryDTO;
     },
   });
+
+
+export const getCategoryByIdUsecase = buildGetCategoryByIdUsecase()

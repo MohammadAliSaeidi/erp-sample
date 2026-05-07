@@ -1,6 +1,6 @@
 import { Category as PrismaCategory } from "@/app/generated/prisma/client";
+import { CategoryId } from "@/domain/category/category-id";
 import { createCategory, Category as DomainCategory } from "@/domain/category/category.entity";
-import { CategoryId } from "@/features/shared/domain/ids";
 
 export const mapToDomainCategory = (
   category: PrismaCategory,
