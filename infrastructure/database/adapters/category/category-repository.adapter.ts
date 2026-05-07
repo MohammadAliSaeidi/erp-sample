@@ -14,10 +14,14 @@ export interface ICategoryRepositoryAdapterBuilder {
 export const buildCategoryRepositoryAdapter: ICategoryRepositoryAdapterBuilder =
   (prismaDB: PrismaClient) => {
     return {
-      getById: async (categoryId: CategoryId): Promise<Category | null> => {
+      getById: async (
+        categoryId: CategoryId,
+        storeId: StoreId,
+      ): Promise<Category | null> => {
         const category = await prismaDB.category.findFirst({
           where: {
-            id: categoryId,
+            id: String(categoryId),
+            storeId: String(storeId)
           },
         });
 
@@ -62,7 +66,7 @@ export const buildCategoryRepositoryAdapter: ICategoryRepositoryAdapterBuilder =
         });
 
         if (!existingCategory)
-          throw new CategoryNotFoundForStoreError(category.id);
+          throw new CategoryNotFoundForStoreError(category.id, storeId);
 
         const updatedCategory = await prismaDB.category.update({
           data: {

@@ -36,16 +36,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SpecificationValueType } from "@/domain/specification/specification-value-type.enum";
-import {
-  CreateSpecificationFormInputValues,
-  CreateSpecificationFormOutputValues,
-} from "./types";
 import { createSpecificationAction } from "@/interface/actions/create-specification.action";
 import { useEffect, useTransition, useState } from "react";
 import { toast } from "sonner";
-import { CategoryId } from "@/features/shared/domain/ids";
 import { getQueryClient } from "@/lib/get-query-client";
 import { CATEGORY_SPECIFICATIONS_QUERY_KEYS } from "../../constants/query-keys";
+import { CategoryId } from "@/domain/category/category-id";
+import z from "zod";
 
 type CreateSpecificationModalProps = {
   categoryId: string;
@@ -57,16 +54,12 @@ export default function CreateSpecificationModal(
   const { categoryId } = props;
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
-  const form = useForm<
-    CreateSpecificationFormInputValues,
-    unknown,
-    CreateSpecificationFormOutputValues
-  >({
+  const form = useForm<z.input<typeof createSpecificationSchema>>({
     resolver: zodResolver(createSpecificationSchema),
     defaultValues: {
       isPrimary: false,
       isRequired: false,
-      categoryId: categoryId as CategoryId,
+      categoryId: categoryId,
     },
   });
 
@@ -81,8 +74,8 @@ export default function CreateSpecificationModal(
     name: "type",
   });
 
-  const query = getQueryClient()
-  
+  const query = getQueryClient();
+
   const onSubmit = form.handleSubmit((data) => {
     startTransition(async () => {
       console.log(data);
@@ -97,7 +90,9 @@ export default function CreateSpecificationModal(
 
       setOpen(false);
       toast.success("Specification created successfully");
-      query.invalidateQueries({ queryKey: CATEGORY_SPECIFICATIONS_QUERY_KEYS.list(categoryId) });
+      query.invalidateQueries({
+        queryKey: CATEGORY_SPECIFICATIONS_QUERY_KEYS.list(categoryId),
+      });
     });
   });
 
@@ -270,7 +265,7 @@ type SpecValuesSectionProps = {
 
 function SpecValuesSection(props: SpecValuesSectionProps) {
   const { specType } = props;
-  const form = useFormContext<CreateSpecificationFormInputValues>();
+  const form = useFormContext<z.input<typeof createSpecificationSchema>>();
 
   const { errors } = useFormState({
     control: form.control,

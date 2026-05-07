@@ -4,7 +4,10 @@ import { StoreId } from "../store/store-id";
 
 export interface ICategoryRepositoryPort {
   getList: (storeId: StoreId) => Promise<Category[]>;
-  getById: (categoryId: CategoryId) => Promise<Category | null>;
+  getById: (
+    categoryId: CategoryId,
+    storeId: StoreId,
+  ) => Promise<Category | null>;
   create: (category: Category, storeId: StoreId) => Promise<Category>;
   update: (category: Category, storeId: StoreId) => Promise<Category>;
 }

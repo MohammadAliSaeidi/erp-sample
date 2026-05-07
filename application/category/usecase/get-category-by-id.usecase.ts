@@ -1,42 +1,38 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import { UseCaseNotFoundError } from "@/application/errors/use-case-errors";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
-import { Category } from "@/domain/category/category.entity";
 import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";
 import z from "zod";
+import { CategoryId } from "@/domain/category/category-id";
+import { StoreId } from "@/domain/store/store-id";
+import { CategoryDTO } from "@/interface/dto/category/category.dto";
+import { categoryEntityToDTOMapper } from "./mappers/category-entity-to-dto.mapper";
 
 const getCategoryByIdInputSchema = z.object({
   categoryId: z.uuidv7(),
+  storeId: z.uuidv7(),
 });
 
-export interface GetCategoryByIdUsecaseDeps {
-  getByIdAndStoreId: (
-    categoryId: string,
-    storeId: string,
-  ) => Promise<Category | null>;
-}
-
-export const buildGetCategoryByIdUsecase = (deps: GetCategoryByIdUsecaseDeps) =>
+export const buildGetCategoryByIdUsecase = () =>
   authenticatedUsecaseFactory({
     key: "categories.get-by-id",
     auth: "required",
     requiredPermissions: [PERMISSIONS.CATEGORIES.READ_DETAILS],
     inputSchema: getCategoryByIdInputSchema,
-    execute: async ({ input, authContext }) => {
-      const category = await deps.getByIdAndStoreId(
-        input.categoryId,
-        authContext.storeId,
+    execute: async ({ input, authContext }): Promise<CategoryDTO> => {
+      const category = await categoryRepositoryAdapter.getById(
+        input.categoryId as CategoryId,
+        authContext.storeId as StoreId,
       );
+
       if (!category) {
         throw new UseCaseNotFoundError(
           `Category ${input.categoryId} was not found`,
         );
       }
 
-      return category;
+      const categoryDTO = categoryEntityToDTOMapper.map(category);
+
+      return categoryDTO;
     },
   });
-
-export const getCategoryByIdUsecase = buildGetCategoryByIdUsecase({
-  getByIdAndStoreId: categoryRepositoryAdapter.getById,
-});

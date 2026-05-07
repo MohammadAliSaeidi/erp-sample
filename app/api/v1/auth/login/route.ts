@@ -6,7 +6,6 @@ import prisma from "@/lib/prisma";
 import { validateRequestJsonBody } from "@/interface/http/validate-request-json-body";
 import { setTokenCookie } from "@/lib/token";
 import { isHashMatch } from "@/lib/utils/hash/hash";
-import { RouteHandler } from "@/features/shared/types/route-handler.type";
 import { NextRequest, NextResponse } from "next/server";
 import { UseCaseBadRequestError } from "@/application/errors/use-case-errors";
 
@@ -52,7 +51,7 @@ const loginOperation = buildLoginOperation({
 	isPasswordMatch: isHashMatch,
 });
 
-export const POST: RouteHandler = async (request: NextRequest) => {
+export const POST = async (request: NextRequest) => {
 	try {
 		const rawBody = await validateRequestJsonBody(request);
 		const storeSlug = resolveStoreSlugFromRequest(request);

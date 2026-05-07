@@ -31,7 +31,7 @@ describe("specification usecases", () => {
 			specificationRepository: mockSpecRepoAdapter,
 		});
 
-		const s = await listSpecsUsecase.execute({
+		const specifications = await listSpecsUsecase.execute({
 			authContext: {
 				adminId: "1",
 				exp: 1_000_000_000,
@@ -47,6 +47,6 @@ describe("specification usecases", () => {
 			input: "1",
 		});
 
-		expect(s).toHaveLength(1);
+		expect(specifications).toHaveLength(1);
 	});
 });
