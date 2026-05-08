@@ -172,7 +172,15 @@ export function useComboboxCore<T>(props: ComboboxCoreProps<T>) {
     itemToString,
     inputValue,
     selectedItem: multiple ? null : selectedItem,
-    onInputValueChange: ({ inputValue }) => {
+    onInputValueChange: ({ inputValue, type }) => {
+      if (
+        type === useCombobox.stateChangeTypes.InputKeyDownEnter ||
+        type === useCombobox.stateChangeTypes.ItemClick ||
+        type === useCombobox.stateChangeTypes.FunctionSelectItem ||
+        type === useCombobox.stateChangeTypes.ControlledPropUpdatedSelectedItem
+      ) {
+        return;
+      }
       setInputValue(inputValue ?? "");
     },
     onSelectedItemChange: ({ selectedItem: next }) => {

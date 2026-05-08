@@ -20,6 +20,11 @@ import { CategoryDTO } from "@/interface/dto/category/category.dto";
 import { brand } from "@/lib/brand";
 
 export default function CreateItemForm() {
+  const categories: CategoryDTO[] = [
+    { id: brand("1"), name: "asdasd" } as CategoryDTO,
+    { id: brand("2"), name: "asdasd2" } as CategoryDTO,
+  ];
+
   const form = useForm<z.input<typeof createItemSchema>>({
     resolver: zodResolver(createItemSchema),
   });
@@ -30,6 +35,7 @@ export default function CreateItemForm() {
     );
 
   const handleCreateItem = (formData: z.input<typeof createItemSchema>) => {
+    console.log(formData);
     mutateCreateItem(formData, {
       onSuccess: () => {
         toast.success(`Item "${formData.name}" has been created successfully`);
@@ -51,9 +57,7 @@ export default function CreateItemForm() {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field>
-                <div className="flex items-center gap-2">
-                  <FieldLabel>Name</FieldLabel>
-                </div>
+                <FieldLabel>Name</FieldLabel>
                 <Input
                   {...field}
                   id="create-item-field--name"
@@ -68,21 +72,43 @@ export default function CreateItemForm() {
             )}
           />
           <Controller
+            name="number"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel>Number</FieldLabel>
+                <Input
+                  {...field}
+                  id="create-item-field--number"
+                  aria-invalid={fieldState.invalid}
+                  placeholder="et-61q-123"
+                  autoComplete="off"
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <Controller
             control={form.control}
             name="categoryId"
-            render={({ fieldState }) => (
-              <Combobox<CategoryDTO>
-                items={[
-                  { id: brand("1"), name: "asdasd" },
-                  { id: brand("2"), name: "asdasd2" },
-                ]}
-                onChange={(v) => console.log(v)}
-                placeholder="Select A Category"
-                renderItem={(item, state) => <div>asdasd</div>}
-                menu={<ComboboxList />}
-              >
-                <ComboboxTrigger />
-              </Combobox>
+            render={({ field }) => (
+              <Field>
+                <FieldLabel>Category</FieldLabel>
+                <Combobox<CategoryDTO>
+                  className="w-full"
+                  items={categories}
+                  valueKey="id"
+                  labelKey="name"
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Select A Category"
+                  menu={<ComboboxList />}
+                >
+                  <ComboboxTrigger className="w-full" />
+                </Combobox>
+              </Field>
             )}
           />
           <Controller
@@ -102,12 +128,34 @@ export default function CreateItemForm() {
               </Field>
             )}
           />
+          <Controller
+            control={form.control}
+            name="price"
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel>Price</FieldLabel>
+                <Input
+                  {...field}
+                  id="create-item-field--price"
+                  aria-invalid={fieldState.invalid}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  placeholder="100,000$"
+                  autoComplete="off"
+                  type="number"
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
         </form>
       </CardContent>
       <CardFooter>
         <Button
           type="submit"
           form="store-create-item-form"
+          onClick={() => console.log(form.formState.errors)}
           loading={isMutateCreateItemPending}
         >
           Create Item

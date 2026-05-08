@@ -13,8 +13,25 @@ export type DefaultItem = {
 
 export type ItemToKey<T> = (item: T) => ItemKey;
 export type ItemToString<T> = (item: T | null) => string;
+export type ComboboxValue<T> = T | T[] | ItemKey | ItemKey[] | null;
 
-export type ComboboxAdapterProps<T> = ComboboxCoreProps<T> & {
+export type ComboboxAdapterProps<T> = Omit<
+  ComboboxCoreProps<T>,
+  "value" | "onChange" | "itemToKey" | "itemToString"
+> & {
+  value?: ComboboxValue<T>;
+  onChange?: (value: ComboboxValue<T>) => void;
+
+  /**
+   * If provided, Combobox can consume/emit primitive values using this key.
+   * Example: valueKey="id" with form values like "category-id".
+   */
+  valueKey?: keyof T;
+  /**
+   * If provided, used as display label when itemToString is not passed.
+   */
+  labelKey?: keyof T;
+
   maxSelected?: number;
   onMaxSelected?: (limit: number, item: T) => void;
 

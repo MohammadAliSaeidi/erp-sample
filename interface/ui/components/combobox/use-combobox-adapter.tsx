@@ -1,29 +1,37 @@
-// use-combobox-adapter.tsx
-import { useCallback, useMemo } from "react";
-import type { UseComboboxGetInputPropsOptions } from "downshift";
+import { type MouseEvent, useCallback, useMemo } from "react";
 import type {
+  UseComboboxGetInputPropsOptions,
+  UseComboboxGetItemPropsOptions,
+} from "downshift";
+import type {
+  ComboboxValue,
   ComboboxAdapterProps,
   ComboboxAdapterReturn,
   DefaultItem,
-  ItemToKey,
-  ItemToString,
 } from "./combobox.adapter.types";
 import { useComboboxCore } from "./combobox.core";
 
 const defaultItemToKey = <T extends DefaultItem>(item: T) => item.id;
 const defaultItemToString = <T extends DefaultItem>(item: T | null) =>
   item?.label ?? "";
+const isItemKey = (value: unknown): value is string | number =>
+  typeof value === "string" || typeof value === "number";
 
 export function useComboboxAdapter<T>(
   props: ComboboxAdapterProps<T>,
 ): ComboboxAdapterReturn<T> {
   const {
+    items: propsItems = [],
+    value,
+    onChange,
     multiple = false,
+    valueKey,
+    labelKey,
     maxSelected,
     onMaxSelected,
 
-    itemToKey = defaultItemToKey as ItemToKey<T>,
-    itemToString = defaultItemToString as ItemToString<T>,
+    itemToKey,
+    itemToString,
     isItemDisabled = () => false,
 
     placeholder,
@@ -36,20 +44,94 @@ export function useComboboxAdapter<T>(
     ...coreProps
   } = props;
 
+  const itemToKeyResolved = useCallback(
+    (item: T): string | number => {
+      if (itemToKey) return itemToKey(item);
+      if (valueKey != null) {
+        const maybeKey = (item as Record<PropertyKey, unknown>)[valueKey];
+        if (isItemKey(maybeKey)) return maybeKey;
+      }
+      return defaultItemToKey(item as DefaultItem);
+    },
+    [itemToKey, valueKey],
+  );
+
+  const itemToStringResolved = useCallback(
+    (item: T | null): string => {
+      if (itemToString) return itemToString(item);
+      if (item == null) return "";
+      if (labelKey != null) {
+        const maybeLabel = (item as Record<PropertyKey, unknown>)[labelKey];
+        if (typeof maybeLabel === "string") return maybeLabel;
+        if (typeof maybeLabel === "number") return String(maybeLabel);
+      }
+      return defaultItemToString(item as unknown as DefaultItem | null);
+    },
+    [itemToString, labelKey],
+  );
+
+  const valueByKeyMode = valueKey != null;
+  const findItemByKey = useCallback(
+    (key: string | number): T | null =>
+      propsItems.find((item) => itemToKeyResolved(item) === key) ?? null,
+    [propsItems, itemToKeyResolved],
+  );
+
+  const coreValue = useMemo<T | T[] | null | undefined>(() => {
+    if (!valueByKeyMode) return value as T | T[] | null | undefined;
+    if (value == null) return null;
+
+    if (Array.isArray(value)) {
+      if (value.length === 0) return [];
+      if (isItemKey(value[0])) {
+        return (value as (string | number)[])
+          .map((key) => findItemByKey(key))
+          .filter((item): item is T => item != null);
+      }
+      return value as T[];
+    }
+
+    if (isItemKey(value)) return findItemByKey(value);
+    return value as T;
+  }, [valueByKeyMode, value, findItemByKey]);
+
+  const handleCoreChange = useCallback(
+    (next: T | T[] | null) => {
+      if (!onChange) return;
+      if (!valueByKeyMode) {
+        onChange(next as ComboboxValue<T>);
+        return;
+      }
+
+      if (Array.isArray(next)) {
+        onChange(next.map((item) => itemToKeyResolved(item)));
+        return;
+      }
+
+      onChange(next ? itemToKeyResolved(next) : null);
+    },
+    [onChange, valueByKeyMode, itemToKeyResolved],
+  );
+
   const core = useComboboxCore<T>({
     ...coreProps,
+    items: propsItems,
+    value: coreValue,
+    onChange: handleCoreChange,
     multiple,
-    itemToString,
-    itemToKey,
+    itemToString: itemToStringResolved,
+    itemToKey: itemToKeyResolved,
   });
 
   const isItemSelected = useCallback(
     (item: T) =>
       core.multiple
-        ? core.selectedItems.some((s) => itemToKey(s) === itemToKey(item))
+        ? core.selectedItems.some(
+            (s) => itemToKeyResolved(s) === itemToKeyResolved(item),
+          )
         : core.selectedItem != null &&
-          itemToKey(core.selectedItem) === itemToKey(item),
-    [core.multiple, core.selectedItem, core.selectedItems, itemToKey],
+          itemToKeyResolved(core.selectedItem) === itemToKeyResolved(item),
+    [core.multiple, core.selectedItem, core.selectedItems, itemToKeyResolved],
   );
 
   const canSelectMore =
@@ -94,8 +176,14 @@ export function useComboboxAdapter<T>(
   // guard selecting when max reached (multi only)
   const getItemPropsGuarded = useMemo(() => {
     const orig = core.getItemProps;
-    return (options: any) => {
-      const item = options?.item as T | undefined;
+    type GuardedItemOptions = UseComboboxGetItemPropsOptions<T> & {
+      disabled?: boolean;
+      onClick?: (e: MouseEvent<HTMLElement>) => void;
+    };
+
+    const guarded = ((options: unknown) => {
+      const typedOptions = options as GuardedItemOptions;
+      const item = typedOptions?.item as T | undefined;
       const disabledByLimit =
         core.multiple &&
         item != null &&
@@ -103,9 +191,9 @@ export function useComboboxAdapter<T>(
         !isItemSelected(item);
 
       return orig({
-        ...options,
-        disabled: options.disabled || disabledByLimit,
-        onClick: (e: any) => {
+        ...typedOptions,
+        disabled: typedOptions.disabled || disabledByLimit,
+        onClick: (e: MouseEvent<HTMLElement>) => {
           if (
             disabledByLimit &&
             item != null &&
@@ -115,10 +203,12 @@ export function useComboboxAdapter<T>(
             onMaxSelected?.(maxSelected, item);
             return;
           }
-          options.onClick?.(e);
+          typedOptions.onClick?.(e);
         },
-      });
-    };
+      } as GuardedItemOptions);
+    }) as typeof core.getItemProps;
+
+    return guarded;
   }, [core, canSelectMore, isItemSelected, maxSelected, onMaxSelected]);
 
   return {
@@ -130,8 +220,8 @@ export function useComboboxAdapter<T>(
     emptyText,
     loadingText,
 
-    itemToKey,
-    itemToString,
+    itemToKey: itemToKeyResolved,
+    itemToString: itemToStringResolved,
     isItemDisabled,
 
     renderItem,
@@ -144,5 +234,5 @@ export function useComboboxAdapter<T>(
     clearAll,
 
     getInputPropsMerged,
-  };
+  } as ComboboxAdapterReturn<T>;
 }

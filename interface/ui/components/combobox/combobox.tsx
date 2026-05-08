@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import type { ReactNode } from "react";
 import { useComboboxAdapter } from "./use-combobox-adapter";
@@ -27,7 +27,14 @@ export function Combobox<T>(props: Props<T>) {
     <ComboboxProvider value={cb}>
       <Popover
         open={cb.isOpen}
-        onOpenChange={(open) => (open ? cb.openMenu() : cb.closeMenu())}
+        onOpenChange={(open) => {
+          if (open) {
+            cb.setInputValue("");
+            cb.openMenu();
+          } else {
+            cb.closeMenu();
+          }
+        }}
       >
         <PopoverAnchor className={className}>{children}</PopoverAnchor>
 
