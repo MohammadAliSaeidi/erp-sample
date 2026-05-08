@@ -25,7 +25,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switcher";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createSpecificationSchema } from "@/interface/schema/specification/create-specification.schema";
 import {
@@ -43,6 +42,7 @@ import { getQueryClient } from "@/lib/get-query-client";
 import { CATEGORY_SPECIFICATIONS_QUERY_KEYS } from "../../constants/query-keys";
 import { CategoryId } from "@/domain/category/category-id";
 import z from "zod";
+import SwitchField from "@/interface/ui/components/field/switch";
 
 type CreateSpecificationModalProps = {
   categoryId: string;
@@ -187,59 +187,16 @@ export default function CreateSpecificationModal(
                   </Field>
                 )}
               />
-              <Controller
+              <SwitchField<z.input<typeof createSpecificationSchema>>
+                label={"Primary"}
                 name="isPrimary"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field
-                    orientation="horizontal"
-                    data-invalid={fieldState.invalid}
-                  >
-                    <FieldContent>
-                      <FieldLabel htmlFor="field-is-primary">
-                        Primary
-                      </FieldLabel>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </FieldContent>
-                    <Switch
-                      id="field-is-primary"
-                      name={field.name}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      aria-invalid={fieldState.invalid}
-                    />
-                  </Field>
-                )}
+                switchProps={{ id: "field-is-primary" }}
               />
-              <Controller
+              <SwitchField<z.input<typeof createSpecificationSchema>>
+                label={"Required"}
                 name="isRequired"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field
-                    orientation="horizontal"
-                    data-invalid={fieldState.invalid}
-                  >
-                    <FieldContent>
-                      <FieldLabel htmlFor="field-is-required">
-                        Required
-                      </FieldLabel>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </FieldContent>
-                    <Switch
-                      id="field-is-required"
-                      name={field.name}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      aria-invalid={fieldState.invalid}
-                    />
-                  </Field>
-                )}
+                switchProps={{ id: "field-is-required" }}
               />
-
               <SpecValuesSection specType={specType} />
             </FieldGroup>
           </FormProvider>

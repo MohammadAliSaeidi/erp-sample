@@ -15,7 +15,7 @@ export const buildGetItemsListUsecase = (deps: GetItemsListUsecaseDeps) =>
     key: "items.list",
     auth: "required",
     requiredPermissions: [PERMISSIONS.ITEMS.READ],
-    inputSchema: z.uuidv7(),
+    inputSchema: z.object({}),
     execute: async ({ input: {}, authContext: { storeId } }) => {
       const items = await deps.repository.getList(brand(storeId));
 

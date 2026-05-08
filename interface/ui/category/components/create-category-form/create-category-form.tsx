@@ -10,7 +10,7 @@ import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useCreateCategoryMutation } from "../../hooks/use-create-item-mutation";
+import { useCreateCategoryMutation } from "../../hooks/use-create-category-mutation";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { InfoIcon } from "lucide-react";
@@ -39,7 +39,9 @@ function CreateCategoryForm() {
   const handleCreateCategory = (formData: CreateCategoryInputDTO) => {
     mutateCreateCategory(formData, {
       onSuccess: () => {
-        toast.success(`Category "${formData.name}" has been successfully`);
+        toast.success(
+          `Category "${formData.name}" has been created successfully`,
+        );
         form.reset();
       },
     });

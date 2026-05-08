@@ -45,7 +45,7 @@ function EditCategoryForm(props: EditCategoryFormProps) {
     mutateEditCategory(formData, {
       onSuccess: () =>
         toast.success(
-          `Category "${formData.name}" has been successfully updated`,
+          `Category "${formData.name}" has been updated successfully`,
         ),
     });
   };
