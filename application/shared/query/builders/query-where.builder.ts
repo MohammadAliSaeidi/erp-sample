@@ -5,6 +5,7 @@ import {
   NumberFilterInput,
   DateFilterInput,
   BooleanFilterInput,
+  EnumOperators,
 } from "../types/filter.types";
 
 type WhereCondition = Record<string, unknown>;
@@ -136,6 +137,29 @@ function buildBooleanCondition(
   return {};
 }
 
+function buildEnumCondition(
+  field: string,
+  input: EnumOperators<string>,
+): WhereCondition {
+  if (input.eq !== undefined) {
+    return {
+      [field]: {
+        equals: input.eq,
+      },
+    };
+  }
+
+  if (input.in && input.in.length > 0) {
+    return {
+      [field]: {
+        in: input.in,
+      },
+    };
+  }
+
+  return {};
+}
+
 export function buildPrismaWhere<
   TFilter extends Record<string, FilterInput>,
   TWhere,
@@ -153,7 +177,7 @@ export function buildPrismaWhere<
     const rule = spec[key];
     const value = filter[key];
 
-    if (!rule || !value) {
+    if (!rule || value === undefined) {
       continue;
     }
 
@@ -189,6 +213,12 @@ export function buildPrismaWhere<
       case "boolean":
         conditions.push(
           buildBooleanCondition(rule.dbField, value as BooleanFilterInput),
+        );
+        break;
+
+      case "enum":
+        conditions.push(
+          buildEnumCondition(rule.dbField, value as EnumOperators<string>),
         );
         break;
     }

@@ -35,7 +35,7 @@ export const dateFilterSchema = z
     after: z.coerce.date().optional(),
     between: z
       .object({
-        from: z.coerce.date,
+        from: z.coerce.date(),
         to: z.coerce.date(),
       })
       .optional(),

@@ -9,36 +9,26 @@ import {
 } from "@/application/shared/query/schema/filter.schemas";
 import { paginationSchema } from "@/application/shared/query/schema/pagination.schema";
 
+const filterSchema = z.object({
+  price: numberFilterSchema.optional(),
+  categoryId: stringFilterSchema.optional(),
+  isDeleted: booleanFilterSchema.optional(),
+});
+
+type ItemFilterShape = z.infer<typeof filterSchema>;
+type ItemFilterSpecShape = {
+  [K in keyof ItemFilterShape]-?: Exclude<ItemFilterShape[K], undefined>;
+};
+
 export const itemListQuery = defineQuery<
-  {
-    price: {
-      eq?: number;
-      gt?: number;
-      gte?: number;
-      lt?: number;
-      lte?: number;
-    };
-
-    categoryId: {
-      eq?: string;
-    };
-
-    isDeleted: {
-      eq?: boolean;
-    };
-  },
+  ItemFilterSpecShape,
   Prisma.ItemWhereInput
 >()({
-  filterSchema: z.object({
-    price: numberFilterSchema.optional(),
-    categoryId: stringFilterSchema.optional(),
-    isDeleted: booleanFilterSchema.optional(),
-  }),
-
+  filterSchema,
   filterSpec: {
     price: {
       type: "number",
-      dbField: "price",
+      dbField: 'price'
     },
 
     categoryId: {
@@ -71,5 +61,4 @@ export const itemListQueryInputSchema = z.object({
   pagination: paginationSchema.optional(),
 });
 
-export type ItemListQueryInput =
-  z.output<typeof itemListQueryInputSchema>;
+export type ItemListQueryInput = z.output<typeof itemListQueryInputSchema>;

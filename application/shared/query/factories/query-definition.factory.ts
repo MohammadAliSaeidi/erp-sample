@@ -15,10 +15,10 @@ export function defineQuery<
   TFilter extends Record<string, FilterInput>,
   TWhere,
 >() {
-  return (config: {
-    filterSchema: z.ZodType<Partial<TFilter>>;
-    filterSpec: FilterSpec<TFilter, TWhere>;
-  }): QueryDefinition<TFilter, TWhere> => ({
+  return <TFilterExact extends TFilter>(config: {
+    filterSchema: z.ZodType<{ [K in keyof TFilterExact]?: TFilterExact[K] }>;
+    filterSpec: FilterSpec<TFilterExact, TWhere>;
+  }): QueryDefinition<TFilterExact, TWhere> => ({
     ...config,
     paginationSchema,
   });
