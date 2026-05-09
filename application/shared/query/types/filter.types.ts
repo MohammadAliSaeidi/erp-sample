@@ -1,3 +1,6 @@
+// This file defines the supported filter operators per field type
+
+
 export type StringFilterInput = {
   eq?: string;
   contains?: string;

@@ -1,3 +1,5 @@
+// The central contract that ties together filter schema, filter spec, and the target Prisma model
+
 import { z } from "zod";
 import { PaginationInput } from "./pagination.types";
 import { FilterInput, FilterSpec } from "./filter.types";
