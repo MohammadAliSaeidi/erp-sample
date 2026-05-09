@@ -5,7 +5,7 @@ import {
   AuthenticatedUsecaseDefinition,
   authenticatedUsecaseFactory,
 } from "@/features/shared/application/use-case";
-import { editCategorySchema } from "../../../interface/schema/category/edit-category.schema";
+import { editCategorySchema } from "../schema/edit-category.schema";
 import { CategoryDTO } from "@/interface/dto/category/category.dto";
 import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";
 import { createCategoryDTOToEntityMapper } from "./mappers/create-category-dto-to-entity.mapper";

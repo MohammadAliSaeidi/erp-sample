@@ -17,6 +17,7 @@ export const createItemDTOToEntityMapper: IMapper<
       name: itemDTO.name,
       number: itemDTO.number,
       description: itemDTO.description,
+      isDeleted: true,
       price: itemDTO.price,
       categoryId: brand(itemDTO.categoryId),
       specificationAssignments: itemDTO.specificationAssignments.map(

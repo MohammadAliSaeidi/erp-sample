@@ -1,30 +1,14 @@
 import { createItem, Item } from "@/domain/item/item.entity";
-import { ItemSpecificationValue as PrismaItemSpecificationValue } from "@/app/generated/prisma/client";
 import { IMapper } from "@/application/map-dto-to-entity";
 import { brand } from "@/lib/brand";
+import { ItemWithRelations } from "../types";
 
-export type PrismaItemWithSpecificationValues = {
-  id: string;
-  name: string;
-  categoryId: string | null;
-  storeId: string;
-  number: string;
-  description: string | null;
-  price: number;
-  itemSpecificationValues: Pick<
-    PrismaItemSpecificationValue,
-    "specificationId" | "specificationValueId"
-  >[];
-};
-
-export const itemPrismaToDomainMapper: IMapper<
-  PrismaItemWithSpecificationValues,
-  Item
-> = {
-  map: (item: PrismaItemWithSpecificationValues): Item => {
+export const itemPrismaToDomainMapper: IMapper<ItemWithRelations, Item> = {
+  map: (item: ItemWithRelations): Item => {
     return createItem({
       id: brand(item.id),
       name: item.name,
+      isDeleted: item.deletedAt === null,
       number: item.number,
       description: item.description ?? undefined,
       price: item.price,

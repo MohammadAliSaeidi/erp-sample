@@ -1,4 +1,4 @@
 import z from "zod";
-import { editCategorySchema } from "../../schema/category/edit-category.schema";
+import { editCategorySchema } from "../../../application/category/schema/edit-category.schema";
 
 export type EditCategoryInputDTO = z.infer<typeof editCategorySchema>;

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { editCategorySchema } from "@/interface/schema/category/edit-category.schema";
+import { editCategorySchema } from "@/application/category/schema/edit-category.schema";
 import { createApiClient } from "@/lib/api-client";
 import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect-handler";
 import { zodResolver } from "@hookform/resolvers/zod";

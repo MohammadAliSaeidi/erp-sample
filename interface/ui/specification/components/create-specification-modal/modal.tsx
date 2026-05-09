@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createSpecificationSchema } from "@/interface/schema/specification/create-specification.schema";
+import { createSpecificationSchema } from "@/application/specification/schema/create-specification.schema";
 import {
   Select,
   SelectContent,

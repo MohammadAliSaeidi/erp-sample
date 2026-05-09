@@ -2,7 +2,7 @@ import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
 import { Item, ItemSpecificationAssignment } from "@/domain/item/item.entity";
 import { ItemDTO } from "@/interface/dto/item/item.dto";
-import { createItemSchema } from "@/interface/schema/item/create-item.schema";
+import { createItemSchema } from "@/application/item/schema/create-item.schema";
 import { brand } from "@/lib/brand";
 import { createItemDTOToEntityMapper } from "./mappers/create-item-dto-to-entity.mapper";
 import { uuid7GeneratorAdapter } from "@/lib/id-generator/uuid-generator.adapter";

@@ -1,6 +1,6 @@
 import z from "zod";
 import { storeSlugSchema } from "@/features/store/domain/store";
-import { usernameSchema } from "@/interface/schema/username.schema";
+import { usernameSchema } from "@/application/admin/schema/username.schema";
 
 export const JwtPayload = z.object({
   storeUserId: z.uuidv7(),

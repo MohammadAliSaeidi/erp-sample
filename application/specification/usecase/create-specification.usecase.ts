@@ -8,7 +8,7 @@ import {
 	SpecificationValue,
 } from "../../../domain/specification/specification-value.entity";
 import { specificationRepositoryAdapter } from "../../../infrastructure/database/adapters/specification/specification-repository.adapter";
-import { createSpecificationSchema } from "../../../interface/schema/specification/create-specification.schema";
+import { createSpecificationSchema } from "../schema/create-specification.schema";
 import { IdGeneratorPort } from "@/lib/id-generator/id-generator.port";
 import { ISpecificationRepositoryPort } from "@/domain/specification/specification-repository.port";
 

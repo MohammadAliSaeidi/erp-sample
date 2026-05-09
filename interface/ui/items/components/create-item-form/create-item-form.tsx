@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { createItemSchema } from "@/interface/schema/item/create-item.schema";
+import { createItemSchema } from "@/application/item/schema/create-item.schema";
 import { createApiClient } from "@/lib/api-client";
 import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect-handler";
 import { zodResolver } from "@hookform/resolvers/zod";

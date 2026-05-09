@@ -5,51 +5,49 @@ import { SpecificationValueId } from "../specification/specification-value-id";
 import { ItemId } from "./item-id";
 
 export type ItemSpecificationAssignment = {
-	specificationId: SpecificationId;
-	specificationValueId: SpecificationValueId;
+  specificationId: SpecificationId;
+  specificationValueId: SpecificationValueId;
 };
 
 export type Item = {
-	id: ItemId;
-	name: string;
-	number: string;
-	description?: string;
-	price: number;
-	categoryId?: CategoryId;
-	specificationAssignments: ItemSpecificationAssignment[];
+  id: ItemId;
+  name: string;
+  number: string;
+  description?: string;
+  price: number;
+  categoryId?: CategoryId;
+  specificationAssignments: ItemSpecificationAssignment[];
+  isDeleted: boolean;
 };
 
 export const createItem = (input: Item): Item => {
-	if (input.name.trim().length === 0)
-		throw new Error("Item name is required");
+  if (input.name.trim().length === 0) throw new Error("Item name is required");
 
-	if (input.number.trim().length === 0)
-		throw new Error("Item number is required");
+  if (input.number.trim().length === 0)
+    throw new Error("Item number is required");
 
-	if (
-		input.price === undefined ||
-		Number.isNaN(input.price) ||
-		input.price < 0
-	) {
-		throw new Error("Invalid price");
-	}
+  if (
+    input.price === undefined ||
+    Number.isNaN(input.price) ||
+    input.price < 0
+  ) {
+    throw new Error("Invalid price");
+  }
 
-	if (!input.categoryId) throw new Error("categoryId is required");
+  if (!input.categoryId) throw new Error("categoryId is required");
 
-	// for each specification, there should be only one assignment
-	const assignmentsClean = (input.specificationAssignments ?? []).map(
-		(a) => ({
-			specificationId: a.specificationId,
-			specificationValueId: a.specificationValueId,
-		})
-	);
+  // for each specification, there should be only one assignment
+  const assignmentsClean = (input.specificationAssignments ?? []).map((a) => ({
+    specificationId: a.specificationId,
+    specificationValueId: a.specificationValueId,
+  }));
 
-	const uniqueBySpec = uniq(assignmentsClean, (a) => a.specificationId);
+  const uniqueBySpec = uniq(assignmentsClean, (a) => a.specificationId);
 
-	return {
-		...input,
-		name: input.name.trim(),
-		number: input.number.trim(),
-		specificationAssignments: uniqueBySpec,
-	};
+  return {
+    ...input,
+    name: input.name.trim(),
+    number: input.number.trim(),
+    specificationAssignments: uniqueBySpec,
+  };
 };

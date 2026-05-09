@@ -3,7 +3,7 @@ import {
   AuthenticatedUsecaseDefinition,
   authenticatedUsecaseFactory,
 } from "@/features/shared/application/use-case";
-import { createCategorySchema } from "../../../interface/schema/category/create-category.schema";
+import { createCategorySchema } from "../schema/create-category.schema";
 import { CategoryDTO } from "@/interface/dto/category/category.dto";
 import { categoryRepositoryAdapter } from "@/infrastructure/database/adapters/category/category-repository.adapter";
 import { createCategory } from "@/domain/category/category.entity";

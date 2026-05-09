@@ -3,8 +3,11 @@ import { IItemQueryPort } from "@/application/item/port/item.query.port";
 import { ItemId } from "@/domain/item/item-id";
 import { StoreId } from "@/domain/store/store-id";
 import { ItemDTO } from "@/interface/dto/item/item.dto";
-import { mapToDomainType } from "../specification/mappers/map-to-domain-type.mapper";
 import prisma from "@/lib/prisma";
+import { itemPrismaToDTOMapper } from "./mappers/item-prisma-to-dto-mapper";
+import { buildPrismaWhere } from "@/application/shared/query/builders/query-where.builder";
+import { itemListQuery } from "@/application/item/schema/item-list-query.schema";
+import { itemWithRelationsInclude } from "./types";
 
 export interface IItemQueryAdapterBuilder {
   (prismaDB: PrismaClient): IItemQueryPort;
@@ -25,6 +28,12 @@ export const buildItemRepositoryAdapter: IItemQueryAdapterBuilder = (
           deletedAt: null,
         },
         include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
           itemSpecificationValues: {
             include: {
               specification: {
@@ -45,20 +54,27 @@ export const buildItemRepositoryAdapter: IItemQueryAdapterBuilder = (
 
       if (!item) return null;
 
-      return {
-        ...item,
-        description: item.description ?? undefined,
-        categoryId: item.categoryId ?? undefined,
-        specificationAssignments: item.itemSpecificationValues.map(
-          (assignment) => ({
-            specification: {
-              ...assignment.specification,
-              type: mapToDomainType(assignment.specification.type),
-            },
-            specificationValue: assignment.specificationValue,
-          }),
-        ),
-      };
+      return itemPrismaToDTOMapper.map(item);
+    },
+
+    getItemDTOList: async (storeId, query): Promise<ItemDTO[]> => {
+      const dynamicWhere = buildPrismaWhere(
+        query.filter,
+        itemListQuery.filterSpec,
+      );
+
+      const items = await prismaDB.item.findMany({
+        where: {
+          storeId,
+          ...dynamicWhere,
+        },
+        skip:
+          ((query.pagination?.page ?? 1) - 1) * (query.pagination?.limit ?? 20),
+        take: query.pagination?.limit ?? 20,
+        include: itemWithRelationsInclude,
+      });
+
+      return items.map(itemPrismaToDTOMapper.map);
     },
   };
 };

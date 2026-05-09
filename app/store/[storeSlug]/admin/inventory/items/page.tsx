@@ -20,7 +20,7 @@ export default async function ItemsPage(props: ItemPageProps) {
 	const authContext = await requireSsrAuth({ storeSlug });
 
 	const items: ItemDTO[] = await runUsecase({
-		input: {},
+		input: undefined,
 		useCase: getItemsListUsecase,
 		authContext: authContext,
 	});

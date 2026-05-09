@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { createCategorySchema } from "@/interface/schema/category/create-category.schema";
+import { createCategorySchema } from "@/application/category/schema/create-category.schema";
 import { CreateCategoryInputDTO } from "@/interface/dto/category/create-category-input.dto";
 import { createApiClient } from "@/lib/api-client";
 import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect-handler";
