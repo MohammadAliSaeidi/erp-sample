@@ -9,6 +9,17 @@ import {
 
 type WhereCondition = Record<string, unknown>;
 
+/**
+ *
+ * Converts a validated `QueryInput` into a Prisma-compatible `WHERE` object:
+ *
+ * ``` typescript
+ * const where = buildPrismaWhere(query, itemListQuery);
+ * // → { name: { contains: '...' }, price: { gte: 100 }, isActive: true }
+ * ```
+ * Internally iterates over `query.filters`, looks up the matching `filterSpec` handler, and merges results into a single `AND` condition.
+ *
+ */
 function buildStringCondition(
   field: string,
   input: StringFilterInput,
@@ -61,16 +72,14 @@ function buildNumberCondition(
   }
 
   const condition: Record<string, unknown> = {};
-  
+
   if (input.eq !== undefined) condition.equals = input.eq;
   if (input.gt !== undefined) condition.gt = input.gt;
   if (input.gte !== undefined) condition.gte = input.gte;
   if (input.lt !== undefined) condition.lt = input.lt;
   if (input.lte !== undefined) condition.lte = input.lte;
 
-  return Object.keys(condition).length > 0 
-    ? { [field]: condition }
-    : {};
+  return Object.keys(condition).length > 0 ? { [field]: condition } : {};
 }
 
 function buildDateCondition(

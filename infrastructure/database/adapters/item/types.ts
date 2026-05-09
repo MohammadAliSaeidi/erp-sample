@@ -1,5 +1,10 @@
 import { Prisma } from "@/app/generated/prisma/client";
 
+/**
+ * Centralizes relation includes so the mapper type and query stay in sync:
+ *
+ * The mapper accepts `ItemWithRelations` -- if you add a relation to the include, TypeScript will enforce that the mapper handles it.
+ */
 export const itemWithRelationsInclude = {
   category: {
     select: {

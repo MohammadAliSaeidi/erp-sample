@@ -12,69 +12,34 @@ Request Params → Zod Validation → QueryDefinition → buildPrismaWhere() →
 
 ---
 
-## Core Concepts
-
-
-### 4. Prisma WHERE Builder (`prisma-where.builder.ts`)
-
-Converts a validated `QueryInput` into a Prisma-compatible `WHERE` object:
-
-typescript
-const where = buildPrismaWhere(query, itemListQuery);
-// → { name: { contains: '...' }, price: { gte: 100 }, isActive: true }
-
-Internally iterates over `query.filters`, looks up the matching `filterSpec` handler, and merges results into a single `AND` condition.
-
----
-
-### 5. Prisma Include (`item-with-relations.include.ts`)
-
-Centralizes relation includes so the mapper type and query stay in sync:
-
-typescript
-export const itemWithRelationsInclude = {
-  category: { select: { id: true, name: true } },
-  itemSpecificationValues: {
-    include: {
-      specification: { select: { id: true, name: true, type: true } },
-      specificationValue: true,
-    },
-  },
-} satisfies Prisma.ItemInclude;
-
-export type ItemWithRelations = Prisma.ItemGetPayload<{
-  include: typeof itemWithRelationsInclude;
-}>;
-
-The mapper accepts `ItemWithRelations` — if you add a relation to the include, TypeScript will enforce that the mapper handles it.
-
----
-
 ## Full Data Flow
 
 ### Step 1 — Request arrives (Server Action / API Route)
 
-typescript
+``` typescript
 // app/api/items/route.ts
 const raw = Object.fromEntries(new URL(request.url).searchParams);
+```
 
 ### Step 2 — Validate with Zod
 
-typescript
+``` typescript
 const input = itemListQueryInputSchema.parse(raw);
 // throws ZodError with structured messages if invalid
+```
 
 ### Step 3 — Usecase
 
-typescript
+``` typescript
 // get-items-list.usecase.ts
 async execute(input: ItemListQueryInput) {
   return this.itemQueryPort.findMany(input);
 }
+```
 
 ### Step 4 — Repository Adapter
 
-typescript
+``` typescript
 // item-query.adapter.ts
 async findMany(query: ItemListQueryInput) {
   const where = buildPrismaWhere(query, itemListQuery);
@@ -87,10 +52,11 @@ async findMany(query: ItemListQueryInput) {
 
   return items.map(itemPrismaToDTOMapper.map);
 }
+```
 
 ### Step 5 — Mapper
 
-typescript
+```typescript
 // item-prisma-to-dto.mapper.ts
 map(item: ItemWithRelations): ItemDTO {
   return {
@@ -103,6 +69,7 @@ map(item: ItemWithRelations): ItemDTO {
     })),
   };
 }
+```
 
 ---
 
@@ -122,7 +89,7 @@ map(item: ItemWithRelations): ItemDTO {
 1. Add the field to `defineQuery` fields config
 2. That's it — schema and spec update automatically
 
-typescript
+``` typescript
 // Before
 fields: { name: { type: 'string', prismaField: 'name' } }
 
@@ -131,7 +98,7 @@ fields: {
   name:     { type: 'string', prismaField: 'name' },
   category: { type: 'string', prismaField: 'categoryId' },  // ← added
 }
-
+```
 ---
 
 ## Removed / Replaced Files
