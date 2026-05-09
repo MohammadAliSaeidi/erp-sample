@@ -51,10 +51,12 @@ export type FieldTypeMap = {
   enum: EnumOperators<string>;
 };
 
+type WhereFieldKey<TWhere> = Extract<keyof TWhere, string>;
+
 export type FilterFieldSpec<TFieldType extends keyof FieldTypeMap, TWhere> =
   | {
       type: TFieldType;
-      dbField: string;
+      dbField: WhereFieldKey<TWhere>;
       // if we have dbField, we can not have toWhere
       toWhere?: never;
     }

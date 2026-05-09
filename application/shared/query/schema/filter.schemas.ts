@@ -47,3 +47,18 @@ export const booleanFilterSchema = z
     eq: z.coerce.boolean().optional(),
   })
   .refine(onlyOneKey, "Only one boolean operator allowed");
+
+export function enumFilterSchema<TEnum extends string>(enumValues: readonly TEnum[]) {
+  if (enumValues.length === 0) {
+    throw new Error("enumFilterSchema requires at least one enum value");
+  }
+
+  const enumSchema = z.enum(enumValues as [TEnum, ...TEnum[]]);
+
+  return z
+    .object({
+      eq: enumSchema.optional(),
+      in: z.array(enumSchema).optional(),
+    })
+    .refine(onlyOneKey, "Only one enum operator allowed");
+}

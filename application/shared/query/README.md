@@ -86,8 +86,27 @@ map(item: ItemWithRelations): ItemDTO {
 
 ## Adding a New Filter Field
 
-1. Add the field to `defineQuery` fields config
-2. That's it — schema and spec update automatically
+Use `defineQueryFromFields()` and keep everything in one place:
+
+1. Add or edit one field in `fields` config
+2. `filterSchema` and `filterSpec` are generated automatically
+3. Reuse `itemListQuery.filterSchema` in input schema
+
+```typescript
+export const itemListQuery = defineQueryFromFields<Prisma.ItemWhereInput>()({
+  price: { type: "number", dbField: "price" },
+  categoryId: { type: "string", dbField: "categoryId" },
+  isDeleted: {
+    type: "boolean",
+    toWhere: (input) =>
+      input.eq
+        ? { deletedAt: { not: null } }
+        : { deletedAt: null },
+  },
+});
+```
+
+You can still use low-level `defineQuery()` when you need full manual control.
 
 ``` typescript
 // Before
