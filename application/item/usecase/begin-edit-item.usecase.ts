@@ -1,7 +1,11 @@
-import { EventPublisherPort } from "@/application/shared/ports/event-publisher.port";
 import { LockServicePort } from "@/application/shared/ports/lock-service.port";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
 import { z } from "zod";
+import { IEventPublisherPort } from "@/application/shared/ports/event-publisher.port";
+import { buildEvent } from "@/domain/shared/events/build-event";
+import { buildRedisLockService } from "@/infrastructure/redis/redis-lock-service.adapter";
+import { buildRedisEventPublisher } from "@/infrastructure/redis/redis-event-publisher.adapter";
+import { redisClient } from "@/infrastructure/redis/redis-client";
 
 /** Input schema for begin edit. */
 const inputSchema = z.object({
@@ -15,7 +19,7 @@ const inputSchema = z.object({
 
 export type BeginEditItemDeps = {
   lockService: LockServicePort;
-  events: EventPublisherPort;
+  events: IEventPublisherPort;
 };
 
 /**
@@ -34,30 +38,35 @@ export const buildBeginEditItemUsecase = (deps: BeginEditItemDeps) =>
       const res = await deps.lockService.acquire(key, adminId, input.ttlMs);
 
       if (res.ok) {
-        await deps.events.publish({
-          type: "item.locked",
-          payload: {
-            storeId: storeId,
-            itemId: input.itemId,
-            lockedBy: adminId,
-            expiresAt: res.expiresAt,
-          },
-          meta: { actorId: adminId, occurredAt: new Date().toISOString() },
-        });
+        await deps.events.publish(
+          buildEvent(
+            "item.locked",
+            {
+              storeId: storeId,
+              itemId: input.itemId,
+              lockedBy: adminId,
+              expiresAt: res.expiresAt,
+            },
+            adminId,
+          ),
+        );
 
         return { locked: true, lockedBy: adminId, expiresAt: res.expiresAt };
       }
 
-      await deps.events.publish({
-        type: "item.lock.denied",
-        payload: {
-          storeId: storeId,
-          itemId: input.itemId,
-          lockedBy: res.lockedBy,
-          expiresAt: res.expiresAt,
-        },
-        meta: { actorId: adminId, occurredAt: new Date().toISOString() },
-      });
+      await deps.events.publish(
+        buildEvent(
+          "item.lock.denied",
+          {
+            storeId: storeId,
+            requestedBy: adminId,
+            itemId: input.itemId,
+            lockedBy: res.lockedBy,
+            expiresAt: res.expiresAt,
+          },
+          adminId,
+        ),
+      );
 
       return {
         locked: false,
@@ -66,3 +75,8 @@ export const buildBeginEditItemUsecase = (deps: BeginEditItemDeps) =>
       };
     },
   });
+
+export const beginEditItemUsecase = buildBeginEditItemUsecase({
+  lockService: buildRedisLockService(redisClient),
+  events: buildRedisEventPublisher(redisClient),
+});

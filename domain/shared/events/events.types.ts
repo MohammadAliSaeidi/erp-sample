@@ -12,7 +12,7 @@ export type DomainEvent<T extends EventType> = {
   version: (typeof EventRegistry)[T]["version"];
   payload: EventPayload<T>;
   meta: {
-    actorId: string;
+    actorAdminId: string;
     occurredAt: string;
   };
 };

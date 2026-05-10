@@ -8,17 +8,21 @@ export interface LockServicePort {
   /**
    * Try to acquire a lock.
    * @param key Entity lock key (e.g. "item:123").
-   * @param actorId Who is locking.
+   * @param actorAdminId Who is locking.
    * @param ttlMs Lock TTL in milliseconds.
    */
-  acquire(key: string, adminId: string, ttlMs: number): Promise<LockResult>;
+  acquire(
+    key: string,
+    actorAdminId: string,
+    ttlMs: number,
+  ): Promise<LockResult>;
 
   /**
    * Release a lock if held by the same actor.
    * @param key Entity lock key.
-   * @param actorId Who is releasing.
+   * @param actorAdminId Who is releasing.
    */
-  release(key: string, actorId: string): Promise<boolean>;
+  release(key: string, actorAdminId: string): Promise<boolean>;
 
   /**
    * Check current lock state.
