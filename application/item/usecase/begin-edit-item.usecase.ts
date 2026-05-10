@@ -1,5 +1,5 @@
-import { EventPublisherPort } from "@/application/ports/event-publisher.port";
-import { LockServicePort } from "@/application/ports/lock-service.port";
+import { EventPublisherPort } from "@/application/shared/ports/event-publisher.port";
+import { LockServicePort } from "@/application/shared/ports/lock-service.port";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
 import { z } from "zod";
 

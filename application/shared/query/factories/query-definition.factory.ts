@@ -46,7 +46,7 @@ type QueryFieldConfig<TWhere> =
       TWhere
     >);
 
-type FilterFromFields<
+export type FilterFromFields<
   TFields extends Record<string, { type: keyof FieldTypeMap }>,
 > = {
   [K in keyof TFields]: TFields[K] extends { type: infer TType }
