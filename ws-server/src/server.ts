@@ -1,10 +1,18 @@
-import { httpServer } from "./http.js";
+import http from "node:http";
 import { config } from "./config.js";
 import { bootstrap } from "./bootstrap.js";
-import "./socket.js";
 
-httpServer.listen(config.port, async () => {
-  console.log(`[ws] server listening on port ${config.port}`);
-  console.log(`[ws] health check: http://localhost:${config.port}/health`);
-  await bootstrap();
+async function main() {
+  const httpServer = http.createServer();
+
+  await bootstrap(httpServer);
+
+  httpServer.listen(config.port, () => {
+    console.log(`WS server listening on http://localhost:${config.port}`);
+  });
+}
+
+main().catch((error) => {
+  console.error("Failed to start ws-server:", error);
+  process.exit(1);
 });

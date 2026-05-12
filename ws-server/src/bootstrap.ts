@@ -1,27 +1,15 @@
-import { io } from "./socket.js";
+import { Server as HttpServer } from "node:http";
+import { buildSocketServer } from "./socket.js";
+import { buildRedisSubscriber } from "./redis.js";
 import { buildRedisEventSubscriber } from "./adapters/redis-event-subscriber.adapter.js";
-import { buildRedisClient } from "./redis.js";
 
-export async function bootstrap() {
-  const redis = buildRedisClient();
-  const subscriber = buildRedisEventSubscriber(redis);
+export async function bootstrap(httpServer: HttpServer) {
+  const io = buildSocketServer(httpServer);
 
-  await subscriber.subscribe((event) => {
-    const storeId =
-      typeof event.payload === "object" &&
-      event.payload !== null &&
-      "storeId" in event.payload &&
-      typeof event.payload.storeId === "string"
-        ? event.payload.storeId
-        : undefined;
+  const redisSubscriber = buildRedisSubscriber();
 
-    if (storeId) {
-      io.to(`store:${storeId}`).emit("domain:event", event);
-      return;
-    }
+  const redisEventSubscriber = buildRedisEventSubscriber(redisSubscriber, io);
+  await redisEventSubscriber.start();
 
-    io.emit("domain:event", event);
-  });
-
-  console.log("[ws] subscribed to domain-events");
+  return { io, redisSubscriber };
 }

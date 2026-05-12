@@ -22,6 +22,16 @@ export type BeginEditItemDeps = {
   events: IEventPublisherPort;
 };
 
+// TODO: about locks:
+// My release currently does:
+//
+//   GET
+// compare lockedBy
+// DEL
+// This can technically race (rare but possible). The safer Redis pattern uses a Lua script to atomically check and delete.
+//
+// But for most internal systems your approach is acceptable.
+
 /**
  * Use case: try to lock an item for editing.
  * Emits: item.locked or item.lock.denied

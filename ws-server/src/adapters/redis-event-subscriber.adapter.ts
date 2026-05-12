@@ -1,52 +1,48 @@
-import type { Redis } from "ioredis";
+import { Redis } from "ioredis";
+import { Server as SocketIOServer } from "socket.io";
+import { config } from "../config.js";
 
-const DOMAIN_EVENTS_CHANNEL = "domain-events";
-
-type WsDomainEvent = {
+type DomainEvent = {
   type: string;
   version: number;
-  payload: unknown;
+  payload: Record<string, unknown>;
   meta: {
     actorAdminId: string;
     occurredAt: string;
   };
 };
 
-function isWsDomainEvent(value: unknown): value is WsDomainEvent {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-
-  const event = value as Partial<WsDomainEvent>;
-  return (
-    typeof event.type === "string" &&
-    typeof event.version === "number" &&
-    typeof event.meta === "object" &&
-    event.meta !== null &&
-    typeof event.meta.actorAdminId === "string" &&
-    typeof event.meta.occurredAt === "string"
-  );
-}
-
-export function buildRedisEventSubscriber(client: Redis) {
+export function buildRedisEventSubscriber(
+  subscriber: Redis,
+  io: SocketIOServer,
+) {
   return {
-    async subscribe(onEvent: (event: WsDomainEvent) => void): Promise<void> {
-      await client.subscribe(DOMAIN_EVENTS_CHANNEL);
+    async start() {
+      await subscriber.subscribe(config.domainEventsChannel);
 
-      client.on("message", (channel, message) => {
-        if (channel !== DOMAIN_EVENTS_CHANNEL) return;
+      subscriber.on("message", (channel, message) => {
+        if (channel !== config.domainEventsChannel) return;
 
         try {
-          const parsed = JSON.parse(message);
-          if (!isWsDomainEvent(parsed)) {
-            console.error("[ws] invalid domain event payload shape");
-            return;
+          const event = JSON.parse(message) as DomainEvent;
+
+          console.log("Received domain event:", event);
+
+          const storeId = event.payload?.storeId;
+
+          if (typeof storeId === "string" && storeId.length > 0) {
+            console.log(`Broadcasting ${event.type} to room store:${storeId}`);
+            io.to(`store:${storeId}`).emit(event.type, event.payload);
+          } else {
+            console.log(`Broadcasting ${event.type} globally`);
+            io.emit(event.type, event.payload);
           }
-          onEvent(parsed);
-        } catch (err) {
-          console.error("[ws] failed to parse event", err);
+        } catch (error) {
+          console.error("Failed to parse Redis message:", error);
         }
       });
+
+      console.log(`Subscribed to Redis channel: ${config.domainEventsChannel}`);
     },
   };
 }
