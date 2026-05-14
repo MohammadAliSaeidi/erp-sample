@@ -1,11 +1,12 @@
 import { z } from "zod";
-import { LockServicePort } from "@/application/shared/ports/lock-service.port";
+import { LockServicePort } from "@/application/shared/lock-service/lock-service.port";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
 import { IEventPublisherPort } from "@/application/shared/ports/event-publisher.port";
 import { buildEvent } from "@/domain/shared/events/build-event";
 import { buildRedisEventPublisher } from "@/infrastructure/redis/redis-event-publisher.adapter";
 import { buildRedisLockService } from "@/infrastructure/redis/redis-lock-service.adapter";
 import { redisClient } from "@/infrastructure/redis/redis-client";
+import { LockKeys } from "@/application/shared/lock-service/lock-service.registry";
 
 /** Input schema for end edit. */
 const inputSchema = z.object({
@@ -32,7 +33,7 @@ export const buildEndEditItemUsecase = (deps: EndEditItemDeps) =>
       input,
       authContext: { adminId, storeId },
     }): Promise<{ released: boolean }> => {
-      const key = `store:${storeId}:item:${input.itemId}`;
+      const key = LockKeys.item(storeId, input.itemId);
       const released: boolean = await deps.lockService.release(key, adminId);
 
       if (released) {

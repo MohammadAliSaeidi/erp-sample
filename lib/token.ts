@@ -1,4 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
+import { brand, Brand } from "@/lib/brand";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 
@@ -9,12 +10,14 @@ export interface TokenPayload {
 
 export async function encodeToken<T extends TokenPayload>(
   payload: T,
-): Promise<string> {
-  return new SignJWT({ ...payload })
+): Promise<Brand<string, "Token">> {
+  const token: string = await new SignJWT({ ...payload })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("1h")
     .sign(secret);
+
+  return brand(token);
 }
 
 export async function decodeToken<T extends TokenPayload>(

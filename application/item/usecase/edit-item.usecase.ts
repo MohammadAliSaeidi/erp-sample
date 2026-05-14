@@ -62,7 +62,7 @@ export const buildEditItemUsecase = (deps: EditItemUsecaseDeps) =>
     },
   });
 
-export const createItemUsecase = buildEditItemUsecase({
+export const editItemUsecase = buildEditItemUsecase({
   itemQuery: itemQueryAdapter,
   itemRepository: itemRepositoryAdapter,
 });

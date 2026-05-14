@@ -5,6 +5,7 @@ import z, { ZodType } from "zod";
 export interface AuthenticatedUsecaseDefinition<
   TSchema extends ZodType,
   TResult,
+  TAuthContext = AuthContext,
 > {
   key: string;
   auth: "required";
@@ -12,14 +13,11 @@ export interface AuthenticatedUsecaseDefinition<
   inputSchema: TSchema;
   execute: (params: {
     input: z.output<TSchema>;
-    authContext: AuthContext;
+    authContext: TAuthContext;
   }) => Promise<TResult>;
 }
 
-export interface PublicUsecaseDefinition<
-  TSchema extends ZodType,
-  TResult,
-> {
+export interface PublicUsecaseDefinition<TSchema extends ZodType, TResult> {
   key: string;
   auth: "public";
   inputSchema: TSchema;
@@ -38,10 +36,7 @@ export type UsecaseInput<TDef extends UsecaseDefinition<ZodType, unknown>> =
 export type UsecaseResult<TDef extends UsecaseDefinition<ZodType, unknown>> =
   Awaited<ReturnType<TDef["execute"]>>;
 
-export const authenticatedUsecaseFactory = <
-  TSchema extends ZodType,
-  TResult,
->(
+export const authenticatedUsecaseFactory = <TSchema extends ZodType, TResult>(
   definition: AuthenticatedUsecaseDefinition<TSchema, TResult>,
 ): AuthenticatedUsecaseDefinition<TSchema, TResult> => ({
   ...definition,

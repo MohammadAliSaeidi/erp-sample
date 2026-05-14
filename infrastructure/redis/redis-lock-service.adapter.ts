@@ -2,7 +2,7 @@ import type { Redis } from "ioredis";
 import type {
   LockResult,
   LockServicePort,
-} from "@/application/shared/ports/lock-service.port";
+} from "@/application/shared/lock-service/lock-service.port";
 
 type StoredLockValue = {
   lockedBy: string;

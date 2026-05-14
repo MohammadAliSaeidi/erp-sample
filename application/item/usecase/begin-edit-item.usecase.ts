@@ -1,4 +1,7 @@
-import { LockServicePort } from "@/application/shared/ports/lock-service.port";
+import {
+  LockResult,
+  LockServicePort,
+} from "@/application/shared/lock-service/lock-service.port";
 import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
 import { z } from "zod";
 import { IEventPublisherPort } from "@/application/shared/ports/event-publisher.port";
@@ -6,6 +9,9 @@ import { buildEvent } from "@/domain/shared/events/build-event";
 import { buildRedisLockService } from "@/infrastructure/redis/redis-lock-service.adapter";
 import { buildRedisEventPublisher } from "@/infrastructure/redis/redis-event-publisher.adapter";
 import { redisClient } from "@/infrastructure/redis/redis-client";
+import { LockKeys } from "@/application/shared/lock-service/lock-service.registry";
+import { LockKey } from "@/application/shared/lock-service/lock-service.types";
+import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
 
 /** Input schema for begin edit. */
 const inputSchema = z.object({
@@ -42,17 +48,26 @@ export const buildBeginEditItemUsecase = (deps: BeginEditItemDeps) =>
     auth: "required",
     requiredPermissions: ["items:update"],
     inputSchema,
-    execute: async ({ input, authContext: { storeId, adminId } }) => {
-      const key = `store:${storeId}:item:${input.itemId}`;
-
-      const res = await deps.lockService.acquire(key, adminId, input.ttlMs);
+    execute: async ({
+      input,
+      authContext: { storeId, adminId },
+    }: {
+      input: z.infer<typeof inputSchema>;
+      authContext: AuthContext;
+    }) => {
+      const key: LockKey = LockKeys.item(storeId, input.itemId);
+      const res: LockResult = await deps.lockService.acquire(
+        key,
+        adminId,
+        input.ttlMs,
+      );
 
       if (res.ok) {
         await deps.events.publish(
           buildEvent(
             "item.locked",
             {
-              storeId: storeId,
+              storeId,
               itemId: input.itemId,
               lockedBy: adminId,
               expiresAt: res.expiresAt,
@@ -61,7 +76,12 @@ export const buildBeginEditItemUsecase = (deps: BeginEditItemDeps) =>
           ),
         );
 
-        return { locked: true, lockedBy: adminId, expiresAt: res.expiresAt };
+        return {
+          locked: true,
+          lockedBy: adminId,
+          expiresAt: res.expiresAt,
+          token: res.token,
+        };
       }
 
       await deps.events.publish(

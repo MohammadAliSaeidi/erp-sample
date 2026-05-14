@@ -9,7 +9,10 @@ export const EventRegistry = {
       lockedBy: z.string(),
       expiresAt: z.string(),
     }),
+    room: (payload: { storeId: string; itemId: string }) =>
+      `store:${payload.storeId}:item:${payload.itemId}`,
   },
+
   "item.unlocked": {
     version: 1,
     schema: z.object({
@@ -17,7 +20,10 @@ export const EventRegistry = {
       itemId: z.string(),
       unlockedBy: z.string(),
     }),
+    room: (payload: { storeId: string; itemId: string }) =>
+      `store:${payload.storeId}:item:${payload.itemId}`,
   },
+
   "item.updated": {
     version: 1,
     schema: z.object({
@@ -26,7 +32,10 @@ export const EventRegistry = {
       name: z.string(),
       price: z.number(),
     }),
+    room: (payload: { storeId: string; itemId: string }) =>
+      `store:${payload.storeId}:item:${payload.itemId}`,
   },
+
   "item.lock.denied": {
     version: 1,
     schema: z.object({
@@ -36,5 +45,7 @@ export const EventRegistry = {
       lockedBy: z.string(),
       expiresAt: z.string(),
     }),
+    room: (payload: { storeId: string; itemId: string }) =>
+      `store:${payload.storeId}:item:${payload.itemId}`,
   },
 } as const;
