@@ -8,7 +8,6 @@ import { buildRedisLockService } from "@/infrastructure/redis/redis-lock-service
 import { buildRedisEventPublisher } from "@/infrastructure/redis/redis-event-publisher.adapter";
 import { redisClient } from "@/infrastructure/redis/redis-client";
 import { generateLockToken } from "@/application/shared/lock-service/generate-lock-token";
-import { EventType } from "@/domain/shared/events/events.types";
 
 export type AcquireEditItemLockDeps = {
   lockService: LockServicePort;
@@ -36,7 +35,7 @@ export const buildAcquireEditItemLockUsecase = (
             itemId: input.entityId,
             lockedBy: String(ctx.adminId),
             expiresAt: result.expiresAt,
-            token: generateLockToken(),
+            token: result.token,
           },
           undefined,
         ),

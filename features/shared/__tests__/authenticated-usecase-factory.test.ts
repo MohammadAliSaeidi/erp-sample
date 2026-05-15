@@ -6,10 +6,11 @@ import {
 import { runUsecase } from "../application/run-use-case";
 import { UseCaseForbiddenError } from "../../../application/errors/use-case-errors";
 import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
+import { brand } from "@/lib/brand";
 
-const AUTH_CONTEXT: AuthContext = {
-  adminId: "admin-1",
-  storeId: "store-1",
+export const MOCK_AUTH_CONTEXT: AuthContext = {
+  adminId: brand("admin-1"),
+  storeId: brand("store-1"),
   storeSlug: "store-1",
   username: "admin-user",
   roleId: "role-1",
@@ -69,7 +70,7 @@ describe("authenticatedUsecaseFactory", () => {
         useCase: usecase,
         input: {},
         authContext: {
-          ...AUTH_CONTEXT,
+          ...MOCK_AUTH_CONTEXT,
           grantsAll: false,
           permissions: [],
         },
@@ -81,7 +82,7 @@ describe("authenticatedUsecaseFactory", () => {
 
   it("allows execution when grantsAll is true", async () => {
     const execute = jest.fn().mockResolvedValue("ok");
-  
+
     const usecase = authenticatedUsecaseFactory({
       key: "test",
       auth: "required",
@@ -89,21 +90,20 @@ describe("authenticatedUsecaseFactory", () => {
       inputSchema: z.object({}),
       execute,
     });
-  
+
     const result = await runUsecase({
       useCase: usecase,
       input: {},
       authContext: {
-        ...AUTH_CONTEXT,
+        ...MOCK_AUTH_CONTEXT,
         grantsAll: true,
         permissions: [],
       },
     });
-  
+
     expect(result).toBe("ok");
     expect(execute).toHaveBeenCalled();
   });
-  
 
   it("throws when auth is required but missing", async () => {
     const usecase = authenticatedUsecaseFactory({

@@ -72,7 +72,7 @@ export const buildReleaseLockUsecase = <
 
       const result = await deps.lockService.release(
         key,
-        brand(String(input.lockToken)),
+        brand(input.lockToken)
       );
 
       const shouldEmit = deps.emitEvents ?? true;

@@ -1,28 +1,6 @@
-/**
- * Brand type utility compatible with Zod
- */
-declare const $brand: unique symbol;
+import { z } from 'zod';
 
-export type Brand<T, TBrand extends string> = T & {
-  readonly [$brand]: TBrand;
-};
+export type Brand<A, B extends string> = A & z.BRAND<B>;
+export const Brand = <T extends z.ZodTypeAny, T2 extends string>(schema: T, brand: T2) => schema.brand(brand);
 
-/**
- * helper function to brand a value. no validation; only type casting
- */
-export function brand<T, TBrand extends string>(value: T): Brand<T, TBrand> {
-  return value as Brand<T, TBrand>;
-}
-
-/**
- * helper function to unbrand
- */
-export function unbrand<T, TBrand extends string>(value: Brand<T, TBrand>): T {
-  return value as T;
-}
-
-/**
- * Type guard for checking brand
- */
-export type IsBranded<T, TBrand extends string> =
-  T extends Brand<unknown, TBrand> ? true : false;
+export const brand = <T, B extends string>(value: T): Brand<T, B> => value as Brand<T, B>;
