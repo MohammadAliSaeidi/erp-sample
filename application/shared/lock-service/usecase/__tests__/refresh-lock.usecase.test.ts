@@ -1,13 +1,13 @@
 import { runUsecase } from "@/features/shared/application/run-use-case";
 import { UseCaseValidationError } from "@/application/errors/use-case-errors";
-import { buildRefreshLockUsecase } from "./refresh-lock.usecase";
+import { buildRefreshLockUsecase } from "../refresh-lock.usecase";
 import {
   buildItemLockKey,
   createMockLockService,
   ITEMS_UPDATE_PERMISSION,
   LOCK_AUTH_CONTEXT,
   REFRESH_LOCK_INPUT,
-} from "../testing/lock-usecase-test.helpers";
+} from "../../testing/lock-usecase-test.helpers";
 
 describe("buildRefreshLockUsecase", () => {
   const lockService = createMockLockService();
@@ -54,7 +54,10 @@ describe("buildRefreshLockUsecase", () => {
 
   it.each([
     ["ttl below minimum", { entityId: "item-1", token: "t", ttlMs: 500 }],
-    ["ttl above maximum", { entityId: "item-1", token: "t", ttlMs: 11 * 60 * 1000 }],
+    [
+      "ttl above maximum",
+      { entityId: "item-1", token: "t", ttlMs: 11 * 60 * 1000 },
+    ],
     ["empty entity id", { entityId: "", token: "t", ttlMs: 5_000 }],
   ])("rejects invalid input: %s", async (_label, input) => {
     await expect(

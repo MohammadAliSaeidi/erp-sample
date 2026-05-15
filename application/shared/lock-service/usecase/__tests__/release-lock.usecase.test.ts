@@ -2,7 +2,7 @@ import { buildEvent } from "@/domain/shared/events/build-event";
 import { runUsecase } from "@/features/shared/application/run-use-case";
 import { UseCaseValidationError } from "@/application/errors/use-case-errors";
 import { brand } from "@/lib/brand";
-import { buildReleaseLockUsecase } from "./release-lock.usecase";
+import { buildReleaseLockUsecase } from "../release-lock.usecase";
 import {
   buildItemLockKey,
   createMockEventPublisher,
@@ -11,7 +11,7 @@ import {
   LOCK_AUTH_CONTEXT,
   LOCK_TOKEN,
   RELEASE_LOCK_INPUT,
-} from "../testing/lock-usecase-test.helpers";
+} from "../../testing/lock-usecase-test.helpers";
 
 describe("buildReleaseLockUsecase", () => {
   const lockService = createMockLockService();

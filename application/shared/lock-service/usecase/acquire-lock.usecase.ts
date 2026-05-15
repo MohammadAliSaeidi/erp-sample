@@ -14,7 +14,6 @@ import { IEventPublisherPort } from "@/application/shared/ports/event-publisher.
 import { DomainEvent, EventType } from "@/domain/shared/events/events.types";
 import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
 
-
 export type AcquireLockDeps<
   TSchema extends ZodType,
   TResult,
@@ -26,15 +25,18 @@ export type AcquireLockDeps<
   lockService: LockServicePort;
   buildLockKey: (storeId: string, entityId: string) => LockKey;
   eventPublisher?: IEventPublisherPort;
+  /**
+   * True by default
+   */
   emitEvents?: boolean;
   eventFactory?: {
-    locked: (
+    buildLockedEvent: (
       ctx: TAuth,
       input: TInput,
       result: LockResultOk,
     ) => DomainEvent<TLockedEvent>;
 
-    denied: (
+    buildDeniedEvent: (
       ctx: TAuth,
       input: TInput,
       result: LockResultFailure,
@@ -80,6 +82,7 @@ export const buildAcquireLockUsecase = <
         authContext.storeId,
         input.entityId,
       );
+
       const result: LockResult = await deps.lockService.acquire(
         key,
         authContext.adminId,
@@ -87,21 +90,24 @@ export const buildAcquireLockUsecase = <
       );
 
       const shouldEmit = deps.emitEvents ?? true;
+
       if (shouldEmit && deps.eventPublisher && deps.eventFactory) {
         if (result.ok) {
-          const event = deps.eventFactory.locked(
-            authContext as TAuth,
-            input as TInput,
-            result as LockResultOk,
-          );
+          const event: DomainEvent<TLockedEvent> =
+            deps.eventFactory.buildLockedEvent(
+              authContext as TAuth,
+              input as TInput,
+              result as LockResultOk,
+            );
 
           await deps.eventPublisher.publish<EventType>(event);
         } else {
-          const event = deps.eventFactory.denied(
-            authContext as TAuth,
-            input as TInput,
-            result as LockResultFailure,
-          );
+          const event: DomainEvent<TDeniedEvent> =
+            deps.eventFactory.buildDeniedEvent(
+              authContext as TAuth,
+              input as TInput,
+              result as LockResultFailure,
+            );
 
           await deps.eventPublisher.publish<EventType>(event);
         }

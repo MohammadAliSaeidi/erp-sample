@@ -15,6 +15,7 @@ export const buildWsEventPublisher = (
       if (storeId) {
         return ws.broadcastToRoom(`store:${storeId}`, json);
       }
+
       return ws.broadcast(json);
     },
   };

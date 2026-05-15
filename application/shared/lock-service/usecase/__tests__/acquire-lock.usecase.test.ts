@@ -1,7 +1,7 @@
 import { buildEvent } from "@/domain/shared/events/build-event";
 import { runUsecase } from "@/features/shared/application/run-use-case";
 import { UseCaseValidationError } from "@/application/errors/use-case-errors";
-import { buildAcquireLockUsecase } from "./acquire-lock.usecase";
+import { buildAcquireLockUsecase } from "../acquire-lock.usecase";
 import {
   ACQUIRE_LOCK_INPUT,
   buildItemLockKey,
@@ -11,7 +11,7 @@ import {
   LOCK_AUTH_CONTEXT,
   lockResultDenied,
   lockResultOk,
-} from "../testing/lock-usecase-test.helpers";
+} from "../../testing/lock-usecase-test.helpers";
 
 describe("buildAcquireLockUsecase", () => {
   const lockService = createMockLockService();
@@ -24,7 +24,7 @@ describe("buildAcquireLockUsecase", () => {
     eventPublisher,
     buildLockKey: buildItemLockKey,
     eventFactory: {
-      locked: (ctx, input, result) =>
+      buildLockedEvent: (ctx, input, result) =>
         buildEvent(
           "item.locked",
           {
@@ -36,7 +36,7 @@ describe("buildAcquireLockUsecase", () => {
           },
           undefined,
         ),
-      denied: (ctx, input, result) =>
+      buildDeniedEvent: (ctx, input, result) =>
         buildEvent(
           "item.lock.denied",
           {
@@ -134,7 +134,7 @@ describe("buildAcquireLockUsecase", () => {
         emitEvents: false,
         buildLockKey: buildItemLockKey,
         eventFactory: {
-          locked: (ctx, input, result) =>
+          buildLockedEvent: (ctx, input, result) =>
             buildEvent(
               "item.locked",
               {
@@ -146,7 +146,7 @@ describe("buildAcquireLockUsecase", () => {
               },
               undefined,
             ),
-          denied: (ctx, input, result) =>
+          buildDeniedEvent: (ctx, input, result) =>
             buildEvent(
               "item.lock.denied",
               {

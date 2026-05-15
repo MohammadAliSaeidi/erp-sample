@@ -2,12 +2,16 @@ import { buildAcquireLockUsecase } from "@/application/shared/lock-service/useca
 import { LockKeys } from "@/application/shared/lock-service/lock-service.registry";
 import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
 import { buildEvent } from "@/domain/shared/events/build-event";
-import { LockServicePort } from "@/application/shared/lock-service/lock-service.port";
+import {
+  LockResultFailure,
+  LockResultOk,
+  LockServicePort,
+} from "@/application/shared/lock-service/lock-service.port";
 import { IEventPublisherPort } from "@/application/shared/ports/event-publisher.port";
 import { buildRedisLockService } from "@/infrastructure/redis/redis-lock-service.adapter";
 import { buildRedisEventPublisher } from "@/infrastructure/redis/redis-event-publisher.adapter";
 import { redisClient } from "@/infrastructure/redis/redis-client";
-import { generateLockToken } from "@/application/shared/lock-service/generate-lock-token";
+import { DomainEvent } from "@/domain/shared/events/events.types";
 
 export type AcquireEditItemLockDeps = {
   lockService: LockServicePort;
@@ -27,7 +31,11 @@ export const buildAcquireEditItemLockUsecase = (
       LockKeys.item(storeId, entityId),
 
     eventFactory: {
-      locked: (ctx: AuthContext, input, result) =>
+      buildLockedEvent: (
+        ctx: AuthContext,
+        input,
+        result: LockResultOk,
+      ): DomainEvent<"item.locked"> =>
         buildEvent(
           "item.locked",
           {
@@ -40,7 +48,11 @@ export const buildAcquireEditItemLockUsecase = (
           undefined,
         ),
 
-      denied: (ctx: AuthContext, input, result) =>
+      buildDeniedEvent: (
+        ctx: AuthContext,
+        input,
+        result: LockResultFailure,
+      ): DomainEvent<"item.lock.denied"> =>
         buildEvent(
           "item.lock.denied",
           {

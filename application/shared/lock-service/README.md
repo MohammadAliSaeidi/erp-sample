@@ -9,7 +9,7 @@ It is designed to prevent conflicting edits and to show edit presence in realtim
 
 ---
 
-## ✅ Goals
+## Goals
 
 - **Per‑entity locking** (item 1 doesn’t block item 2)
 - **Tenant isolation** (store A never sees store B events)
@@ -20,7 +20,7 @@ It is designed to prevent conflicting edits and to show edit presence in realtim
 
 ---
 
-## 🧩 Architecture Overview
+## Architecture Overview
 
 **Core components**
 
@@ -33,7 +33,7 @@ It is designed to prevent conflicting edits and to show edit presence in realtim
 
 ---
 
-## 🏗️ High-Level Flow
+##  High-Level Flow
 
 1. Admin opens edit page.
 2. Client joins rooms:
@@ -48,7 +48,7 @@ It is designed to prevent conflicting edits and to show edit presence in realtim
 
 ---
 
-## ✅ Room Strategy (Required)
+## Room Strategy (Required)
 
 | Scope | Room | Purpose |
 |------|------|---------|

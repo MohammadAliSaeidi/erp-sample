@@ -14,3 +14,5 @@ export function buildRedisEventPublisher(client: Redis): IEventPublisherPort {
     },
   };
 }
+
+// export redisEventPublisher
