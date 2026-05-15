@@ -1,72 +1,193 @@
 import type { Redis } from "ioredis";
+import { randomUUID } from "node:crypto";
 import type {
-  LockResult,
   LockServicePort,
+  LockResult,
+  LockResultFailure,
+  LockResultOk,
 } from "@/application/shared/lock-service/lock-service.port";
+import type { LockKey } from "@/application/shared/lock-service/lock-service.types";
+import { Brand, brand } from "@/lib/brand";
+import { AdminToken } from "@/application/auth/types/admin-token";
+import { StoreId } from "@/domain/store/store-id";
+import { StoreAdminId } from "@/domain/store-admin/store-admin-id";
 
-type StoredLockValue = {
-  lockedBy: string;
-  expiresAt: string;
+export type ISO = Brand<string, "ISO">;
+
+type StoredLockValue<TBrand extends string> = {
+  storeId: StoreId;
+  entityId: Brand<string, TBrand>;
+  lockedBy: StoreAdminId;
+  lockedByName?: string;
+  adminToken: AdminToken;
+  expiresAt: ISO;
 };
 
-function parseStoredLock(raw: string | null): StoredLockValue | null {
+function parseStoredLock<TEntityBrand extends string>(
+  raw: string | null,
+): StoredLockValue<TEntityBrand> | null {
   if (!raw) return null;
 
   try {
-    const value = JSON.parse(raw) as Partial<StoredLockValue>;
+    const v = JSON.parse(raw) as Partial<StoredLockValue<TEntityBrand>>;
+
     if (
-      typeof value.lockedBy !== "string" ||
-      typeof value.expiresAt !== "string"
+      typeof v.storeId !== "string" ||
+      typeof v.entityId !== "string" ||
+      typeof v.lockedBy !== "string" ||
+      typeof v.adminToken !== "string" ||
+      typeof v.expiresAt !== "string"
     ) {
       return null;
     }
-    return { lockedBy: value.lockedBy, expiresAt: value.expiresAt };
+    return {
+      storeId: v.storeId,
+      entityId: v.entityId,
+      lockedBy: v.lockedBy,
+      lockedByName: v.lockedByName,
+      adminToken: v.adminToken,
+      expiresAt: v.expiresAt,
+    };
   } catch {
     return null;
   }
 }
 
+function lockOk<TEntityBrand extends string>(
+  v: StoredLockValue<TEntityBrand>,
+): LockResultOk {
+  return {
+    ok: true,
+    lockedBy: v.lockedBy,
+    expiresAt: v.expiresAt,
+    token: brand<string, "Token">(v.adminToken),
+  };
+}
+
+function lockDenied<TEntityBrand extends string>(
+  v: StoredLockValue<TEntityBrand>,
+): LockResultFailure {
+  return {
+    ok: false,
+    lockedBy: v.lockedBy,
+    expiresAt: v.expiresAt,
+  };
+}
+
+// Atomic compare-token-and-delete
+const RELEASE_LUA = `
+local key = KEYS[1]
+local token = ARGV[1]
+local raw = redis.call("GET", key)
+if not raw then
+  return 0
+end
+local data = cjson.decode(raw)
+if data["token"] == token then
+  return redis.call("DEL", key)
+end
+return 0
+`;
+
+// Atomic compare-token-and-refresh (+update expiresAt in value)
+const REFRESH_LUA = `
+local key = KEYS[1]
+local token = ARGV[1]
+local ttlMs = tonumber(ARGV[2])
+local expiresAtIso = ARGV[3]
+
+local raw = redis.call("GET", key)
+if not raw then
+  return 0
+end
+
+local data = cjson.decode(raw)
+if data["token"] ~= token then
+  return 0
+end
+
+data["expiresAt"] = expiresAtIso
+redis.call("SET", key, cjson.encode(data), "PX", ttlMs, "XX")
+return 1
+`;
+
 export function buildRedisLockService(client: Redis): LockServicePort {
   return {
-    async acquire(
-      key: string,
-      actorAdminId: string,
+    async acquire<TEntityBrand extends string>(
+      key: LockKey,
+      actorStoreAdminId: string,
       ttlMs: number,
     ): Promise<LockResult> {
-      const expiresAt = new Date(Date.now() + ttlMs).toISOString();
-      const value = JSON.stringify({
-        lockedBy: actorAdminId,
+      // Derive store/entity from key if you encode them there.
+      // For simplicity, keep raw key as entityId fallback:
+      const now = Date.now();
+      const expiresAt = new Date(now + ttlMs).toISOString();
+      const token = randomUUID();
+
+      // Optional parse from key pattern store:{storeId}:item:{entityId}
+      const m = String(key).match(/^store:(.+):item:(.+)$/);
+      const storeId = m?.[1] ?? "unknown-store";
+      const entityId = m?.[2] ?? String(key);
+
+      const value: StoredLockValue<TEntityBrand> = {
+        storeId: brand(storeId),
+        entityId: brand(entityId),
+        lockedBy: brand(actorStoreAdminId),
+        adminToken: brand(token),
+        expiresAt: brand(expiresAt),
+      };
+
+      const setResult = await client.set(
+        String(key),
+        JSON.stringify(value),
+        "PX",
+        ttlMs,
+        "NX",
+      );
+
+      if (setResult === "OK") return lockOk(value);
+
+      const existing = parseStoredLock(await client.get(String(key)));
+      if (existing) return lockDenied(existing);
+
+      return {
+        ok: false,
+        lockedBy: actorStoreAdminId,
         expiresAt,
-      } satisfies StoredLockValue);
-
-      const setResult = await client.set(key, value, "PX", ttlMs, "NX");
-      if (setResult === "OK") {
-        return { ok: true, lockedBy: actorAdminId, expiresAt };
-      }
-
-      const existing = parseStoredLock(await client.get(key));
-      if (existing) {
-        return { ok: false, ...existing };
-      }
-
-      return { ok: false, lockedBy: actorAdminId, expiresAt };
+      };
     },
 
-    async release(key: string, actorAdminId: string): Promise<boolean> {
-      const raw = await client.get(key);
-      const existing = parseStoredLock(raw);
-      if (!existing || existing.lockedBy !== actorAdminId) {
-        return false;
-      }
-
-      const deleted = await client.del(key);
-      return deleted > 0;
+    async release(key: LockKey, token: AdminToken): Promise<boolean> {
+      const result = await client.eval(
+        RELEASE_LUA,
+        1,
+        String(key),
+        String(token),
+      );
+      return Number(result) > 0;
     },
 
-    async get(key: string): Promise<LockResult | null> {
-      const existing = parseStoredLock(await client.get(key));
+    async refresh(
+      key: LockKey,
+      token: string,
+      ttlMs: number,
+    ): Promise<boolean> {
+      const expiresAtIso = new Date(Date.now() + ttlMs).toISOString();
+      const result = await client.eval(
+        REFRESH_LUA,
+        1,
+        String(key),
+        token,
+        String(ttlMs),
+        expiresAtIso,
+      );
+      return Number(result) === 1;
+    },
+
+    async get(key: LockKey): Promise<LockResult | null> {
+      const existing = parseStoredLock(await client.get(String(key)));
       if (!existing) return null;
-      return { ok: true, ...existing };
+      return lockOk(existing);
     },
   };
 }

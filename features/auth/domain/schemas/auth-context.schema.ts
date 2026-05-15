@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const adminAuthContextSchema = z.object({
-  adminId: z.string().brand("AdminId"),
+  adminId: z.string().brand("StoreAdminId"),
   storeId: z.string().brand("StoreId"),
   storeSlug: z.string(),
   username: z.string(),

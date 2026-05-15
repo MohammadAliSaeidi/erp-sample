@@ -1,11 +1,13 @@
 import { LockKey } from "@/application/shared/lock-service/lock-service.types";
 import { Brand } from "@/lib/brand";
 
+export type LockToken = Brand<string, "LockToken">;
+
 export type LockResultOk = {
   ok: true;
   lockedBy: string;
   expiresAt: string;
-  token: string;
+  token: LockToken;
 };
 
 export type LockResultFailure = {
@@ -16,6 +18,12 @@ export type LockResultFailure = {
 
 /** Lock acquisition result. */
 export type LockResult = LockResultOk | LockResultFailure;
+
+export type UnlockResultOk = { ok: true };
+
+export type UnlockResultFailure = { ok: false };
+
+export type UnlockResult = UnlockResultOk | UnlockResultFailure;
 
 /** Port: distributed/centralized lock service for edit sessions. */
 export interface LockServicePort {
@@ -36,7 +44,7 @@ export interface LockServicePort {
    * @param key Entity lock key.
    * @param token token of who is releasing.
    */
-  release(key: LockKey, token: Brand<string, "Token">): Promise<boolean>;
+  release(key: LockKey, token: LockToken): Promise<UnlockResult>;
 
   /**
    * Refresh/extend a lock TTL if the caller still owns it.

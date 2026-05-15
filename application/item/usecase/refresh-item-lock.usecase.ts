@@ -1,4 +1,4 @@
-import { buildRefreshLockUsecase } from "@/application/shared/lock-service/refresh-lock.usecase";
+import { buildRefreshLockUsecase } from "@/application/shared/lock-service/usecase/refresh-lock.usecase";
 import { LockServicePort } from "@/application/shared/lock-service/lock-service.port";
 import { LockKeys } from "@/application/shared/lock-service/lock-service.registry";
 

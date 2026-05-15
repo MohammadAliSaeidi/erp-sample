@@ -1,10 +1,10 @@
-// lib/brand.ts
-
 /**
- * Brand type utility - create nominal types
+ * Brand type utility compatible with Zod
  */
+declare const $brand: unique symbol;
+
 export type Brand<T, TBrand extends string> = T & {
-  readonly __brand: TBrand;
+  readonly [$brand]: TBrand;
 };
 
 /**

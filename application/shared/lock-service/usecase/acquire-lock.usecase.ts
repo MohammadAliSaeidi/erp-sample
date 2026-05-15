@@ -88,7 +88,7 @@ export const buildAcquireLockUsecase = <
       const shouldEmit = deps.emitEvents ?? true;
       if (shouldEmit && deps.eventPublisher && deps.eventFactory) {
         if (result.ok) {
-          const event: DomainEvent<EventType> = deps.eventFactory.locked(
+          const event = deps.eventFactory.locked(
             authContext as TAuth,
             input as TInput,
             result as LockResultOk,
@@ -96,7 +96,7 @@ export const buildAcquireLockUsecase = <
 
           await deps.eventPublisher.publish<EventType>(event);
         } else {
-          const event: DomainEvent<EventType> = deps.eventFactory.denied(
+          const event = deps.eventFactory.denied(
             authContext as TAuth,
             input as TInput,
             result as LockResultFailure,

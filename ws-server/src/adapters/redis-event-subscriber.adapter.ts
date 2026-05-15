@@ -5,17 +5,19 @@ import { config } from "../config.js";
 type DomainEvent = {
   type: string;
   version: number;
-  payload: Record<string, unknown>;
+  payload: {
+    storeId?: string;
+    itemId?: string;
+    adminId?: string;
+    [k: string]: unknown;
+  };
   meta: {
     actorAdminId: string;
     occurredAt: string;
   };
 };
 
-export function buildRedisEventSubscriber(
-  subscriber: Redis,
-  io: SocketIOServer,
-) {
+export function buildRedisEventSubscriber(subscriber: Redis, io: SocketIOServer) {
   return {
     async start() {
       await subscriber.subscribe(config.domainEventsChannel);
@@ -25,20 +27,27 @@ export function buildRedisEventSubscriber(
 
         try {
           const event = JSON.parse(message) as DomainEvent;
+          const { storeId, itemId, adminId } = event.payload ?? {};
 
-          console.log("Received domain event:", event);
-
-          const storeId = event.payload?.storeId;
-
-          if (typeof storeId === "string" && storeId.length > 0) {
-            console.log(`Broadcasting ${event.type} to room store:${storeId}`);
-            io.to(`store:${storeId}`).emit(event.type, event.payload);
-          } else {
-            console.log(`Broadcasting ${event.type} globally`);
-            io.emit(event.type, event.payload);
+          if (storeId && itemId) {
+            io.to(`store:${storeId}:item:${itemId}`).emit(event.type, event.payload);
+            return;
           }
-        } catch (error) {
-          console.error("Failed to parse Redis message:", error);
+
+          if (storeId) {
+            io.to(`store:${storeId}`).emit(event.type, event.payload);
+            return;
+          }
+
+          if (adminId) {
+            io.to(`admin:${adminId}`).emit(event.type, event.payload);
+            return;
+          }
+
+          // Avoid global emit unless explicitly intended
+          console.warn(`[ws] dropped non-scoped event type=${event.type}`);
+        } catch (err) {
+          console.error("[ws] parse error:", err);
         }
       });
 
