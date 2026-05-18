@@ -1,10 +1,10 @@
 import { requireSsrAuth } from "@/features/auth";
-import List from "../../../../../../interface/ui/items/components/list";
+import List from "@/src/interface/ui/items/components/list";
 import { runUsecase } from "@/features/shared/application/run-use-case";
-import { getItemsListUsecase } from "@/application/item/usecase/get-items-list.usecase";
-import { ItemDTO } from "@/interface/dto/item/item.dto";
+import { getItemsListUsecase } from "@/src/application/item/usecase/get-items-list.usecase";
+import { ItemDTO } from "@/src/application/item/dto/item.dto";
 import { getQueryClient } from "@/lib/get-query-client";
-import { ITEM_QUERY_KEYS } from "@/interface/ui/items/constants/query-keys";
+import { ITEM_QUERY_KEYS } from "@/src/interface/ui/items/constants/query-keys";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 type ItemPageProps = {

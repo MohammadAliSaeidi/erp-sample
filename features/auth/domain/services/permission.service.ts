@@ -1,4 +1,4 @@
-import { IPermissionRepositoryPort } from "@/domain/permission/permission-repository.port";
+import { IPermissionRepositoryPort } from "@/src/domain/permission/permission-repository.port";
 import { Permission } from "../types/permission.type";
 
 export interface IPermissionService {

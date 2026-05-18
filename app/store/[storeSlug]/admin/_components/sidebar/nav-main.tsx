@@ -4,7 +4,7 @@ import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from "@/src/presentation/components/ui/collapsible";
 import {
 	SidebarMenu,
 	SidebarMenuAction,
@@ -13,7 +13,7 @@ import {
 	SidebarMenuSub,
 	SidebarMenuSubButton,
 	SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
+} from "@/src/presentation/components/ui/sidebar";
 import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import { ReactNode } from "react";

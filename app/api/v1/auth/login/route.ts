@@ -1,15 +1,15 @@
-import { resolveStoreSlugFromRequest } from "@/interface/http/resolve-store-slug-from-request";
-import { buildLoginOperation } from "@/features/auth/application/operations/login.operation";
-import { mapUsecaseErrorToResponse } from "@/features/shared/adapters/http/map-usecase-error-to-response";
+import { resolveStoreSlugFromRequest } from "@/src/interface/http/resolve-store-slug-from-request";
+import { buildLoginUsecase } from "@/src/application/auth/usecase/login.usecase";
+import { mapUsecaseErrorToResponse } from "@/src/interface/http/map-usecase-error-to-response";
 import { runUsecase } from "@/features/shared/application/run-use-case";
 import prisma from "@/lib/prisma";
-import { validateRequestJsonBody } from "@/interface/http/validate-request-json-body";
+import { validateRequestJsonBody } from "@/src/interface/http/validate-request-json-body";
 import { setTokenCookie } from "@/lib/token";
 import { isHashMatch } from "@/lib/utils/hash/hash";
 import { NextRequest, NextResponse } from "next/server";
-import { UseCaseBadRequestError } from "@/application/errors/use-case-errors";
+import { UseCaseBadRequestError } from "@/src/application/shared/errors/use-case-errors";
 
-const loginOperation = buildLoginOperation({
+const loginOperation = buildLoginUsecase({
 	findStoreBySlug: async (storeSlug) => {
 		return prisma.store.findUnique({
 			where: { slug: storeSlug },

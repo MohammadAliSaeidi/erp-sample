@@ -3,7 +3,10 @@
 import * as React from "react";
 
 import { NavMain } from "@/app/store/[storeSlug]/admin/_components/sidebar/nav-main";
-import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
+import {
+	Sidebar,
+	SidebarContent,
+} from "@/src/presentation/components/ui/sidebar";
 import { useSidebarData } from "./use-sidebar-data";
 
 export default function AppSidebar({

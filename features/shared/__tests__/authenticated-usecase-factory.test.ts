@@ -4,7 +4,7 @@ import {
   authenticatedUsecaseFactory,
 } from "../application/use-case";
 import { runUsecase } from "../application/run-use-case";
-import { UseCaseForbiddenError } from "../../../application/errors/use-case-errors";
+import { UseCaseForbiddenError } from "@/src/application/shared/errors/use-case-errors";
 import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
 import { brand } from "@/lib/brand";
 

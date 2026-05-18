@@ -1,6 +1,6 @@
-import { storeSlugSchema } from "@/application/store/schema/store-slug.schema";
+import { storeSlugSchema } from "@/src/application/store/schema/store-slug.schema";
 import z from "zod";
-import { usernameSchema } from "@/application/admin/schema/username.schema";
+import { usernameSchema } from "@/src/application/admin/schema/username.schema";
 
 export const loginInputSchema = z.object({
   storeSlug: storeSlugSchema,

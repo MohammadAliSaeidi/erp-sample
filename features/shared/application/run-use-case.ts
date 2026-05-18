@@ -6,9 +6,9 @@ import {
   UseCaseForbiddenError,
   UseCaseUnauthorizedError,
   UseCaseValidationError,
-} from "../../../application/errors/use-case-errors";
+} from "@/src/application/shared/errors/use-case-errors";
 import { ZodType } from "zod";
-import { mapDomainError } from "@/application/errors/map-domain-error";
+import { mapDomainError } from "@/src/application/shared/errors/map-domain-error";
 
 export interface RunUseCaseParams<
   TDef extends UsecaseDefinition<ZodType, unknown>,

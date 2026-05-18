@@ -1,9 +1,9 @@
-import { createCategoryUsecase } from "@/application/category/usecase/create-category.usecase";
-import { listCategoriesUsecase } from "@/application/category/usecase/list-categories.usecase";
-import { resolveAuthContextFromRequest } from "@/interface/http/resolve-auth-context-from-request";
-import { mapUsecaseErrorToResponse } from "@/features/shared/adapters/http/map-usecase-error-to-response";
+import { createCategoryUsecase } from "@/src/application/category/usecase/create-category.usecase";
+import { listCategoriesUsecase } from "@/src/application/category/usecase/list-categories.usecase";
+import { resolveAuthContextFromRequest } from "@/src/interface/http/resolve-auth-context-from-request";
+import { mapUsecaseErrorToResponse } from "@/src/interface/http/map-usecase-error-to-response";
 import { runUsecase } from "@/features/shared/application/run-use-case";
-import { validateRequestJsonBody } from "@/interface/http/validate-request-json-body";
+import { validateRequestJsonBody } from "@/src/interface/http/validate-request-json-body";
 import { NextRequest, NextResponse } from "next/server";
 
 const getCategoriesHandler = async (request: NextRequest) => {

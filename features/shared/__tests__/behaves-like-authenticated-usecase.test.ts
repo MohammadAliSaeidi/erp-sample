@@ -1,6 +1,6 @@
 import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
 import { runUsecase } from "../application/run-use-case";
-import { UseCaseForbiddenError } from "../../../application/errors/use-case-errors";
+import { UseCaseForbiddenError } from "@/src/application/shared/errors/use-case-errors";
 
 export function behavesLikeAuthenticatedUsecase(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

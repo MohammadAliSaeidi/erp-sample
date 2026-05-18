@@ -1,6 +1,6 @@
 "use client";
-import { DirectionProvider } from "@/components/ui/direction";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { DirectionProvider } from "@/src/presentation/components/ui/direction";
+import { TooltipProvider } from "@/src/presentation/components/ui/tooltip";
 import { getQueryClient } from "@/lib/get-query-client";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -30,7 +30,7 @@ export default function Providers({
 					</AgGridProvider>
 				</TooltipProvider>
 			</DirectionProvider>
-			{process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
+			{process.env.NODE_ENV === "development" && <ReactQueryDevtools />}
 		</QueryClientProvider>
 	);
 }

@@ -1,7 +1,7 @@
-import { getItemsListUsecase } from "@/application/item/usecase/get-items-list.usecase";
-import { mapUsecaseErrorToResponse } from "@/features/shared/adapters/http/map-usecase-error-to-response";
+import { getItemsListUsecase } from "@/src/application/item/usecase/get-items-list.usecase";
+import { mapUsecaseErrorToResponse } from "@/src/interface/http/map-usecase-error-to-response";
 import { runUsecase } from "@/features/shared/application/run-use-case";
-import { resolveAuthContextFromRequest } from "@/interface/http/resolve-auth-context-from-request";
+import { resolveAuthContextFromRequest } from "@/src/interface/http/resolve-auth-context-from-request";
 import { NextRequest, NextResponse } from "next/server";
 
 const getItemsHandler = async (request: NextRequest) => {

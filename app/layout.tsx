@@ -1,4 +1,4 @@
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/src/presentation/components/ui/sonner";
 import {
 	DEFAULT_LOCALE,
 	LOCALE_COOKIE,
@@ -37,7 +37,7 @@ export default async function RootLayout({
 	const jar = await cookies();
 	const locale = jar.get(LOCALE_COOKIE)?.value ?? DEFAULT_LOCALE;
 	const dir = getTextDirection(locale);
-	
+
 	return (
 		<html lang={locale} className={publicSans.variable} dir={dir}>
 			{/* <Script

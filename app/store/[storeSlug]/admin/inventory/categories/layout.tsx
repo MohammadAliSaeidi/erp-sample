@@ -1,4 +1,4 @@
-import AdminDashboardContentLayout from "@/components/layouts/admin-dashboard-content-layout";
+import AdminDashboardContentLayout from "@/src/presentation/components/layouts/admin-dashboard-content-layout";
 import { PropsWithChildren } from "react";
 
 export default function Layout({ children }: PropsWithChildren) {

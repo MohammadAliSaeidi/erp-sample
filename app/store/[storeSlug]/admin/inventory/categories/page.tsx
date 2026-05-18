@@ -1,8 +1,8 @@
-import { SpinnerCustom } from "@/components/ui/spinner";
-import CategoriesList from "@/interface/ui/category/components/categories-list/categories-list";
+import { SpinnerCustom } from "@/src/presentation/components/ui/spinner";
+import CategoriesList from "@/src/interface/ui/category/components/categories-list/categories-list";
 import { requireSsrAuth } from "@/features/auth";
-import { listCategoriesUsecase } from "@/application/category/usecase/list-categories.usecase";
-import { CATEGORY_QUERY_KEYS } from "@/interface/ui/category/constants/query-keys";
+import { listCategoriesUsecase } from "@/src/application/category/usecase/list-categories.usecase";
+import { CATEGORY_QUERY_KEYS } from "@/src/interface/ui/category/constants/query-keys";
 import { runUsecase } from "@/features/shared/application/run-use-case";
 import { getQueryClient } from "@/lib/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
@@ -10,7 +10,7 @@ import { Suspense } from "react";
 import Breadcrumb from "./breadcrumb";
 import { URLS } from "@/constants/urls";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/src/presentation/components/ui/button";
 import { PlusIcon } from "lucide-react";
 
 type CategoryPageProps = {

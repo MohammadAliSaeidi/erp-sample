@@ -1,6 +1,6 @@
-import { getCategorySpecificationsUsecase } from "@/application/specification/usecase/get-category-specifications.usecase";
-import { resolveAuthContextFromRequest } from "@/interface/http/resolve-auth-context-from-request";
-import { mapUsecaseErrorToResponse } from "@/features/shared/adapters/http/map-usecase-error-to-response";
+import { getCategorySpecificationsUsecase } from "@/src/application/specification/usecase/get-category-specifications.usecase";
+import { resolveAuthContextFromRequest } from "@/src/interface/http/resolve-auth-context-from-request";
+import { mapUsecaseErrorToResponse } from "@/src/interface/http/map-usecase-error-to-response";
 import { runUsecase } from "@/features/shared/application/run-use-case";
 import { NextRequest, NextResponse } from "next/server";
 

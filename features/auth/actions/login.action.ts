@@ -1,21 +1,21 @@
 "use server";
 
 import {
-  buildLoginOperation,
+  buildLoginUsecase,
   LoginStoreUserDTO,
-} from "@/features/auth/application/operations/login.operation";
+} from "@/src/application/auth/usecase/login.usecase";
 import {
   ActionResult,
   actionSuccess,
   mapUsecaseErrorToActionResult,
-} from "@/features/shared/adapters/action/map-usecase-error-to-action-result";
+} from "@/src/interface/actions/map-usecase-error-to-action-result";
 import { runUsecase } from "@/features/shared/application/run-use-case";
 import prisma from "@/lib/prisma";
 import { setTokenCookie } from "@/lib/token";
 import { isHashMatch } from "@/lib/utils/hash/hash";
 import { LoginInput } from "../domain/types/login-body.type";
 
-const loginOperation = buildLoginOperation({
+const loginOperation = buildLoginUsecase({
   findStoreBySlug: async (storeSlug: string) => {
     return prisma.store.findUnique({
       where: { slug: storeSlug },

@@ -1,10 +1,13 @@
 "use client";
 
 import { SearchForm } from "@/app/store/[storeSlug]/admin/_components/sidebar/search-form";
-import { Breadcrumb, BreadcrumbList } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { useSidebar } from "@/components/ui/sidebar";
+import {
+	Breadcrumb,
+	BreadcrumbList,
+} from "@/src/presentation/components/ui/breadcrumb";
+import { Button } from "@/src/presentation/components/ui/button";
+import { Separator } from "@/src/presentation/components/ui/separator";
+import { useSidebar } from "@/src/presentation/components/ui/sidebar";
 import { PanelLeftIcon } from "lucide-react";
 
 export function SiteHeader() {

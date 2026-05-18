@@ -4,7 +4,7 @@ import {
   UseCaseForbiddenError,
   UseCaseUnauthorizedError,
   UseCaseValidationError,
-} from "@/application/errors/use-case-errors";
+} from "@/src/application/shared/errors/use-case-errors";
 import {
   authenticatedUsecaseFactory,
   publicUsecaseFactory,

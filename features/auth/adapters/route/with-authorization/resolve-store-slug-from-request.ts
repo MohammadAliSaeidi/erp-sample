@@ -1,1 +1,1 @@
-export { resolveStoreSlugFromRequest } from "@/interface/http/resolve-store-slug-from-request";
+export { resolveStoreSlugFromRequest } from "@/src/interface/http/resolve-store-slug-from-request";

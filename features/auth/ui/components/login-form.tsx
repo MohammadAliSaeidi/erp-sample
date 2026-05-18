@@ -1,29 +1,29 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/src/presentation/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/src/presentation/components/ui/card";
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+} from "@/src/presentation/components/ui/field";
+import { Input } from "@/src/presentation/components/ui/input";
 import { loginInputSchema } from "@/features/auth/domain/schemas/login-body.schema";
-import { useIsHydrated } from "@/hooks/use-is-hydrated";
-import { useParamBasedRedirect } from "@/hooks/use-safe-redirect";
+import { useIsHydrated } from "@/src/presentation/hooks/use-is-hydrated";
+import { useParamBasedRedirect } from "@/src/presentation/hooks/use-safe-redirect";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeClosedIcon, EyeIcon } from "lucide-react";
 import React, { useActionState, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { ActionResult } from "@/features/shared/adapters/action/map-usecase-error-to-action-result";
+import { ActionResult } from "@/src/interface/actions/map-usecase-error-to-action-result";
 import { loginAction } from "../../actions/login.action";
 import type { LoginInput as LoginInputType } from "../../domain/types/login-body.type";
 import { Prettify } from "@/features/shared/types/prettify.type";

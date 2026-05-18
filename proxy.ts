@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { resolveAdminAccessTokenCookieName } from "./features/auth/domain/lib/resolve-admin-access-token-cookie-name";
-import { buildJwtService } from "./application/auth/jwt.service";
+import { buildJwtService } from "@/src/application/auth/jwt.service";
 import { getStoreSlugFromPath } from "./lib/utils/get-store-slug-from-path";
 
 export async function proxy(request: NextRequest) {
@@ -10,7 +10,7 @@ export async function proxy(request: NextRequest) {
   requestHeaders.set("x-pathname", request.nextUrl.pathname);
 
   if (request.nextUrl.pathname.startsWith("/store")) {
-    const storeSlug = getStoreSlugFromPath(request.nextUrl.pathname)
+    const storeSlug = getStoreSlugFromPath(request.nextUrl.pathname);
 
     if (storeSlug) {
       if (
@@ -43,8 +43,8 @@ export async function proxy(request: NextRequest) {
           );
         }
 
-        const now = Date.now()
-        const isExpired = payload.exp && payload.exp < (now / 1000);
+        const now = Date.now();
+        const isExpired = payload.exp && payload.exp < now / 1000;
         const isInvalidStoreSlug = payload.storeSlug !== storeSlug;
 
         if (isExpired || isInvalidStoreSlug) {

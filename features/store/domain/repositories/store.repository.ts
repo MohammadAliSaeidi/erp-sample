@@ -1,16 +1,11 @@
 import { PrismaClient, Store } from "@/app/generated/prisma/client";
+import prisma from "@/lib/prisma";
 
-export interface IStoresRepository {
+export interface IStoresRepositoryPort {
   getBySlug: (storeSlug: string) => Promise<Store | null>;
 }
 
-export interface IStoresRepositoryBuilder {
-  (prismaDB: PrismaClient): IStoresRepository;
-}
-
-export const buildStoresRepository: IStoresRepositoryBuilder = (
-  prismaDB: PrismaClient,
-) => {
+export const buildStoresRepositoryAdapter = (prismaDB: PrismaClient) => {
   return {
     getBySlug: async (storeSlug: string) => {
       const store = await prismaDB.store.findUnique({
@@ -23,3 +18,5 @@ export const buildStoresRepository: IStoresRepositoryBuilder = (
     },
   };
 };
+
+export const storeRepositoryAdapter = buildStoresRepositoryAdapter(prisma);

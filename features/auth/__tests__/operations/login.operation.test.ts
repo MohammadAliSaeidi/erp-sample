@@ -1,116 +1,112 @@
-import { buildLoginOperation } from "@/features/auth/application/operations/login.operation";
+import { buildLoginUsecase } from "@/src/application/auth/usecase/login.usecase";
 import {
-	UseCaseNotFoundError,
-	UseCaseUnauthorizedError,
-	UseCaseValidationError,
-} from "@/application/errors/use-case-errors";
+  UseCaseNotFoundError,
+  UseCaseUnauthorizedError,
+  UseCaseValidationError,
+} from "@/src/application/shared/errors/use-case-errors";
 import { runUsecase } from "@/features/shared/application/run-use-case";
 
 describe("login operation", () => {
-	it("validates required input fields", async () => {
-		const operation = buildLoginOperation({
-			findStoreBySlug: jest.fn(),
-			findStoreUserByStoreAndUsername: jest.fn(),
-			isPasswordMatch: jest.fn(),
-		});
+  it("validates required input fields", async () => {
+    const operation = buildLoginUsecase({
+      findStoreBySlug: jest.fn(),
+      findStoreUserByStoreAndUsername: jest.fn(),
+      isPasswordMatch: jest.fn(),
+    });
 
-		await expect(
-			runUsecase({
-				useCase: operation,
-				input: {
-					username: "admin",
-					password: "1234",
-				},
-			}),
-		).rejects.toBeInstanceOf(UseCaseValidationError);
-	});
+    await expect(
+      runUsecase({
+        useCase: operation,
+        input: {
+          username: "admin",
+          password: "1234",
+        },
+      }),
+    ).rejects.toBeInstanceOf(UseCaseValidationError);
+  });
 
-	it("throws OperationNotFoundError when store does not exist", async () => {
-		const operation = buildLoginOperation({
-			findStoreBySlug: jest.fn().mockResolvedValue(null),
-			findStoreUserByStoreAndUsername: jest.fn(),
-			isPasswordMatch: jest.fn(),
-		});
+  it("throws OperationNotFoundError when store does not exist", async () => {
+    const operation = buildLoginUsecase({
+      findStoreBySlug: jest.fn().mockResolvedValue(null),
+      findStoreUserByStoreAndUsername: jest.fn(),
+      isPasswordMatch: jest.fn(),
+    });
 
-		await expect(
-			runUsecase({
-				useCase: operation,
-				input: {
-					storeSlug: "missing-store",
-					username: "admin",
-					password: "1234",
-				},
-			}),
-		).rejects.toBeInstanceOf(UseCaseNotFoundError);
-	});
+    await expect(
+      runUsecase({
+        useCase: operation,
+        input: {
+          storeSlug: "missing-store",
+          username: "admin",
+          password: "1234",
+        },
+      }),
+    ).rejects.toBeInstanceOf(UseCaseNotFoundError);
+  });
 
-	it("throws OperationUnauthorizedError for invalid credentials", async () => {
-		const operation = buildLoginOperation({
-			findStoreBySlug: jest
-				.fn()
-				.mockResolvedValue({ id: "store-1", slug: "store-1" }),
-			findStoreUserByStoreAndUsername: jest
-				.fn()
-				.mockResolvedValue({
-					id: "user-1",
-					name: "Admin",
-					storeId: "store-1",
-					username: "admin",
-					roleId: "role-1",
-					password: "hashed-password",
-				}),
-			isPasswordMatch: jest.fn().mockResolvedValue(false),
-		});
+  it("throws OperationUnauthorizedError for invalid credentials", async () => {
+    const operation = buildLoginUsecase({
+      findStoreBySlug: jest
+        .fn()
+        .mockResolvedValue({ id: "store-1", slug: "store-1" }),
+      findStoreUserByStoreAndUsername: jest.fn().mockResolvedValue({
+        id: "user-1",
+        name: "Admin",
+        storeId: "store-1",
+        username: "admin",
+        roleId: "role-1",
+        password: "hashed-password",
+      }),
+      isPasswordMatch: jest.fn().mockResolvedValue(false),
+    });
 
-		await expect(
-			runUsecase({
-				useCase: operation,
-				input: {
-					storeSlug: "store-1",
-					username: "admin",
-					password: "bad-pass",
-				},
-			}),
-		).rejects.toBeInstanceOf(UseCaseUnauthorizedError);
-	});
+    await expect(
+      runUsecase({
+        useCase: operation,
+        input: {
+          storeSlug: "store-1",
+          username: "admin",
+          password: "bad-pass",
+        },
+      }),
+    ).rejects.toBeInstanceOf(UseCaseUnauthorizedError);
+  });
 
-	it("returns token payload and cookie name when credentials are valid", async () => {
-		const operation = buildLoginOperation({
-			findStoreBySlug: jest
-				.fn()
-				.mockResolvedValue({ id: "store-1", slug: "store-1" }),
-			findStoreUserByStoreAndUsername: jest
-				.fn()
-				.mockResolvedValue({
-					id: "user-1",
-					name: "Admin",
-					storeId: "store-1",
-					username: "admin",
-					roleId: "role-1",
-					password: "hashed-password",
-				}),
-			isPasswordMatch: jest.fn().mockResolvedValue(true),
-		});
+  it("returns token payload and cookie name when credentials are valid", async () => {
+    const operation = buildLoginUsecase({
+      findStoreBySlug: jest
+        .fn()
+        .mockResolvedValue({ id: "store-1", slug: "store-1" }),
+      findStoreUserByStoreAndUsername: jest.fn().mockResolvedValue({
+        id: "user-1",
+        name: "Admin",
+        storeId: "store-1",
+        username: "admin",
+        roleId: "role-1",
+        password: "hashed-password",
+      }),
+      isPasswordMatch: jest.fn().mockResolvedValue(true),
+    });
 
-		await expect(
-			runUsecase({
-				useCase: operation,
-				input: {
-					storeSlug: "store-1",
-					username: "admin",
-					password: "correct-pass",
-				},
-			}),
-		).resolves.toMatchObject({
-			cookieName: "ADMIN_ACCESS_TOKEN_COOKIE_STORE_1",
-			tokenPayload: {
-				sub: "user-1",
-				adminId: "user-1",
-				storeId: "store-1",
-				storeSlug: "store-1",
-				username: "admin",
-				roleId: "role-1",
-			},
-		});
-	});
+    await expect(
+      runUsecase({
+        useCase: operation,
+        input: {
+          storeSlug: "store-1",
+          username: "admin",
+          password: "correct-pass",
+        },
+      }),
+    ).resolves.toMatchObject({
+      cookieName: "ADMIN_ACCESS_TOKEN_COOKIE_STORE_1",
+      tokenPayload: {
+        sub: "user-1",
+        adminId: "user-1",
+        storeId: "store-1",
+        storeSlug: "store-1",
+        username: "admin",
+        roleId: "role-1",
+      },
+    });
+  });
 });

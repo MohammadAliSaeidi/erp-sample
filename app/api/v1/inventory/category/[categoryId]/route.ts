@@ -1,9 +1,9 @@
-import { getCategoryByIdUsecase } from "@/application/category/usecase/get-category-by-id.usecase";
-import { updateCategoryUsecase } from "@/application/category/usecase/update-category.usecase";
-import { resolveAuthContextFromRequest } from "@/interface/http/resolve-auth-context-from-request";
-import { mapUsecaseErrorToResponse } from "@/features/shared/adapters/http/map-usecase-error-to-response";
+import { getCategoryByIdUsecase } from "@/src/application/category/usecase/get-category-by-id.usecase";
+import { updateCategoryUsecase } from "@/src/application/category/usecase/update-category.usecase";
+import { resolveAuthContextFromRequest } from "@/src/interface/http/resolve-auth-context-from-request";
+import { mapUsecaseErrorToResponse } from "@/src/interface/http/map-usecase-error-to-response";
 import { runUsecase } from "@/features/shared/application/run-use-case";
-import { validateRequestJsonBody } from "@/interface/http/validate-request-json-body";
+import { validateRequestJsonBody } from "@/src/interface/http/validate-request-json-body";
 import { NextRequest, NextResponse } from "next/server";
 
 type CategoryRouteContext = {
