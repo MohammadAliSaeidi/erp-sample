@@ -3,7 +3,7 @@ import { UseCaseNotFoundError } from "@/src/application/shared/errors/use-case-e
 import { CategoryId } from "@/src/domain/category/category-id";
 import { StoreId } from "@/src/domain/store/store-id";
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
+import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
 import { categoryRepositoryAdapter } from "@/src/infrastructure/database/adapters/category/category-repository.adapter";
 import z from "zod";
 import { categoryEntityToDTOMapper } from "./mappers/category-entity-to-dto.mapper";
@@ -14,7 +14,7 @@ const getCategoryByIdInputSchema = z.object({
 });
 
 export const buildGetCategoryByIdUsecase = () =>
-  authenticatedUsecaseFactory({
+  buildAuthenticatedUsecase({
     key: "categories.get-by-id",
     auth: "required",
     requiredPermissions: [PERMISSIONS.CATEGORIES.READ_DETAILS],

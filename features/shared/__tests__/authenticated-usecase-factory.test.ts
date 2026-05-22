@@ -1,7 +1,7 @@
 import z from "zod";
 import {
   AuthenticatedUsecaseDefinition,
-  authenticatedUsecaseFactory,
+  buildAuthenticatedUsecase,
 } from "../application/use-case";
 import { runUsecase } from "../application/run-use-case";
 import { UseCaseForbiddenError } from "@/src/application/shared/errors/use-case-errors";
@@ -36,7 +36,7 @@ describe("authenticatedUsecaseFactory", () => {
     };
 
   it("preserves all definition properties", () => {
-    const usecase = authenticatedUsecaseFactory(baseDefinition);
+    const usecase = buildAuthenticatedUsecase(baseDefinition);
 
     expect(usecase.key).toBe("test.usecase");
     expect(usecase.auth).toBe("required");
@@ -45,7 +45,7 @@ describe("authenticatedUsecaseFactory", () => {
   });
 
   it("defaults requiredPermissions to empty array", () => {
-    const usecase = authenticatedUsecaseFactory({
+    const usecase = buildAuthenticatedUsecase({
       ...baseDefinition,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       requiredPermissions: undefined as any,
@@ -57,7 +57,7 @@ describe("authenticatedUsecaseFactory", () => {
   it("blocks execution when permission missing", async () => {
     const execute = jest.fn();
 
-    const usecase = authenticatedUsecaseFactory({
+    const usecase = buildAuthenticatedUsecase({
       key: "test",
       auth: "required",
       requiredPermissions: ["categories:update"],
@@ -83,7 +83,7 @@ describe("authenticatedUsecaseFactory", () => {
   it("allows execution when grantsAll is true", async () => {
     const execute = jest.fn().mockResolvedValue("ok");
 
-    const usecase = authenticatedUsecaseFactory({
+    const usecase = buildAuthenticatedUsecase({
       key: "test",
       auth: "required",
       requiredPermissions: ["categories:update"],
@@ -106,7 +106,7 @@ describe("authenticatedUsecaseFactory", () => {
   });
 
   it("throws when auth is required but missing", async () => {
-    const usecase = authenticatedUsecaseFactory({
+    const usecase = buildAuthenticatedUsecase({
       key: "test",
       auth: "required",
       requiredPermissions: [],

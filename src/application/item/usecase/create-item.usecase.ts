@@ -1,5 +1,5 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
+import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
 import {
   Item,
   ItemSpecificationAssignment,
@@ -9,7 +9,7 @@ import { brand } from "@/lib/brand";
 import { createItemDTOToEntityMapper } from "./mappers/create-item-dto-to-entity.mapper";
 import { uuid7GeneratorAdapter } from "@/lib/id-generator/uuid-generator.adapter";
 import { itemRepositoryAdapter } from "@/src/infrastructure/database/adapters/item/item-repository.adapter";
-import { IItemRepositoryPort } from "@/src/domain/item/item-repository.port";
+import { ItemRepositoryPort } from "@/src/domain/item/item-repository.port";
 import { IItemQueryPort } from "../port/item.query.port";
 import { itemQueryAdapter } from "@/src/infrastructure/database/adapters/item/item-query.adapter";
 import { IdGeneratorPort } from "@/lib/id-generator/id-generator.port";
@@ -17,13 +17,13 @@ import { StoreId } from "@/src/domain/store/store-id";
 import { ItemDTO } from "@/src/application/item/dto/item.dto";
 
 export interface CreateItemUsecaseDeps {
-  itemRepository: Pick<IItemRepositoryPort, "create">;
+  itemRepository: Pick<ItemRepositoryPort, "create">;
   itemQuery: Pick<IItemQueryPort, "getItemDTOById">;
   idGenerator: IdGeneratorPort;
 }
 
 export const buildCreateItemUsecase = (deps: CreateItemUsecaseDeps) =>
-  authenticatedUsecaseFactory({
+  buildAuthenticatedUsecase({
     key: "items.create",
     auth: "required",
     requiredPermissions: [PERMISSIONS.ITEMS.CREATE],

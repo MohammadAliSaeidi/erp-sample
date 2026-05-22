@@ -1,7 +1,7 @@
 import { z, ZodType } from "zod";
 import {
   AuthenticatedUsecaseDefinition,
-  authenticatedUsecaseFactory,
+  buildAuthenticatedUsecase,
 } from "@/features/shared/application/use-case";
 import { LockServicePort } from "@/src/application/shared/lock-service/lock-service.port";
 import { LockKey } from "@/src/application/shared/lock-service/lock-service.types";
@@ -62,7 +62,7 @@ export const buildReleaseLockUsecase = <
     TAuth
   >,
 ) =>
-  authenticatedUsecaseFactory({
+  buildAuthenticatedUsecase({
     key: deps.key,
     auth: "required",
     requiredPermissions: deps.requiredPermissions,

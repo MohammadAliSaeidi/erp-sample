@@ -1,5 +1,5 @@
 import { Permission } from "@/features/auth/domain/types/permission.type";
-import { PrismaClient } from "@/app/generated/prisma/client";
+import { PrismaClient } from "@/src/infrastructure/database/orm/prisma/generated/client";
 import { IPermissionRepositoryPort } from "@/src/domain/permission/permission-repository.port";
 
 export interface IPermissionRepositoryAdapterBuilder {

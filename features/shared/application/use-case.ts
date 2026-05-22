@@ -36,13 +36,13 @@ export type UsecaseInput<TDef extends UsecaseDefinition<ZodType, unknown>> =
 export type UsecaseResult<TDef extends UsecaseDefinition<ZodType, unknown>> =
   Awaited<ReturnType<TDef["execute"]>>;
 
-export const authenticatedUsecaseFactory = <TSchema extends ZodType, TResult>(
+export const buildAuthenticatedUsecase = <TSchema extends ZodType, TResult>(
   definition: AuthenticatedUsecaseDefinition<TSchema, TResult>,
 ): AuthenticatedUsecaseDefinition<TSchema, TResult> => ({
   ...definition,
   requiredPermissions: definition.requiredPermissions ?? [],
 });
 
-export const publicUsecaseFactory = <TSchema extends ZodType, TResult>(
+export const buildPublicUsecase = <TSchema extends ZodType, TResult>(
   definition: PublicUsecaseDefinition<TSchema, TResult>,
 ): PublicUsecaseDefinition<TSchema, TResult> => definition;

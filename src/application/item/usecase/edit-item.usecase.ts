@@ -1,11 +1,11 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
+import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
 import { Item } from "@/src/domain/item/item.entity";
 import { ItemDTO } from "@/src/application/item/dto/item.dto";
 import { brand } from "@/lib/brand";
 import { createItemDTOToEntityMapper } from "./mappers/create-item-dto-to-entity.mapper";
 import { itemRepositoryAdapter } from "@/src/infrastructure/database/adapters/item/item-repository.adapter";
-import { IItemRepositoryPort } from "@/src/domain/item/item-repository.port";
+import { ItemRepositoryPort } from "@/src/domain/item/item-repository.port";
 import { IItemQueryPort } from "../port/item.query.port";
 import { itemQueryAdapter } from "@/src/infrastructure/database/adapters/item/item-query.adapter";
 import { StoreId } from "@/src/domain/store/store-id";
@@ -14,12 +14,12 @@ import { ItemId } from "@/src/domain/item/item-id";
 import { UseCaseNotFoundError } from "@/src/application/shared/errors/use-case-errors";
 
 export interface EditItemUsecaseDeps {
-  itemRepository: Pick<IItemRepositoryPort, "update">;
+  itemRepository: Pick<ItemRepositoryPort, "update">;
   itemQuery: Pick<IItemQueryPort, "getItemDTOById">;
 }
 
 export const buildEditItemUsecase = (deps: EditItemUsecaseDeps) =>
-  authenticatedUsecaseFactory({
+  buildAuthenticatedUsecase({
     key: "items.edit",
     auth: "required",
     requiredPermissions: [PERMISSIONS.ITEMS.UPDATE],

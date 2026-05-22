@@ -1,4 +1,4 @@
-import { Category as PrismaCategory } from "@/app/generated/prisma/client";
+import { Category as PrismaCategory } from "@/src/infrastructure/database/orm/prisma/generated/client";
 import { CategoryId } from "@/src/domain/category/category-id";
 import {
   createCategory,

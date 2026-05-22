@@ -1,4 +1,4 @@
-import { Prisma } from "@/app/generated/prisma/client";
+import { Prisma } from "@/src/infrastructure/database/orm/prisma/generated/client";
 import { z } from "zod";
 
 import { defineQueryFromFields } from "@/src/application/shared/query/factories/query-definition.factory";

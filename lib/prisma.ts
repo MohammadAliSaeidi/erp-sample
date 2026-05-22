@@ -1,7 +1,7 @@
 // lib/prisma.ts   (or wherever you keep this file)
 
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "@/app/generated/prisma/client";
+import { PrismaClient } from "@/src/infrastructure/database/orm/prisma/generated/client";
 
 const globalForPrisma = global as unknown as {
   prisma?: PrismaClient;

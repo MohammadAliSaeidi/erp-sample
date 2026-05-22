@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/app/generated/prisma/client";
+import { PrismaClient } from "@/src/infrastructure/database/orm/prisma/generated/client";
 import { ISpecificationRepositoryPort } from "@/src/domain/specification/specification-repository.port";
 import {
   createSpecification,

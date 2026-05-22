@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
+import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
 import { LockServicePort } from "@/src/application/shared/lock-service/lock-service.port";
 import { LockKey } from "@/src/application/shared/lock-service/lock-service.types";
 import { Permission } from "@/features/auth/domain/types/permission.type";
@@ -21,7 +21,7 @@ const inputSchema = z.object({
 });
 
 export const buildRefreshLockUsecase = (deps: RefreshLockDeps) =>
-  authenticatedUsecaseFactory({
+  buildAuthenticatedUsecase({
     key: deps.key,
     auth: "required",
     requiredPermissions: deps.permissions,

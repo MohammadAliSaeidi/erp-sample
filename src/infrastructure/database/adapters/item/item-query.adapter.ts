@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/app/generated/prisma/client";
+import { PrismaClient } from "@/src/infrastructure/database/orm/prisma/generated/client";
 import { IItemQueryPort } from "@/src/application/item/port/item.query.port";
 import { ItemId } from "@/src/domain/item/item-id";
 import { StoreId } from "@/src/domain/store/store-id";

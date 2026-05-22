@@ -1,5 +1,5 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
+import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
 import { brand } from "@/lib/brand";
 import { IItemQueryPort } from "../port/item.query.port";
 import { itemQueryAdapter } from "@/src/infrastructure/database/adapters/item/item-query.adapter";
@@ -10,7 +10,7 @@ export interface GetItemsListUsecaseDeps {
 }
 
 export const buildGetItemsListUsecase = (deps: GetItemsListUsecaseDeps) =>
-  authenticatedUsecaseFactory({
+  buildAuthenticatedUsecase({
     key: "items.list",
     auth: "required",
     requiredPermissions: [PERMISSIONS.ITEMS.READ],

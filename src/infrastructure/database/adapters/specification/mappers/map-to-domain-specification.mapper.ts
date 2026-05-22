@@ -1,7 +1,7 @@
 import {
   SpecificationValue as PrismaSpecificationValue,
   SpecificationValueType as PrismaSpecificationValueType,
-} from "@/app/generated/prisma/client";
+} from "@/src/infrastructure/database/orm/prisma/generated/client";
 import { Specification } from "@/src/domain/specification/specification.aggregate";
 import { mapToDomainType } from "./map-to-domain-type.mapper";
 import { SpecificationValue as DomainSpecificationValue } from "@/src/domain/specification/specification-value.entity";

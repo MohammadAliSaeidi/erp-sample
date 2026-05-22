@@ -14,7 +14,7 @@ import { StoreId } from "@/src/domain/store/store-id";
 import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
 import {
   AuthenticatedUsecaseDefinition,
-  authenticatedUsecaseFactory,
+  buildAuthenticatedUsecase,
 } from "@/features/shared/application/use-case";
 import { brand, Brand } from "@/lib/brand";
 import { z, ZodType } from "zod";
@@ -80,7 +80,7 @@ export const buildAcquireLockUsecase = <
     TAuth
   >,
 ) =>
-  authenticatedUsecaseFactory({
+  buildAuthenticatedUsecase({
     key: deps.key,
     auth: "required",
     requiredPermissions: deps.requiredPermissions,

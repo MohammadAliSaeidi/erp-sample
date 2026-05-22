@@ -1,5 +1,5 @@
 import { SpecificationValueType as DomainSpecificationValueType } from "@/src/domain/specification/specification-value-type.enum";
-import { SpecificationValueType as PrismaSpecificationValueType } from "@/app/generated/prisma/client";
+import { SpecificationValueType as PrismaSpecificationValueType } from "@/src/infrastructure/database/orm/prisma/generated/client";
 
 export const mapToDomainType = (
   type: PrismaSpecificationValueType,

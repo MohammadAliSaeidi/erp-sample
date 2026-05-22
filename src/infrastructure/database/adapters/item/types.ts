@@ -1,4 +1,4 @@
-import { Prisma } from "@/app/generated/prisma/client";
+import { Prisma } from "@/src/infrastructure/database/orm/prisma/generated/client";
 
 /**
  * Centralizes relation includes so the mapper type and query stay in sync:

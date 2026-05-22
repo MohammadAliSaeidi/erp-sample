@@ -1,13 +1,14 @@
-import { PrismaClient } from "@/app/generated/prisma/client";
+import { PrismaClient } from "@/src/infrastructure/database/orm/prisma/generated/client";
 import { ItemId } from "@/src/domain/item/item-id";
-import { IItemRepositoryPort } from "@/src/domain/item/item-repository.port";
+import { ItemRepositoryPort } from "@/src/domain/item/item-repository.port";
 import { StoreId } from "@/src/domain/store/store-id";
 import { itemPrismaToDomainMapper } from "./mappers/item-prisma-to-domain-mapper";
 import { Item } from "@/src/domain/item/item.entity";
 import prisma from "@/lib/prisma";
+import { itemWithRelationsInclude } from "@/src/infrastructure/database/adapters/item/types";
 
 export interface IItemRepositoryAdapterBuilder {
-  (prismaDB: PrismaClient): IItemRepositoryPort;
+  (prismaDB: PrismaClient): ItemRepositoryPort;
 }
 
 export const buildItemRepositoryAdapter: IItemRepositoryAdapterBuilder = (
@@ -17,34 +18,16 @@ export const buildItemRepositoryAdapter: IItemRepositoryAdapterBuilder = (
     getList: async (storeId: StoreId): Promise<Item[]> => {
       const items = await prismaDB.item.findMany({
         where: { storeId: String(storeId) },
-        include: {
-          itemSpecificationValues: {
-            select: {
-              specificationId: true,
-              specificationValueId: true,
-            },
-          },
-        },
+        include: itemWithRelationsInclude,
       });
 
-      const itemsDomain = items.map((item) =>
-        itemPrismaToDomainMapper.map(item),
-      );
-
-      return itemsDomain;
+      return items.map((item): Item => itemPrismaToDomainMapper.map(item));
     },
 
     getById: async (itemId: ItemId, storeId: StoreId): Promise<Item | null> => {
       const item = await prismaDB.item.findUnique({
         where: { id: String(itemId), storeId: String(storeId) },
-        include: {
-          itemSpecificationValues: {
-            select: {
-              specificationId: true,
-              specificationValueId: true,
-            },
-          },
-        },
+        include: itemWithRelationsInclude,
       });
 
       if (!item) return null;
@@ -57,14 +40,7 @@ export const buildItemRepositoryAdapter: IItemRepositoryAdapterBuilder = (
     create: async (item: Item, storeId: StoreId): Promise<Item> => {
       const createdItem = await prismaDB.item.create({
         data: { ...item, storeId: String(storeId) },
-        include: {
-          itemSpecificationValues: {
-            select: {
-              specificationId: true,
-              specificationValueId: true,
-            },
-          },
-        },
+        include: itemWithRelationsInclude,
       });
 
       return itemPrismaToDomainMapper.map(createdItem);
@@ -82,14 +58,7 @@ export const buildItemRepositoryAdapter: IItemRepositoryAdapterBuilder = (
       const updatedItem = await prismaDB.item.update({
         where: { id: String(item.id), storeId: String(storeId) },
         data: { ...item, storeId: String(storeId) },
-        include: {
-          itemSpecificationValues: {
-            select: {
-              specificationId: true,
-              specificationValueId: true,
-            },
-          },
-        },
+        include: itemWithRelationsInclude,
       });
 
       return itemPrismaToDomainMapper.map(updatedItem);

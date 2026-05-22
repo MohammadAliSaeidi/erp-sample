@@ -1,4 +1,7 @@
-import { PrismaClient, Store } from "@/app/generated/prisma/client";
+import {
+  PrismaClient,
+  Store,
+} from "@/src/infrastructure/database/orm/prisma/generated/client";
 import prisma from "@/lib/prisma";
 
 export interface IStoresRepositoryPort {

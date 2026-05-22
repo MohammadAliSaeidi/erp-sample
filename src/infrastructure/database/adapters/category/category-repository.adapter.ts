@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/app/generated/prisma/client";
+import { PrismaClient } from "@/src/infrastructure/database/orm/prisma/generated/client";
 import { CategoryNotFoundForStoreError } from "@/src/domain/category/errors/category-not-found-for-store.error";
 import { ICategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
 import { Category } from "@/src/domain/category/category.entity";

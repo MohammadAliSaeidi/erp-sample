@@ -2,7 +2,7 @@ import { CategoryDTO } from "@/src/application/category/dto/category.dto";
 import { ICategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
 import { StoreId } from "@/src/domain/store/store-id";
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
+import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
 import { categoryRepositoryAdapter } from "@/src/infrastructure/database/adapters/category/category-repository.adapter";
 import z from "zod";
 
@@ -13,7 +13,7 @@ export interface ListCategoriesUsecaseDeps {
 }
 
 export const buildListCategoriesUsecase = (deps: ListCategoriesUsecaseDeps) =>
-  authenticatedUsecaseFactory({
+  buildAuthenticatedUsecase({
     key: "categories.list",
     auth: "required",
     requiredPermissions: [PERMISSIONS.CATEGORIES.READ],

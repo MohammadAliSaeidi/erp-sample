@@ -6,7 +6,7 @@ import { CategoryNotFoundForStoreError } from "@/src/domain/category/errors/cate
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import {
   AuthenticatedUsecaseDefinition,
-  authenticatedUsecaseFactory,
+  buildAuthenticatedUsecase,
 } from "@/features/shared/application/use-case";
 import { categoryRepositoryAdapter } from "@/src/infrastructure/database/adapters/category/category-repository.adapter";
 import { brand } from "@/lib/brand";
@@ -20,7 +20,7 @@ export interface UpdateCategoryUsecaseDeps {
 export const buildUpdateCategoryUsecase = (
   deps: UpdateCategoryUsecaseDeps,
 ): AuthenticatedUsecaseDefinition<typeof editCategorySchema, CategoryDTO> =>
-  authenticatedUsecaseFactory({
+  buildAuthenticatedUsecase({
     key: "categories.update",
     auth: "required",
     requiredPermissions: [PERMISSIONS.CATEGORIES.UPDATE],

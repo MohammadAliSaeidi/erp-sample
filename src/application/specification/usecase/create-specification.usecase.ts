@@ -1,5 +1,5 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
+import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
 import { SpecificationDTO } from "../dto/specification.dto";
 import { uuid7GeneratorAdapter } from "@/lib/id-generator/uuid-generator.adapter";
 import { createSpecification } from "@/src/domain/specification/specification.aggregate";
@@ -20,7 +20,7 @@ export interface CreateSpecificationUsecaseDeps {
 export const buildCreateSpecificationUsecase = (
   deps: CreateSpecificationUsecaseDeps,
 ) =>
-  authenticatedUsecaseFactory({
+  buildAuthenticatedUsecase({
     key: "specifications.create",
     auth: "required",
     requiredPermissions: [PERMISSIONS.SPECIFICATION.CREATE],

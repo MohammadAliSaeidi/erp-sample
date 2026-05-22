@@ -1,5 +1,5 @@
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { authenticatedUsecaseFactory } from "@/features/shared/application/use-case";
+import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
 import { specificationRepositoryAdapter } from "@/src/infrastructure/database/adapters/specification/specification-repository.adapter";
 
 import { CategoryId } from "@/src/domain/category/category-id";
@@ -16,7 +16,7 @@ export interface GetCategorySpecificationsUsecaseDeps {
 export const buildGetCategorySpecificationsUsecase = (
   deps: GetCategorySpecificationsUsecaseDeps,
 ) =>
-  authenticatedUsecaseFactory({
+  buildAuthenticatedUsecase({
     key: "category-specifications.get-list",
     auth: "required",
     requiredPermissions: [PERMISSIONS.SPECIFICATION.READ],

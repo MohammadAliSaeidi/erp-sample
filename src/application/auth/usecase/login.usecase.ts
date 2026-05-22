@@ -1,4 +1,7 @@
-import { Store, StoreUser } from "@/app/generated/prisma/client";
+import {
+  Store,
+  StoreUser,
+} from "@/src/infrastructure/database/orm/prisma/generated/client";
 import { getAdminAccessTokenCookieName } from "@/constants/token-names";
 import { Role } from "@/features/admin/domain/role";
 import { loginInputSchema } from "@/features/auth/domain/schemas/login-body.schema";
@@ -7,7 +10,7 @@ import {
   UseCaseUnauthorizedError,
 } from "@/src/application/shared/errors/use-case-errors";
 import {
-  publicUsecaseFactory,
+  buildPublicUsecase,
   PublicUsecaseDefinition,
 } from "@/features/shared/application/use-case";
 import { AdminAccessTokenPayload } from "@/features/shared/types/admin-access-token-payload";
@@ -20,7 +23,7 @@ export type LoginStoreUserDTO = Pick<
 > &
   Pick<Role, "grantsAll">;
 
-export interface LoginOperationDeps {
+export interface LoginUsecaseDeps {
   findStoreBySlug: (storeSlug: string) => Promise<LoginStoreDTO | null>;
   findStoreUserByStoreAndUsername: (
     storeId: string,
@@ -35,9 +38,9 @@ export interface LoginOperationResult {
 }
 
 export const buildLoginUsecase = (
-  deps: LoginOperationDeps,
+  deps: LoginUsecaseDeps,
 ): PublicUsecaseDefinition<typeof loginInputSchema, LoginOperationResult> =>
-  publicUsecaseFactory({
+  buildPublicUsecase({
     key: "auth.login",
     auth: "public",
     inputSchema: loginInputSchema,

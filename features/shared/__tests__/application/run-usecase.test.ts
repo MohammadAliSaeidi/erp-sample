@@ -6,8 +6,8 @@ import {
   UseCaseValidationError,
 } from "@/src/application/shared/errors/use-case-errors";
 import {
-  authenticatedUsecaseFactory,
-  publicUsecaseFactory,
+  buildAuthenticatedUsecase,
+  buildPublicUsecase,
 } from "@/features/shared/application/use-case";
 import { runUsecase } from "@/features/shared/application/run-use-case";
 import z from "zod";
@@ -30,7 +30,7 @@ const AUTH_CONTEXT: AuthContext = {
 
 describe("runOperation", () => {
   it("throws OperationValidationError for invalid input", async () => {
-    const operation = publicUsecaseFactory({
+    const operation = buildPublicUsecase({
       key: "test.public",
       auth: "public",
       inputSchema: z.object({ value: z.number() }),
@@ -46,7 +46,7 @@ describe("runOperation", () => {
   });
 
   it("throws OperationUnauthorizedError for authenticated operation without auth context", async () => {
-    const operation = authenticatedUsecaseFactory({
+    const operation = buildAuthenticatedUsecase({
       key: "test.auth-required",
       auth: "required",
       requiredPermissions: [READ_PERMISSION],
@@ -63,7 +63,7 @@ describe("runOperation", () => {
   });
 
   it("throws OperationForbiddenError when required permissions are missing", async () => {
-    const operation = authenticatedUsecaseFactory({
+    const operation = buildAuthenticatedUsecase({
       key: "test.forbidden",
       auth: "required",
       requiredPermissions: [READ_PERMISSION],
@@ -84,7 +84,7 @@ describe("runOperation", () => {
   });
 
   it("executes an authenticated operation when permissions match", async () => {
-    const operation = authenticatedUsecaseFactory({
+    const operation = buildAuthenticatedUsecase({
       key: "test.success",
       auth: "required",
       requiredPermissions: [READ_PERMISSION],

@@ -4,7 +4,7 @@ import { createCategory } from "@/src/domain/category/category.entity";
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import {
   AuthenticatedUsecaseDefinition,
-  authenticatedUsecaseFactory,
+  buildAuthenticatedUsecase,
 } from "@/features/shared/application/use-case";
 import { categoryRepositoryAdapter } from "@/src/infrastructure/database/adapters/category/category-repository.adapter";
 import { brand } from "@/lib/brand";
@@ -21,7 +21,7 @@ export interface CreateCategoryUsecaseDeps {
 export const buildCreateCategoryUsecase = (
   deps: CreateCategoryUsecaseDeps,
 ): AuthenticatedUsecaseDefinition<typeof createCategorySchema, CategoryDTO> =>
-  authenticatedUsecaseFactory({
+  buildAuthenticatedUsecase({
     key: "categories.create",
     auth: "required",
     requiredPermissions: [PERMISSIONS.CATEGORIES.CREATE],
