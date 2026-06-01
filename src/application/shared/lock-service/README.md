@@ -3,6 +3,10 @@
 This document describes the realtime, tenant‑safe, entity‑scoped locking system for the inventory management SaaS.  
 It is designed to prevent conflicting edits and to show edit presence in realtime.
 
+**Implementation plan (TDD tasks, definition of done, edge cases):** [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md)
+
+**Sequence diagram:** [FLOW.mermaid](./FLOW.mermaid)
+
 ---
 
 ## Goals

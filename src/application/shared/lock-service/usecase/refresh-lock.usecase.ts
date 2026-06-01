@@ -26,11 +26,10 @@ export const buildRefreshLockUsecase = (deps: RefreshLockDeps) =>
     auth: "required",
     requiredPermissions: deps.permissions,
     inputSchema,
-    execute: async ({ input, authContext: { storeId, adminId } }) => {
+    execute: async ({ input, authContext: { storeId } }) => {
       const key = deps.buildLockKey(storeId, input.entityId);
       const ok = await deps.lockService.refresh(
         key,
-        adminId,
         input.token,
         input.ttlMs,
       );

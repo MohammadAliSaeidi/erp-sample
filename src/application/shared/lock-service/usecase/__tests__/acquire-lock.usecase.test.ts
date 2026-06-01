@@ -32,7 +32,7 @@ describe("buildAcquireLockUsecase", () => {
             itemId: input.entityId,
             lockedBy: String(ctx.adminId),
             expiresAt: result.expiresAt,
-            token: result.token,
+            token: result.lockToken,
           },
           undefined,
         ),
@@ -105,7 +105,7 @@ describe("buildAcquireLockUsecase", () => {
           payload: expect.objectContaining({
             storeId: "store-1",
             itemId: "item-1",
-            token: acquired.token,
+            token: acquired.lockToken,
           }),
         }),
       );
@@ -142,7 +142,7 @@ describe("buildAcquireLockUsecase", () => {
                 itemId: input.entityId,
                 lockedBy: String(ctx.adminId),
                 expiresAt: result.expiresAt,
-                token: result.token,
+                token: result.lockToken,
               },
               undefined,
             ),

@@ -3,6 +3,7 @@ import {
   buildItemLockKey,
   createMockLockService,
   LOCK_AUTH_CONTEXT,
+  LOCK_TOKEN,
   REFRESH_LOCK_INPUT,
 } from "@/src/application/shared/lock-service/testing/lock-usecase-test.helpers";
 import { runUsecase } from "@/features/shared/application/run-use-case";
@@ -38,7 +39,7 @@ describe("buildRefreshItemLockUsecase", () => {
       expect(result).toEqual({ ok: true });
       expect(lockService.refresh).toHaveBeenCalledWith(
         buildItemLockKey("store-1", "item-1"),
-        REFRESH_LOCK_INPUT.token,
+        LOCK_TOKEN,
         REFRESH_LOCK_INPUT.ttlMs,
       );
     });

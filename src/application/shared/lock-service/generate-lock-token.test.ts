@@ -1,4 +1,4 @@
-import { LockToken } from "@/src/application/shared/lock-service/lock-service.port";
+import { LockToken } from "@/src/application/shared/lock-service/lock-service.types";
 import z from "zod";
 
 async function loadGenerateLockToken(): Promise<{

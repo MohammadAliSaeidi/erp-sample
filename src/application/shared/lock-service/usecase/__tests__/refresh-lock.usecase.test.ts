@@ -6,6 +6,7 @@ import {
   createMockLockService,
   ITEMS_UPDATE_PERMISSION,
   LOCK_AUTH_CONTEXT,
+  LOCK_TOKEN,
   REFRESH_LOCK_INPUT,
 } from "../../testing/lock-usecase-test.helpers";
 
@@ -35,7 +36,7 @@ describe("buildRefreshLockUsecase", () => {
     expect(result).toEqual({ ok: true });
     expect(lockService.refresh).toHaveBeenCalledWith(
       buildItemLockKey("store-1", "item-1"),
-      REFRESH_LOCK_INPUT.token,
+      LOCK_TOKEN,
       REFRESH_LOCK_INPUT.ttlMs,
     );
   });

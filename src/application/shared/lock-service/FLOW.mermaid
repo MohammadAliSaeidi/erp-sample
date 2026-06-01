@@ -1,0 +1,13 @@
+sequenceDiagram 
+  participant UI as Next.js client
+  participant API as Usecases (app layer)
+  participant Redis as Redis lock + pub/sub
+  participant WS as ws-server
+  participant Others as Other clients in store
+
+  UI->>WS: connect, join-store, join-item
+  UI->>API: acquire / refresh / release (not wired yet)
+  API->>Redis: SET NX / Lua refresh / Lua release
+  API->>Redis: PUBLISH domain-events
+  Redis->>WS: subscribe domain-events
+  WS->>Others: emit item.locked / denied / unlocked

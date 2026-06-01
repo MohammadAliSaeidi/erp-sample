@@ -68,7 +68,7 @@ describe("buildAcquireEditItemLockUsecase", () => {
             storeId: "store-1",
             itemId: "item-1",
             lockedBy: "admin-1",
-            token: acquired.token,
+            token: acquired.lockToken,
           }),
         }),
       );

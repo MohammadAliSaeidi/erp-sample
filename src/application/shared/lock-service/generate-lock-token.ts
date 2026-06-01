@@ -1,5 +1,5 @@
 import { randomUUID, randomBytes } from "crypto";
-import { LockToken } from "./lock-service.port";
+import { LockToken } from "./lock-service.types";
 import { brand } from "@/lib/brand";
 
 export function generateLockToken(): LockToken {

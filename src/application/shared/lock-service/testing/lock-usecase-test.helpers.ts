@@ -1,8 +1,8 @@
+import { LockServicePort } from "@/src/application/shared/lock-service/lock-service.port";
 import {
   LockResultFailure,
   LockResultOk,
-  LockServicePort,
-} from "@/src/application/shared/lock-service/lock-service.port";
+} from "@/src/application/shared/lock-service/lock-service.types";
 import { LockKeys } from "@/src/application/shared/lock-service/lock-service.registry";
 import { LockKey } from "@/src/application/shared/lock-service/lock-service.types";
 import { IEventPublisherPort } from "@/src/application/shared/ports/event-publisher.port";
@@ -52,7 +52,7 @@ export function lockResultOk(
     ok: true,
     lockedBy: "admin-1",
     expiresAt: new Date(Date.now() + 60_000).toISOString(),
-    token: brand<string, "LockToken">("lock-token-abc"),
+    lockToken: brand<string, "LockToken">("lock-token-abc"),
     ...overrides,
   };
 }

@@ -1,6 +1,5 @@
 import type { LockServicePort } from "@/src/application/shared/lock-service/lock-service.port";
 import {
-  lockKeyRegex,
   type LockKey,
   type LockResult,
   type LockResultFailure,
@@ -82,7 +81,7 @@ if not raw then
   return 0
 end
 local data = cjson.decode(raw)
-if data["token"] == token then
+if data["lockToken"] == token then
   return redis.call("DEL", key)
 end
 return 0
@@ -101,7 +100,7 @@ if not raw then
 end
 
 local data = cjson.decode(raw)
-if data["token"] ~= token then
+if data["lockToken"] ~= token then
   return 0
 end
 
@@ -109,10 +108,6 @@ data["expiresAt"] = expiresAtIso
 redis.call("SET", key, cjson.encode(data), "PX", ttlMs, "XX")
 return 1
 `;
-
-describe("get store and entity ids from lock key", () => {
-  it("should return the ");
-});
 
 export function buildRedisLockService(client: Redis): LockServicePort {
   return {
@@ -160,23 +155,19 @@ export function buildRedisLockService(client: Redis): LockServicePort {
       };
     },
 
-    async release(
-      key: LockKey,
-      actorAdminId: StoreAdminId,
-      lockToken: LockToken,
-    ): Promise<UnlockResult> {
+    async release(key: LockKey, lockToken: LockToken): Promise<UnlockResult> {
       const result = await client.eval(
         RELEASE_LUA,
         1,
         String(key),
         String(lockToken),
       );
-      return Number(result) > 0;
+      return Number(result) > 0 ? { ok: true } : { ok: false };
     },
 
     async refresh(
       key: LockKey,
-      token: string,
+      lockToken: LockToken,
       ttlMs: number,
     ): Promise<boolean> {
       const expiresAtIso = new Date(Date.now() + ttlMs).toISOString();
@@ -184,7 +175,7 @@ export function buildRedisLockService(client: Redis): LockServicePort {
         REFRESH_LUA,
         1,
         String(key),
-        token,
+        String(lockToken),
         String(ttlMs),
         expiresAtIso,
       );
