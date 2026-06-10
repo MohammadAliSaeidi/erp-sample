@@ -1,53 +1,51 @@
-import { CategoryDTO } from "@/src/application/category/dto/category.dto";
-import { UseCaseNotFoundError } from "@/src/application/shared/errors/use-case-errors";
-import { ICategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
-import { Category } from "@/src/domain/category/category.entity";
-import { CategoryNotFoundForStoreError } from "@/src/domain/category/errors/category-not-found-for-store.error";
-import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import {
-  AuthenticatedUsecaseDefinition,
-  buildAuthenticatedUsecase,
-} from "@/features/shared/application/use-case";
-import { categoryRepositoryAdapter } from "@/src/infrastructure/database/adapters/category/category-repository.adapter";
 import { brand } from "@/lib/brand";
-import { editCategorySchema } from "../schema/edit-category.schema";
-import { createCategoryDTOToEntityMapper } from "./mappers/create-category-dto-to-entity.mapper";
+import { defineUsecase } from "@/src/application/core/usecase/factories";
+import { NotFoundError } from "@/src/application/core/errors/application.error";
+import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
+import { Category } from "@/src/domain/category/aggregates/category.aggregate";
+import { CategoryNotFoundForStoreError } from "@/src/domain/category/errors/category-not-found-for-store.error";
+import type { ICategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
+import { StoreId } from "@/src/domain/store/store-id";
+import type { CategoryOutputDTO } from "./list-categories.usecase";
 
-export interface UpdateCategoryUsecaseDeps {
+export type UpdateCategoryInputDTO = {
+  id: string;
+  name: string;
+  description?: string;
+};
+
+export type UpdateCategoryUsecaseDeps = {
   categoryRepository: Pick<ICategoryRepositoryPort, "update">;
-}
+};
 
-export const buildUpdateCategoryUsecase = (
-  deps: UpdateCategoryUsecaseDeps,
-): AuthenticatedUsecaseDefinition<typeof editCategorySchema, CategoryDTO> =>
-  buildAuthenticatedUsecase({
-    key: "categories.update",
-    auth: "required",
-    requiredPermissions: [PERMISSIONS.CATEGORIES.UPDATE],
-    inputSchema: editCategorySchema,
-    execute: async ({ input, authContext }) => {
-      try {
-        const mappedCategory: Category = createCategoryDTOToEntityMapper.map({
-          ...input,
-          id: brand(input.id),
-        });
-
-        const updatedCategory = await deps.categoryRepository.update(
-          mappedCategory,
-          brand(authContext.storeId),
-        );
-
-        return updatedCategory;
-      } catch (error) {
-        if (error instanceof CategoryNotFoundForStoreError) {
-          throw new UseCaseNotFoundError(error.message);
-        }
-
-        throw error;
-      }
-    },
+export const updateCategoryUsecase = defineUsecase<
+  UpdateCategoryInputDTO,
+  CategoryOutputDTO,
+  StoreAuthContext,
+  UpdateCategoryUsecaseDeps
+>(async (input, context, deps) => {
+  const category = Category.update({
+    id: brand<string, "CategoryId">(input.id) as Category.Id,
+    name: input.name,
+    description: input.description ?? null,
   });
 
-export const updateCategoryUsecase = buildUpdateCategoryUsecase({
-  categoryRepository: categoryRepositoryAdapter,
+  try {
+    const updated = await deps.categoryRepository.update(
+      category,
+      brand<string, "StoreId">(context.storeId) as StoreId,
+    );
+
+    return {
+      id: updated.id,
+      name: updated.name,
+      description: updated.description,
+    };
+  } catch (error) {
+    if (error instanceof CategoryNotFoundForStoreError) {
+      throw new NotFoundError(error.message);
+    }
+
+    throw error;
+  }
 });

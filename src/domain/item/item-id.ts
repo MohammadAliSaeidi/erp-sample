@@ -1,3 +1,3 @@
-import { Brand } from "@/lib/brand";
+import { Item } from "./aggregates/item.aggregate";
 
-export type ItemId = Brand<string, "ItemId">;
+export type ItemId = Item.Id;

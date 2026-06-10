@@ -1,3 +1,9 @@
+import {
+  ForbiddenError as ApplicationForbiddenError,
+  NotFoundError as ApplicationNotFoundError,
+  UnauthorizedError as ApplicationUnauthorizedError,
+} from "@/src/application/core/errors/application.error";
+import { InputValidationError } from "@/src/application/core/errors/input-validation.error";
 import { ForbiddenError } from "@/features/auth/domain/errors/forbidden.error";
 import { UnauthenticatedError } from "@/features/auth/domain/errors/unauthenticated.error";
 import { UnauthorizedError } from "@/features/auth/domain/errors/unauthorized.error";
@@ -48,6 +54,38 @@ export const actionSuccess = <TData>(
 export function mapUsecaseErrorToActionResult(
   error: unknown,
 ): ActionFailureResult {
+  if (error instanceof InputValidationError) {
+    return {
+      ok: false,
+      error: {
+        code: "validation",
+        message: error.message,
+        fields: error.fieldErrors,
+      },
+    };
+  }
+
+  if (error instanceof ApplicationUnauthorizedError) {
+    return {
+      ok: false,
+      error: { code: "unauthorized", message: error.message },
+    };
+  }
+
+  if (error instanceof ApplicationForbiddenError) {
+    return {
+      ok: false,
+      error: { code: "forbidden", message: error.message },
+    };
+  }
+
+  if (error instanceof ApplicationNotFoundError) {
+    return {
+      ok: false,
+      error: { code: "not_found", message: error.message },
+    };
+  }
+
   if (error instanceof UseCaseValidationError) {
     return {
       ok: false,

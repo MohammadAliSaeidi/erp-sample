@@ -1,69 +1,59 @@
-import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
-import {
-  Item,
-  ItemSpecificationAssignment,
-} from "@/src/domain/item/item.entity";
-import { createItemSchema } from "@/src/application/item/schema/create-item.schema";
 import { brand } from "@/lib/brand";
-import { createItemDTOToEntityMapper } from "./mappers/create-item-dto-to-entity.mapper";
-import { uuid7GeneratorAdapter } from "@/lib/id-generator/uuid-generator.adapter";
-import { itemRepositoryAdapter } from "@/src/infrastructure/database/adapters/item/item-repository.adapter";
-import { ItemRepositoryPort } from "@/src/domain/item/item-repository.port";
-import { IItemQueryPort } from "../port/item.query.port";
-import { itemQueryAdapter } from "@/src/infrastructure/database/adapters/item/item-query.adapter";
-import { IdGeneratorPort } from "@/lib/id-generator/id-generator.port";
+import { defineUsecase } from "@/src/application/core/usecase/factories";
+import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
+import { Item } from "@/src/domain/item/aggregates/item.aggregate";
+import type { ItemRepositoryPort } from "@/src/domain/item/item-repository.port";
 import { StoreId } from "@/src/domain/store/store-id";
-import { ItemDTO } from "@/src/application/item/dto/item.dto";
+import { CategoryId } from "@/src/domain/category/category-id";
+import { SpecificationId } from "@/src/domain/specification/specification-id";
+import { SpecificationValueId } from "@/src/domain/specification/specification-value-id";
+import type { IItemQueryPort } from "../port/item.query.port";
+import { ItemDTO } from "../dto/item.dto";
 
-export interface CreateItemUsecaseDeps {
+export type CreateItemInputDTO = {
+  name: string;
+  number: string;
+  description?: string;
+  price: number;
+  categoryId?: string;
+  specificationAssignments: ReadonlyArray<{
+    specificationId: string;
+    specificationValueId: string;
+  }>;
+};
+
+export type CreateItemUsecaseDeps = {
   itemRepository: Pick<ItemRepositoryPort, "create">;
   itemQuery: Pick<IItemQueryPort, "getItemDTOById">;
-  idGenerator: IdGeneratorPort;
-}
+};
 
-export const buildCreateItemUsecase = (deps: CreateItemUsecaseDeps) =>
-  buildAuthenticatedUsecase({
-    key: "items.create",
-    auth: "required",
-    requiredPermissions: [PERMISSIONS.ITEMS.CREATE],
-    inputSchema: createItemSchema,
-    execute: async ({ input: item, authContext: { storeId } }) => {
-      const itemUUID = deps.idGenerator.generate();
-      const brandedStoreId: StoreId = brand(storeId);
+export const createItemUsecase = defineUsecase<
+  CreateItemInputDTO,
+  ItemDTO | null,
+  StoreAuthContext,
+  CreateItemUsecaseDeps
+>(async (input, context, deps) => {
+  const storeId = brand<string, "StoreId">(context.storeId) as StoreId;
 
-      const mappedItem: Item = createItemDTOToEntityMapper.map({
-        ...item,
-        id: brand(itemUUID),
-        categoryId: brand(item.categoryId),
-        description: item.description ?? undefined,
-        name: item.name,
-        number: item.number,
-        price: item.price,
-        specificationAssignments: item.specificationAssignments.map(
-          (assignment): ItemSpecificationAssignment => ({
-            specificationId: brand(assignment.specificationId),
-            specificationValueId: brand(assignment.specificationValueId),
-          }),
-        ),
-      });
-
-      const createdItem = await deps.itemRepository.create(
-        mappedItem,
-        brand(storeId),
-      );
-
-      const itemDTO: ItemDTO | null = await deps.itemQuery.getItemDTOById(
-        createdItem.id,
-        brandedStoreId,
-      );
-
-      return itemDTO;
-    },
+  const item = Item.create({
+    name: input.name,
+    number: input.number,
+    description: input.description ?? null,
+    price: input.price,
+    categoryId: brand<string, CategoryId>(input.categoryId!) as CategoryId,
+    specificationAssignments: input.specificationAssignments.map(
+      (assignment) => ({
+        specificationId: brand<string, SpecificationId>(
+          assignment.specificationId,
+        ) as SpecificationId,
+        specificationValueId: brand<string, SpecificationValueId>(
+          assignment.specificationValueId,
+        ) as SpecificationValueId,
+      }),
+    ),
   });
 
-export const createItemUsecase = buildCreateItemUsecase({
-  itemQuery: itemQueryAdapter,
-  itemRepository: itemRepositoryAdapter,
-  idGenerator: uuid7GeneratorAdapter,
+  const createdItem = await deps.itemRepository.create(item, storeId);
+
+  return deps.itemQuery.getItemDTOById(createdItem.id, storeId);
 });

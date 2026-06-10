@@ -1,40 +1,38 @@
-import { CategoryDTO } from "@/src/application/category/dto/category.dto";
-import { UseCaseNotFoundError } from "@/src/application/shared/errors/use-case-errors";
-import { CategoryId } from "@/src/domain/category/category-id";
+import { brand } from "@/lib/brand";
+import { defineUsecase } from "@/src/application/core/usecase/factories";
+import { NotFoundError } from "@/src/application/core/errors/application.error";
+import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
+import { Category } from "@/src/domain/category/aggregates/category.aggregate";
+import type { ICategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
 import { StoreId } from "@/src/domain/store/store-id";
-import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
-import { categoryRepositoryAdapter } from "@/src/infrastructure/database/adapters/category/category-repository.adapter";
-import z from "zod";
-import { categoryEntityToDTOMapper } from "./mappers/category-entity-to-dto.mapper";
+import type { CategoryOutputDTO } from "./list-categories.usecase";
 
-const getCategoryByIdInputSchema = z.object({
-  categoryId: z.uuidv7(),
-  storeId: z.uuidv7(),
+export type GetCategoryByIdInputDTO = {
+  categoryId: string;
+};
+
+export type GetCategoryByIdUsecaseDeps = {
+  categoryRepository: Pick<ICategoryRepositoryPort, "getById">;
+};
+
+export const getCategoryByIdUsecase = defineUsecase<
+  GetCategoryByIdInputDTO,
+  CategoryOutputDTO,
+  StoreAuthContext,
+  GetCategoryByIdUsecaseDeps
+>(async (input, context, deps) => {
+  const category = await deps.categoryRepository.getById(
+    brand<string, "CategoryId">(input.categoryId) as Category.Id,
+    brand<string, "StoreId">(context.storeId) as StoreId,
+  );
+
+  if (!category) {
+    throw new NotFoundError(`Category ${input.categoryId} was not found`);
+  }
+
+  return {
+    id: category.id,
+    name: category.name,
+    description: category.description,
+  };
 });
-
-export const buildGetCategoryByIdUsecase = () =>
-  buildAuthenticatedUsecase({
-    key: "categories.get-by-id",
-    auth: "required",
-    requiredPermissions: [PERMISSIONS.CATEGORIES.READ_DETAILS],
-    inputSchema: getCategoryByIdInputSchema,
-    execute: async ({ input, authContext }): Promise<CategoryDTO> => {
-      const category = await categoryRepositoryAdapter.getById(
-        input.categoryId as CategoryId,
-        authContext.storeId as StoreId,
-      );
-
-      if (!category) {
-        throw new UseCaseNotFoundError(
-          `Category ${input.categoryId} was not found`,
-        );
-      }
-
-      const categoryDTO = categoryEntityToDTOMapper.map(category);
-
-      return categoryDTO;
-    },
-  });
-
-export const getCategoryByIdUsecase = buildGetCategoryByIdUsecase();

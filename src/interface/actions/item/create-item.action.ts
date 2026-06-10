@@ -1,13 +1,15 @@
 "use server";
 
-import { createItemUsecase } from "@/src/application/item/usecase/create-item.usecase";
+import { createItemDeps } from "@/src/application/item/composition/create-item-deps";
+import { buildCreateItemRequest } from "@/src/application/item/composition/create-item-request";
 import { requireSsrAuth } from "@/features/auth";
 import {
   ActionResult,
   actionSuccess,
   mapUsecaseErrorToActionResult,
 } from "@/src/interface/actions/map-usecase-error-to-action-result";
-import { runUsecase } from "@/features/shared/application/run-use-case";
+import { buildUsecaseRunner } from "@/src/application/core/usecase/runner/runner";
+import { buildStoreRequestContext } from "@/src/interface/http/build-store-request-context";
 import { CreateItemInputDTO } from "@/src/application/item/dto/create-item-input.dto";
 import { ItemDTO } from "@/src/application/item/dto/item.dto";
 
@@ -17,11 +19,14 @@ export async function createItemAction(
   try {
     const authContext = await requireSsrAuth();
 
-    const createdItem: ItemDTO = await runUsecase({
-      useCase: createItemUsecase,
-      input: rawInput,
-      authContext,
-    });
+    const runner = buildUsecaseRunner();
+    const createdItem = await runner.runWithInput(
+      buildCreateItemRequest(
+        rawInput,
+        buildStoreRequestContext(authContext),
+        createItemDeps,
+      ),
+    );
 
     return actionSuccess({ ...createdItem });
   } catch (error) {

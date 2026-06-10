@@ -1,15 +1,17 @@
-import { uniq } from "@/lib/uniq/uniq";
+import { Item as ItemAggregate } from "./aggregates/item.aggregate";
+import { ItemId } from "./item-id";
 import { CategoryId } from "../category/category-id";
 import { SpecificationId } from "../specification/specification-id";
 import { SpecificationValueId } from "../specification/specification-value-id";
-import { ItemId } from "./item-id";
 
-export type ItemSpecificationAssignment = {
-  specificationId: SpecificationId;
-  specificationValueId: SpecificationValueId;
-};
+/** @deprecated Use `Item.Aggregate` from `./aggregates/item.aggregate` */
+export type ItemSpecificationAssignment =
+  ItemAggregate.ItemSpecificationAssignment;
 
-export type Item = {
+/** @deprecated Use `Item.Aggregate` from `./aggregates/item.aggregate` */
+export type Item = ItemAggregate.Aggregate;
+
+export const createItem = (input: {
   id: ItemId;
   name: string;
   number: string;
@@ -18,36 +20,20 @@ export type Item = {
   categoryId?: CategoryId;
   specificationAssignments: ItemSpecificationAssignment[];
   isDeleted: boolean;
-};
-
-export const createItem = (input: Item): Item => {
-  if (input.name.trim().length === 0) throw new Error("Item name is required");
-
-  if (input.number.trim().length === 0)
-    throw new Error("Item number is required");
-
-  if (
-    input.price === undefined ||
-    Number.isNaN(input.price) ||
-    input.price < 0
-  ) {
-    throw new Error("Invalid price");
-  }
-
-  if (!input.categoryId) throw new Error("categoryId is required");
-
-  // for each specification, there should be only one assignment
-  const assignmentsClean = (input.specificationAssignments ?? []).map((a) => ({
-    specificationId: a.specificationId,
-    specificationValueId: a.specificationValueId,
-  }));
-
-  const uniqueBySpec = uniq(assignmentsClean, (a) => a.specificationId);
-
-  return {
-    ...input,
-    name: input.name.trim(),
-    number: input.number.trim(),
-    specificationAssignments: uniqueBySpec,
-  };
-};
+}): Item =>
+  ItemAggregate.rehydrate({
+    id: input.id as ItemAggregate.Id,
+    name: input.name,
+    number: input.number,
+    description: input.description ?? null,
+    price: input.price,
+    categoryId: input.categoryId as CategoryId,
+    specificationAssignments: input.specificationAssignments.map(
+      (assignment) => ({
+        specificationId: assignment.specificationId as SpecificationId,
+        specificationValueId:
+          assignment.specificationValueId as SpecificationValueId,
+      }),
+    ),
+    isDeleted: input.isDeleted,
+  });

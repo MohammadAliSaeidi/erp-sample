@@ -1,55 +1,41 @@
-import { CategoryDTO } from "@/src/application/category/dto/category.dto";
-import { ICategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
-import { createCategory } from "@/src/domain/category/category.entity";
-import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import {
-  AuthenticatedUsecaseDefinition,
-  buildAuthenticatedUsecase,
-} from "@/features/shared/application/use-case";
-import { categoryRepositoryAdapter } from "@/src/infrastructure/database/adapters/category/category-repository.adapter";
 import { brand } from "@/lib/brand";
-import { IdGeneratorPort } from "@/lib/id-generator/id-generator.port";
-import { uuid7GeneratorAdapter } from "@/lib/id-generator/uuid-generator.adapter";
-import { createCategorySchema } from "../schema/create-category.schema";
-import { createCategoryDTOToEntityMapper } from "./mappers/create-category-dto-to-entity.mapper";
+import { defineUsecase } from "@/src/application/core/usecase/factories";
+import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
+import { Category } from "@/src/domain/category/aggregates/category.aggregate";
+import type { ICategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
+import { StoreId } from "@/src/domain/store/store-id";
+import type { CategoryOutputDTO } from "./list-categories.usecase";
 
-export interface CreateCategoryUsecaseDeps {
-  idGenerator: IdGeneratorPort;
+export type CreateCategoryInputDTO = {
+  name: string;
+  description?: string;
+};
+
+export type CreateCategoryOutputDTO = CategoryOutputDTO;
+
+export type CreateCategoryUsecaseDeps = {
   categoryRepository: Pick<ICategoryRepositoryPort, "create">;
-}
+};
 
-export const buildCreateCategoryUsecase = (
-  deps: CreateCategoryUsecaseDeps,
-): AuthenticatedUsecaseDefinition<typeof createCategorySchema, CategoryDTO> =>
-  buildAuthenticatedUsecase({
-    key: "categories.create",
-    auth: "required",
-    requiredPermissions: [PERMISSIONS.CATEGORIES.CREATE],
-    inputSchema: createCategorySchema,
-    execute: async ({ input, authContext }) => {
-      const categoryUUID = deps.idGenerator.generate();
-
-      const mappedCategory = createCategoryDTOToEntityMapper.map({
-        ...input,
-        id: brand(categoryUUID),
-      });
-
-      const category = createCategory(mappedCategory);
-
-      const createdCategory = await deps.categoryRepository.create(
-        category,
-        brand(authContext.storeId),
-      );
-
-      const categoryDTO: CategoryDTO = {
-        ...createdCategory,
-      };
-
-      return categoryDTO;
-    },
+export const createCategoryUsecase = defineUsecase<
+  CreateCategoryInputDTO,
+  CreateCategoryOutputDTO,
+  StoreAuthContext,
+  CreateCategoryUsecaseDeps
+>(async (input, context, deps) => {
+  const category = Category.create({
+    name: input.name,
+    description: input.description ?? null,
   });
 
-export const createCategoryUsecase = buildCreateCategoryUsecase({
-  idGenerator: uuid7GeneratorAdapter,
-  categoryRepository: categoryRepositoryAdapter,
+  const created = await deps.categoryRepository.create(
+    category,
+    brand<string, "StoreId">(context.storeId) as StoreId,
+  );
+
+  return {
+    id: created.id,
+    name: created.name,
+    description: created.description,
+  };
 });
