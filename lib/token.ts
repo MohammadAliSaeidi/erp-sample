@@ -15,6 +15,10 @@ const ONE_HOUR_SECONDS = 60 * 60;
  * Build the JWT secret key.
  */
 function buildJwtSecret(): Uint8Array {
+  const secret = process.env.JWT_SECRET;
+
+  if (!secret) throw new Error("JWT Secret is undefined. define it in the env");
+
   return new TextEncoder().encode(process.env.JWT_SECRET!);
 }
 
@@ -79,9 +83,14 @@ async function readCookie(
 export async function encodeToken<T extends TokenPayload>(
   payload: T,
 ): Promise<Brand<string, "Token">> {
-  const secret = buildJwtSecret();
-  const token = await signJwt(payload, secret);
-  return brand(token);
+  try {
+    const secret = buildJwtSecret();
+    const token = await signJwt(payload, secret);
+    return brand(token);
+  } catch (error) {
+    console.error(error);
+    throw error
+  }
 }
 
 /**

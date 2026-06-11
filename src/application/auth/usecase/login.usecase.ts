@@ -1,18 +1,15 @@
+import { getAdminAccessTokenCookieName } from "@/constants/token-names";
+import {
+  NotFoundError,
+  UnauthorizedError,
+} from "@/src/application/core/errors/application.error";
+import { defineUsecase } from "@/src/application/core/usecase/factories";
+import type { BaseContext } from "@/src/application/core/usecase/types/context.types";
 import {
   Store,
   StoreUser,
 } from "@/src/infrastructure/database/orm/prisma/generated/client";
-import { getAdminAccessTokenCookieName } from "@/constants/token-names";
 import { Role } from "@/features/admin/domain/role";
-import { loginInputSchema } from "@/features/auth/domain/schemas/login-body.schema";
-import {
-  UseCaseNotFoundError,
-  UseCaseUnauthorizedError,
-} from "@/src/application/shared/errors/use-case-errors";
-import {
-  buildPublicUsecase,
-  PublicUsecaseDefinition,
-} from "@/features/shared/application/use-case";
 import { AdminAccessTokenPayload } from "@/features/shared/types/admin-access-token-payload";
 import { LoginInput } from "@/features/auth/domain/types/login-body.type";
 
@@ -37,56 +34,50 @@ export interface LoginOperationResult {
   tokenPayload: AdminAccessTokenPayload;
 }
 
-export const buildLoginUsecase = (
-  deps: LoginUsecaseDeps,
-): PublicUsecaseDefinition<typeof loginInputSchema, LoginOperationResult> =>
-  buildPublicUsecase({
-    key: "auth.login",
-    auth: "public",
-    inputSchema: loginInputSchema,
-    execute: async ({
-      input,
-    }: {
-      input: LoginInput;
-    }): Promise<LoginOperationResult> => {
-      const store = await deps.findStoreBySlug(input.storeSlug);
-      if (!store) {
-        throw new UseCaseNotFoundError("Store Not Found");
-      }
+export const loginUsecase = defineUsecase<
+  LoginInput,
+  LoginOperationResult,
+  BaseContext,
+  LoginUsecaseDeps
+>(async (input, _context, deps) => {
+  const store = await deps.findStoreBySlug(input.storeSlug);
+  if (!store) {
+    throw new NotFoundError("Store Not Found");
+  }
 
-      const storeUser = await deps.findStoreUserByStoreAndUsername(
-        store.id,
-        input.username,
-      );
+  const storeUser = await deps.findStoreUserByStoreAndUsername(
+    store.id,
+    input.username,
+  );
 
-      if (!storeUser) {
-        throw new UseCaseUnauthorizedError("Incorrect username or password");
-      }
+  if (!storeUser) {
+    throw new UnauthorizedError("Incorrect username or password");
+  }
 
-      const isValidCredentials =
-        storeUser &&
-        (await deps.isPasswordMatch(input.password, storeUser.password));
+  const isValidCredentials = await deps.isPasswordMatch(
+    input.password,
+    storeUser.password,
+  );
 
-      if (!isValidCredentials) {
-        throw new UseCaseUnauthorizedError("Incorrect username or password");
-      }
+  if (!isValidCredentials) {
+    throw new UnauthorizedError("Incorrect username or password");
+  }
 
-      const cookieName = getAdminAccessTokenCookieName(input.storeSlug);
-      const tokenPayload: AdminAccessTokenPayload = {
-        sub: storeUser.id,
-        adminId: storeUser.id,
-        storeId: storeUser.storeId,
-        storeSlug: input.storeSlug,
-        grantsAll: storeUser.grantsAll,
-        exp: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).getTime(),
-        iat: Date.now(),
-        username: storeUser.username,
-        roleId: storeUser.roleId,
-      };
+  const cookieName = getAdminAccessTokenCookieName(input.storeSlug);
+  const tokenPayload: AdminAccessTokenPayload = {
+    sub: storeUser.id,
+    adminId: storeUser.id,
+    storeId: storeUser.storeId,
+    storeSlug: input.storeSlug,
+    grantsAll: storeUser.grantsAll,
+    exp: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).getTime(),
+    iat: Date.now(),
+    username: storeUser.username,
+    roleId: storeUser.roleId,
+  };
 
-      return {
-        cookieName,
-        tokenPayload,
-      };
-    },
-  });
+  return {
+    cookieName,
+    tokenPayload,
+  };
+});

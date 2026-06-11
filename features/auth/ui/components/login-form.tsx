@@ -26,8 +26,10 @@ import { Controller, useForm } from "react-hook-form";
 import { ActionResult } from "@/src/interface/actions/map-usecase-error-to-action-result";
 import { loginAction } from "../../actions/login.action";
 import type { LoginInput as LoginInputType } from "../../domain/types/login-body.type";
-import { Prettify } from "@/features/shared/types/prettify.type";
 import { startTransition } from "react";
+
+const INPUT_CLASS =
+  "bg-transparent text-white border-white/30 border placeholder-white/30";
 
 export type LoginFormProps = React.ComponentProps<"div"> & {
   storeSlug: string;
@@ -54,11 +56,8 @@ export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
     defaultPath: `/store/${storeSlug}/admin/dashboard`,
   });
 
-  const [state, formAction, isPending] = useActionState(
-    async (
-      previousState: ActionResult<null> | null,
-      formData: LoginInputType,
-    ) => {
+  const [, formAction, isPending] = useActionState(
+    async (_: ActionResult<null> | null, formData: LoginInputType) => {
       const result = await loginAction(formData);
 
       if (result.ok) {
@@ -98,13 +97,14 @@ export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
                       <LoginFieldLabel htmlFor="login-username-field">
                         Username
                       </LoginFieldLabel>
-                      <LoginInput
+                      <Input
                         {...field}
                         id="login-username-field"
                         aria-invalid={invalid}
                         key={"login-username-field"}
                         placeholder="admin_1234"
                         autoComplete="username"
+                        className={INPUT_CLASS}
                         type="text"
                       />
                       {invalid && <FieldError errors={[error]} />}
@@ -121,7 +121,7 @@ export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
                       <LoginFieldLabel htmlFor="login-password-field">
                         Password
                       </LoginFieldLabel>
-                      <LoginInput
+                      <PasswordInput
                         {...field}
                         id="login-password-field"
                         key="login-password-field"
@@ -150,13 +150,13 @@ export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
   );
 }
 
-function LoginInput(props: React.ComponentProps<typeof Input>) {
+function PasswordInput(props: React.ComponentProps<typeof Input>) {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const type = isPasswordVisible ? "text" : "password";
   const endIcon = isPasswordVisible ? (
     <Button
-      variant="ghost"
+      variant="secondary"
       size="icon"
       onClick={() => setIsPasswordVisible(!isPasswordVisible)}
     >
@@ -164,7 +164,7 @@ function LoginInput(props: React.ComponentProps<typeof Input>) {
     </Button>
   ) : (
     <Button
-      variant="ghost"
+      variant="secondary"
       size="icon"
       onClick={() => setIsPasswordVisible(!isPasswordVisible)}
     >
@@ -177,10 +177,7 @@ function LoginInput(props: React.ComponentProps<typeof Input>) {
       {...props}
       type={type}
       endIcon={endIcon}
-      className={cn(
-        "bg-transparent text-white border-white/30 border placeholder-white/30",
-        props.className,
-      )}
+      className={cn(INPUT_CLASS, props.className)}
     />
   );
 }

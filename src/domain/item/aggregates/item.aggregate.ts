@@ -115,4 +115,28 @@ export namespace Item {
       isDeleted: props.isDeleted ?? false,
     });
   }
+
+  export function update(props: RehydrateProps): Aggregate {
+    if (!props.name?.trim()) {
+      throw new RequiredFieldError("name");
+    }
+
+    if (!props.number?.trim()) {
+      throw new RequiredFieldError("number");
+    }
+
+    if (
+      props.price === undefined ||
+      Number.isNaN(props.price) ||
+      props.price < 0
+    ) {
+      throw new InvalidAmountError("price", "Invalid price");
+    }
+
+    if (!props.categoryId) {
+      throw new RequiredFieldError("categoryId");
+    }
+
+    return rehydrate(props);
+  }
 }

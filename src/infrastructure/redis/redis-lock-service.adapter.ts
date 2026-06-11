@@ -110,10 +110,6 @@ redis.call("SET", key, cjson.encode(data), "PX", ttlMs, "XX")
 return 1
 `;
 
-describe("get store and entity ids from lock key", () => {
-  it("should return the ");
-});
-
 export function buildRedisLockService(client: Redis): LockServicePort {
   return {
     async acquire<TEntityBrand extends string>(
@@ -162,7 +158,6 @@ export function buildRedisLockService(client: Redis): LockServicePort {
 
     async release(
       key: LockKey,
-      actorAdminId: StoreAdminId,
       lockToken: LockToken,
     ): Promise<UnlockResult> {
       const result = await client.eval(
@@ -171,12 +166,13 @@ export function buildRedisLockService(client: Redis): LockServicePort {
         String(key),
         String(lockToken),
       );
-      return Number(result) > 0;
+
+      return { ok: Number(result) > 0 };
     },
 
     async refresh(
       key: LockKey,
-      token: string,
+      token: LockToken,
       ttlMs: number,
     ): Promise<boolean> {
       const expiresAtIso = new Date(Date.now() + ttlMs).toISOString();

@@ -1,4 +1,5 @@
 import {
+  BadRequestError as ApplicationBadRequestError,
   ForbiddenError as ApplicationForbiddenError,
   NotFoundError as ApplicationNotFoundError,
   UnauthorizedError as ApplicationUnauthorizedError,
@@ -54,6 +55,13 @@ export const actionSuccess = <TData>(
 export function mapUsecaseErrorToActionResult(
   error: unknown,
 ): ActionFailureResult {
+  if (error instanceof ApplicationBadRequestError) {
+    return {
+      ok: false,
+      error: { code: "bad_request", message: error.message },
+    };
+  }
+
   if (error instanceof InputValidationError) {
     return {
       ok: false,

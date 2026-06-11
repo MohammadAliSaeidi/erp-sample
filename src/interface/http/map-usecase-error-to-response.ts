@@ -1,4 +1,5 @@
 import {
+  BadRequestError as ApplicationBadRequestError,
   ForbiddenError as ApplicationForbiddenError,
   NotFoundError as ApplicationNotFoundError,
   UnauthorizedError as ApplicationUnauthorizedError,
@@ -20,6 +21,10 @@ import {
 } from "@/src/application/shared/errors/use-case-errors";
 
 export function mapUsecaseErrorToResponse(error: unknown): NextResponse {
+  if (error instanceof ApplicationBadRequestError) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+
   if (error instanceof InputValidationError) {
     return NextResponse.json(
       {

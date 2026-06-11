@@ -1,66 +1,58 @@
-import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
-import { SpecificationDTO } from "../dto/specification.dto";
-import { uuid7GeneratorAdapter } from "@/lib/id-generator/uuid-generator.adapter";
-import { createSpecification } from "@/src/domain/specification/specification.aggregate";
-import {
-  createSpecificationValue,
-  SpecificationValue,
-} from "@/src/domain/specification/specification-value.entity";
-import { specificationRepositoryAdapter } from "@/src/infrastructure/database/adapters/specification/specification-repository.adapter";
-import { createSpecificationSchema } from "../schema/create-specification.schema";
+import { brand } from "@/lib/brand";
+import { defineUsecase } from "@/src/application/core/usecase/factories";
+import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
+import { SpecificationDTO } from "@/src/application/specification/dto/specification.dto";
+import { Specification } from "@/src/domain/specification/aggregates/specification.aggregate";
+import { SpecificationValueType } from "@/src/domain/specification/specification-value-type.enum";
+import type { ISpecificationRepositoryPort } from "@/src/domain/specification/specification-repository.port";
+import { CategoryId } from "@/src/domain/category/category-id";
+import { StoreId } from "@/src/domain/store/store-id";
 import { IdGeneratorPort } from "@/lib/id-generator/id-generator.port";
-import { ISpecificationRepositoryPort } from "@/src/domain/specification/specification-repository.port";
 
-export interface CreateSpecificationUsecaseDeps {
+export type CreateSpecificationInputDTO = {
+  name: string;
+  categoryId: string;
+  type: SpecificationValueType;
+  isRequired: boolean;
+  isPrimary: boolean;
+  specificationValues: ReadonlyArray<{
+    value: string | boolean | number;
+  }>;
+};
+
+export type CreateSpecificationUsecaseDeps = {
   idGenerator: IdGeneratorPort;
   specificationRepository: Pick<ISpecificationRepositoryPort, "create">;
-}
+};
 
-export const buildCreateSpecificationUsecase = (
-  deps: CreateSpecificationUsecaseDeps,
-) =>
-  buildAuthenticatedUsecase({
-    key: "specifications.create",
-    auth: "required",
-    requiredPermissions: [PERMISSIONS.SPECIFICATION.CREATE],
-    inputSchema: createSpecificationSchema,
-    execute: async ({ input, authContext: { storeId } }) => {
-      const generatedUUID = deps.idGenerator.generate();
-
-      const values: SpecificationValue[] = input.specificationValues.map(
-        (specValueInput) => {
-          const id = uuid7GeneratorAdapter.generate();
-          const specificationValue = createSpecificationValue({
-            id: id,
-            value: specValueInput.value,
-          });
-
-          return specificationValue;
-        },
-      );
-
-      const createSpecificationInput = createSpecification({
-        ...input,
-        id: generatedUUID,
-        specificationValues: values,
-        isActive: true,
-        storeId: storeId,
-      });
-
-      const specification = await deps.specificationRepository.create(
-        createSpecificationInput,
-      );
-
-      const specificationDTO: SpecificationDTO = {
-        ...specification,
-      };
-
-      return specificationDTO;
-    },
+export const createSpecificationUsecase = defineUsecase<
+  CreateSpecificationInputDTO,
+  SpecificationDTO,
+  StoreAuthContext,
+  CreateSpecificationUsecaseDeps
+>(async (input, context, deps) => {
+  const specification = Specification.create({
+    name: input.name,
+    categoryId: brand<string, CategoryId>(input.categoryId) as CategoryId,
+    storeId: brand<string, StoreId>(context.storeId) as StoreId,
+    type: input.type,
+    isRequired: input.isRequired,
+    isPrimary: input.isPrimary,
+    specificationValues: input.specificationValues,
+    generateValueId: () => deps.idGenerator.generate(),
   });
 
-export const createSpecificationUsecase = buildCreateSpecificationUsecase({
-  idGenerator: uuid7GeneratorAdapter,
-  specificationRepository: specificationRepositoryAdapter,
+  const created = await deps.specificationRepository.create(specification);
+
+  return {
+    id: created.id,
+    name: created.name,
+    categoryId: created.categoryId,
+    storeId: created.storeId,
+    type: created.type,
+    isRequired: created.isRequired,
+    isPrimary: created.isPrimary,
+    specificationValues: created.specificationValues,
+    isActive: created.isActive,
+  };
 });

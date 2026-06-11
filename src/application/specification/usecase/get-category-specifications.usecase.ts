@@ -1,42 +1,39 @@
-import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
-import { specificationRepositoryAdapter } from "@/src/infrastructure/database/adapters/specification/specification-repository.adapter";
-
-import { CategoryId } from "@/src/domain/category/category-id";
-import { ISpecificationRepositoryPort } from "@/src/domain/specification/specification-repository.port";
-import { StoreId } from "@/src/domain/store/store-id";
-import z from "zod";
+import { brand } from "@/lib/brand";
+import { defineUsecase } from "@/src/application/core/usecase/factories";
+import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
 import { SpecificationDTO } from "@/src/application/specification/dto/specification.dto";
-import { getSpecificationsEntityToDtoMapper } from "./mappers/get-specifications-entity-to-dto.mapper";
+import { CategoryId } from "@/src/domain/category/category-id";
+import type { ISpecificationRepositoryPort } from "@/src/domain/specification/specification-repository.port";
+import { StoreId } from "@/src/domain/store/store-id";
 
-export interface GetCategorySpecificationsUsecaseDeps {
+export type GetCategorySpecificationsInputDTO = {
+  categoryId: string;
+};
+
+export type GetCategorySpecificationsUsecaseDeps = {
   specificationRepository: Pick<ISpecificationRepositoryPort, "getList">;
-}
+};
 
-export const buildGetCategorySpecificationsUsecase = (
-  deps: GetCategorySpecificationsUsecaseDeps,
-) =>
-  buildAuthenticatedUsecase({
-    key: "category-specifications.get-list",
-    auth: "required",
-    requiredPermissions: [PERMISSIONS.SPECIFICATION.READ],
-    inputSchema: z.uuid(),
-    execute: async ({ input: categoryId, authContext: { storeId } }) => {
-      const specifications = await deps.specificationRepository.getList(
-        categoryId as CategoryId,
-        storeId as StoreId,
-      );
+export const getCategorySpecificationsUsecase = defineUsecase<
+  GetCategorySpecificationsInputDTO,
+  SpecificationDTO[],
+  StoreAuthContext,
+  GetCategorySpecificationsUsecaseDeps
+>(async (input, context, deps) => {
+  const specifications = await deps.specificationRepository.getList(
+    brand<string, CategoryId>(input.categoryId) as CategoryId,
+    brand<string, StoreId>(context.storeId) as StoreId,
+  );
 
-      const specificationDTOs: SpecificationDTO[] = specifications.map(
-        (specification) =>
-          getSpecificationsEntityToDtoMapper.map(specification),
-      );
-
-      return specificationDTOs;
-    },
-  });
-
-export const getCategorySpecificationsUsecase =
-  buildGetCategorySpecificationsUsecase({
-    specificationRepository: specificationRepositoryAdapter,
-  });
+  return specifications.map((specification) => ({
+    id: specification.id,
+    name: specification.name,
+    categoryId: specification.categoryId,
+    storeId: specification.storeId,
+    type: specification.type,
+    isRequired: specification.isRequired,
+    isPrimary: specification.isPrimary,
+    specificationValues: specification.specificationValues,
+    isActive: specification.isActive,
+  }));
+});

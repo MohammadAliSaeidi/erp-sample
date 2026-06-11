@@ -79,4 +79,24 @@ describe("Item aggregate", () => {
       }),
     ).toThrow("Invalid price");
   });
+
+  it("updates an existing item with validated fields", () => {
+    const id = brand<string, "ItemId">(
+      "018f3c8a-0000-7000-8000-000000000011",
+    ) as Item.Id;
+
+    const item = Item.update({
+      id,
+      name: "  Espresso  ",
+      number: "3001",
+      price: 9,
+      categoryId: CATEGORY_ID,
+      specificationAssignments: [],
+      isDeleted: false,
+    });
+
+    expect(item.id).toBe(id);
+    expect(item.name).toBe("Espresso");
+    expect(item.isDeleted).toBe(false);
+  });
 });

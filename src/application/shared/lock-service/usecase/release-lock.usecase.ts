@@ -1,101 +1,77 @@
-import { z, ZodType } from "zod";
-import {
-  AuthenticatedUsecaseDefinition,
-  buildAuthenticatedUsecase,
-} from "@/features/shared/application/use-case";
+import { brand } from "@/lib/brand";
+import { defineUsecase } from "@/src/application/core/usecase/factories";
+import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
 import { LockServicePort } from "@/src/application/shared/lock-service/lock-service.port";
-import { LockKey } from "@/src/application/shared/lock-service/lock-service.types";
+import {
+  LockKey,
+  LockToken,
+  UnlockResult,
+} from "@/src/application/shared/lock-service/lock-service.types";
+import type { ReleaseLockInput } from "@/src/application/shared/lock-service/schema/release-lock.schema";
 import { IEventPublisherPort } from "@/src/application/shared/ports/event-publisher.port";
 import {
   DomainEvent,
   EventType,
 } from "@/src/domain/shared/events/events.types";
-import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
-import { brand } from "@/lib/brand";
+import { StoreId } from "@/src/domain/store/store-id";
 
-export type ReleaseLockDeps<
-  TSchema extends ZodType,
-  TResult,
+export type ReleaseLockEventFactory<
   TReleasedEvent extends EventType,
-  TReleaseDeniedEvent extends EventType,
-  TAuth = AuthContext,
+  TDeniedEvent extends EventType,
+> = {
+  released: (
+    context: StoreAuthContext,
+    input: ReleaseLockInput,
+    result: { ok: true },
+  ) => DomainEvent<TReleasedEvent>;
+
+  denied: (
+    context: StoreAuthContext,
+    input: ReleaseLockInput,
+    result: { ok: false },
+  ) => DomainEvent<TDeniedEvent>;
+};
+
+export type ReleaseLockUsecaseDeps<
+  TReleasedEvent extends EventType = EventType,
+  TDeniedEvent extends EventType = EventType,
 > = {
   lockService: LockServicePort;
-  buildLockKey: (storeId: string, entityId: string) => LockKey;
+  buildLockKey: (storeId: StoreId, entityId: string) => LockKey;
   eventPublisher?: IEventPublisherPort;
   emitEvents?: boolean;
-  eventFactory?: {
-    released: (
-      ctx: TAuth,
-      input: z.infer<typeof inputSchema>,
-      result: { ok: true },
-    ) => DomainEvent<TReleasedEvent, undefined>;
+  eventFactory?: ReleaseLockEventFactory<TReleasedEvent, TDeniedEvent>;
+};
 
-    denied: (
-      ctx: TAuth,
-      input: z.infer<typeof inputSchema>,
-      result: { ok: false },
-    ) => DomainEvent<TReleaseDeniedEvent, undefined>;
-  };
-} & Pick<
-  AuthenticatedUsecaseDefinition<TSchema, TResult>,
-  "key" | "requiredPermissions"
->;
+export const releaseLockUsecase = defineUsecase<
+  ReleaseLockInput,
+  UnlockResult,
+  StoreAuthContext,
+  ReleaseLockUsecaseDeps
+>(async (input, context, deps) => {
+  const key = deps.buildLockKey(
+    brand<string, StoreId>(context.storeId) as StoreId,
+    input.entityId,
+  );
 
-const inputSchema = z.object({
-  entityId: z.string().min(1),
-  lockToken: z.string(),
+  const result = await deps.lockService.release(
+    key,
+    brand<string, LockToken>(input.lockToken) as LockToken,
+  );
+
+  const shouldEmit = deps.emitEvents ?? true;
+
+  if (shouldEmit && deps.eventPublisher && deps.eventFactory) {
+    if (result.ok) {
+      await deps.eventPublisher.publish(
+        deps.eventFactory.released(context, input, { ok: true }),
+      );
+    } else {
+      await deps.eventPublisher.publish(
+        deps.eventFactory.denied(context, input, { ok: false }),
+      );
+    }
+  }
+
+  return result;
 });
-
-export const buildReleaseLockUsecase = <
-  TSchema extends ZodType,
-  TResult extends { ok: boolean },
-  TReleasedEvent extends EventType,
-  TReleaseDeniedEvent extends EventType,
-  TAuth = AuthContext,
->(
-  deps: ReleaseLockDeps<
-    TSchema,
-    TResult,
-    TReleasedEvent,
-    TReleaseDeniedEvent,
-    TAuth
-  >,
-) =>
-  buildAuthenticatedUsecase({
-    key: deps.key,
-    auth: "required",
-    requiredPermissions: deps.requiredPermissions,
-    inputSchema,
-    execute: async ({ input, authContext }): Promise<{ ok: boolean }> => {
-      const key: LockKey = deps.buildLockKey(
-        authContext.storeId,
-        input.entityId,
-      );
-
-      const result = await deps.lockService.release(
-        key,
-        brand(input.lockToken),
-      );
-
-      const shouldEmit = deps.emitEvents ?? true;
-
-      if (shouldEmit && deps.eventPublisher && deps.eventFactory) {
-        if (result.ok) {
-          const event: DomainEvent<EventType, undefined> =
-            deps.eventFactory.released(authContext as TAuth, input, {
-              ok: true,
-            });
-          await deps.eventPublisher.publish<EventType>(event);
-        } else {
-          const event: DomainEvent<EventType, undefined> =
-            deps.eventFactory.denied(authContext as TAuth, input, {
-              ok: false,
-            });
-          await deps.eventPublisher.publish<EventType>(event);
-        }
-      }
-
-      return result;
-    },
-  });

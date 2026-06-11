@@ -20,31 +20,14 @@ export interface LockServicePort {
   ): Promise<LockResult>;
 
   /**
-   * Release a lock if held by the same actor.
-   * @param key Entity lock key.
-   * @param lockToken token of who is releasing.
+   * Release a lock when the caller presents the correct lock token.
    */
-  release(
-    key: LockKey,
-    actorAdminId: StoreAdminId,
-    lockToken: LockToken,
-  ): Promise<UnlockResult>;
+  release(key: LockKey, lockToken: LockToken): Promise<UnlockResult>;
 
   /**
-   * Refresh/extend a lock TTL if the caller still owns it.
-   * Ownership is verified by token to prevent stale or cross-session refresh.
-   *
-   * @param key The lock key for the entity (e.g. store:item).
-   * @param token The lock token issued at acquisition time.
-   * @param ttlMs New TTL in milliseconds.
-   * @returns true if refreshed, false if token mismatch or lock missing.
+   * Refresh/extend a lock TTL if the token still matches.
    */
-  refresh(
-    key: LockKey,
-    actorAdminId: StoreAdminId,
-    token: string,
-    ttlMs: number,
-  ): Promise<boolean>;
+  refresh(key: LockKey, token: LockToken, ttlMs: number): Promise<boolean>;
 
   /**
    * Check current lock state.

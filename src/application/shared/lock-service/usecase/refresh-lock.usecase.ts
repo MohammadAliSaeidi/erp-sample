@@ -1,39 +1,34 @@
-import { z } from "zod";
-import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
+import { brand } from "@/lib/brand";
+import { defineUsecase } from "@/src/application/core/usecase/factories";
+import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
 import { LockServicePort } from "@/src/application/shared/lock-service/lock-service.port";
-import { LockKey } from "@/src/application/shared/lock-service/lock-service.types";
-import { Permission } from "@/features/auth/domain/types/permission.type";
+import { LockKey, LockToken } from "@/src/application/shared/lock-service/lock-service.types";
+import type { RefreshLockInput } from "@/src/application/shared/lock-service/schema/refresh-lock.schema";
+import { StoreId } from "@/src/domain/store/store-id";
 
-export type RefreshLockDeps = {
+export type RefreshLockUsecaseDeps = {
   lockService: LockServicePort;
-  buildLockKey: (storeId: string, entityId: string) => LockKey;
-  permissions: Permission[];
-  key: string;
+  buildLockKey: (storeId: StoreId, entityId: string) => LockKey;
 };
 
-const inputSchema = z.object({
-  entityId: z.string().min(1),
-  ttlMs: z
-    .number()
-    .min(1000)
-    .max(10 * 60 * 1000),
-  token: z.string().brand(""),
-});
+export type RefreshLockOutput = { ok: boolean };
 
-export const buildRefreshLockUsecase = (deps: RefreshLockDeps) =>
-  buildAuthenticatedUsecase({
-    key: deps.key,
-    auth: "required",
-    requiredPermissions: deps.permissions,
-    inputSchema,
-    execute: async ({ input, authContext: { storeId, adminId } }) => {
-      const key = deps.buildLockKey(storeId, input.entityId);
-      const ok = await deps.lockService.refresh(
-        key,
-        adminId,
-        input.token,
-        input.ttlMs,
-      );
-      return { ok };
-    },
-  });
+export const refreshLockUsecase = defineUsecase<
+  RefreshLockInput,
+  RefreshLockOutput,
+  StoreAuthContext,
+  RefreshLockUsecaseDeps
+>(async (input, context, deps) => {
+  const key = deps.buildLockKey(
+    brand<string, StoreId>(context.storeId) as StoreId,
+    input.entityId,
+  );
+
+  const ok = await deps.lockService.refresh(
+    key,
+    brand<string, LockToken>(input.token) as LockToken,
+    input.ttlMs,
+  );
+
+  return { ok };
+});

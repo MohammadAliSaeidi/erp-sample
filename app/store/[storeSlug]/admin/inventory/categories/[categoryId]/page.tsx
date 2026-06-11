@@ -6,10 +6,10 @@ import { buildUsecaseRunner } from "@/src/application/core/usecase/runner/runner
 import { getQueryClient } from "@/lib/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { CATEGORY_SPECIFICATIONS_QUERY_KEYS } from "@/src/interface/ui/specification/constants/query-keys";
-import { getCategorySpecificationsUsecase } from "@/src/application/specification/usecase/get-category-specifications.usecase";
+import { specificationDeps } from "@/src/application/specification/composition/specification-deps";
+import { buildGetCategorySpecificationsRequest } from "@/src/application/specification/composition/specification-requests";
 import { requireSsrAuth } from "@/features/auth";
 import { buildStoreRequestContext } from "@/src/interface/http/build-store-request-context";
-import { runUsecase } from "@/features/shared/application/run-use-case";
 
 type CategoryDetailsProps = {
 	params: Promise<{
@@ -33,11 +33,13 @@ export default async function CategoryDetailsPage(props: CategoryDetailsProps) {
 		),
 	);
 
-	const specifications = await runUsecase({
-		useCase: getCategorySpecificationsUsecase,
-		input: categoryId,
-		authContext,
-	});
+	const specifications = await runner.runWithInput(
+		buildGetCategorySpecificationsRequest(
+			{ categoryId },
+			buildStoreRequestContext(authContext),
+			specificationDeps.listByCategory,
+		),
+	);
 
 	const queryClient = getQueryClient();
 
