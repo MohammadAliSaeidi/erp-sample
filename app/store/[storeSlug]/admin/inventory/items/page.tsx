@@ -1,8 +1,10 @@
 import { requireSsrAuth } from "@/features/auth";
 import List from "@/src/interface/ui/items/components/list";
-import { runUsecase } from "@/features/shared/application/run-use-case";
-import { getItemsListUsecase } from "@/src/application/item/usecase/get-items-list.usecase";
+import { itemDeps } from "@/src/application/item/composition/item-deps";
+import { buildGetItemsListRequest } from "@/src/application/item/composition/item-requests";
+import { buildUsecaseRunner } from "@/src/application/core/usecase/runner/runner";
 import { ItemDTO } from "@/src/application/item/dto/item.dto";
+import { buildStoreRequestContext } from "@/src/interface/http/build-store-request-context";
 import { getQueryClient } from "@/lib/get-query-client";
 import { ITEM_QUERY_KEYS } from "@/src/interface/ui/items/constants/query-keys";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
@@ -19,11 +21,14 @@ export default async function ItemsPage(props: ItemPageProps) {
 
 	const authContext = await requireSsrAuth({ storeSlug });
 
-	const items: ItemDTO[] = await runUsecase({
-		input: {},
-		useCase: getItemsListUsecase,
-		authContext: authContext,
-	});
+	const runner = buildUsecaseRunner();
+	const items: ItemDTO[] = await runner.runWithInput(
+		buildGetItemsListRequest(
+			{},
+			buildStoreRequestContext(authContext),
+			itemDeps.list,
+		),
+	);
 
 	const queryClient = getQueryClient();
 

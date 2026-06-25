@@ -1,9 +1,11 @@
 import { SpinnerCustom } from "@/src/presentation/components/ui/spinner";
 import CategoriesList from "@/src/interface/ui/category/components/categories-list/categories-list";
 import { requireSsrAuth } from "@/features/auth";
-import { listCategoriesUsecase } from "@/src/application/category/usecase/list-categories.usecase";
+import { categoryDeps } from "@/src/application/category/composition/category-deps";
+import { buildListCategoriesRequest } from "@/src/application/category/composition/category-requests";
+import { buildUsecaseRunner } from "@/src/application/core/usecase/runner/runner";
 import { CATEGORY_QUERY_KEYS } from "@/src/interface/ui/category/constants/query-keys";
-import { runUsecase } from "@/features/shared/application/run-use-case";
+import { buildStoreRequestContext } from "@/src/interface/http/build-store-request-context";
 import { getQueryClient } from "@/lib/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
@@ -25,11 +27,13 @@ export default async function CategoryPage(props: CategoryPageProps) {
 
 	const authContext = await requireSsrAuth({ storeSlug });
 
-	const categories = await runUsecase({
-		useCase: listCategoriesUsecase,
-		input: {},
-		authContext,
-	});
+	const runner = buildUsecaseRunner();
+	const categories = await runner.runWithoutInput(
+		buildListCategoriesRequest(
+			buildStoreRequestContext(authContext),
+			categoryDeps.list,
+		),
+	);
 
 	const queryClient = getQueryClient();
 	queryClient.setQueryData(CATEGORY_QUERY_KEYS.list(), categories);

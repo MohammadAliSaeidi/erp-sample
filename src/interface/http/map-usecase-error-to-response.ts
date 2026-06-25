@@ -1,3 +1,10 @@
+import {
+  BadRequestError as ApplicationBadRequestError,
+  ForbiddenError as ApplicationForbiddenError,
+  NotFoundError as ApplicationNotFoundError,
+  UnauthorizedError as ApplicationUnauthorizedError,
+} from "@/src/application/core/errors/application.error";
+import { InputValidationError } from "@/src/application/core/errors/input-validation.error";
 import { ForbiddenError } from "@/features/auth/domain/errors/forbidden.error";
 import { UnauthenticatedError } from "@/features/auth/domain/errors/unauthenticated.error";
 import { UnauthorizedError } from "@/features/auth/domain/errors/unauthorized.error";
@@ -14,6 +21,32 @@ import {
 } from "@/src/application/shared/errors/use-case-errors";
 
 export function mapUsecaseErrorToResponse(error: unknown): NextResponse {
+  if (error instanceof ApplicationBadRequestError) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+
+  if (error instanceof InputValidationError) {
+    return NextResponse.json(
+      {
+        error: error.message,
+        fields: error.fieldErrors,
+      },
+      { status: 400 },
+    );
+  }
+
+  if (error instanceof ApplicationUnauthorizedError) {
+    return NextResponse.json({ error: error.message }, { status: 401 });
+  }
+
+  if (error instanceof ApplicationForbiddenError) {
+    return NextResponse.json({ error: error.message }, { status: 403 });
+  }
+
+  if (error instanceof ApplicationNotFoundError) {
+    return NextResponse.json({ error: error.message }, { status: 404 });
+  }
+
   if (error instanceof UseCaseValidationError) {
     return NextResponse.json(
       {

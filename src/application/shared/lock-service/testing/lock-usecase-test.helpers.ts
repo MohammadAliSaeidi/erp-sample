@@ -1,10 +1,12 @@
 import { LockServicePort } from "@/src/application/shared/lock-service/lock-service.port";
+import { LockKeys } from "@/src/application/shared/lock-service/lock-service.registry";
 import {
+  LockKey,
   LockResultFailure,
   LockResultOk,
 } from "@/src/application/shared/lock-service/lock-service.types";
-import { LockKeys } from "@/src/application/shared/lock-service/lock-service.registry";
-import { LockKey } from "@/src/application/shared/lock-service/lock-service.types";
+import type { BaseContext } from "@/src/application/core/usecase/types/context.types";
+import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
 import { IEventPublisherPort } from "@/src/application/shared/ports/event-publisher.port";
 import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
 import { Permission } from "@/features/auth/domain/types/permission.type";
@@ -44,6 +46,26 @@ export function createMockEventPublisher(): jest.Mocked<IEventPublisherPort> {
 export function buildItemLockKey(storeId: string, itemId: string): LockKey {
   return LockKeys.item(storeId, itemId);
 }
+
+export const LOCK_BASE_CONTEXT: BaseContext = {
+  requestId: "req-1",
+  timestamp: new Date("2026-06-10T12:00:00.000Z"),
+  metadata: {
+    storeId: "store-1",
+    adminId: "admin-1",
+    grantsAll: false,
+    permissions: [ITEMS_UPDATE_PERMISSION],
+  },
+};
+
+export const LOCK_STORE_AUTH_CONTEXT: StoreAuthContext = {
+  requestId: "req-1",
+  timestamp: new Date("2026-06-10T12:00:00.000Z"),
+  storeId: "store-1",
+  adminId: "admin-1",
+  grantsAll: false,
+  permissions: [ITEMS_UPDATE_PERMISSION],
+};
 
 export function lockResultOk(
   overrides: Partial<LockResultOk> = {},

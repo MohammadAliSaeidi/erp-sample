@@ -1,68 +1,78 @@
-import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
-import { Item } from "@/src/domain/item/item.entity";
-import { ItemDTO } from "@/src/application/item/dto/item.dto";
 import { brand } from "@/lib/brand";
-import { createItemDTOToEntityMapper } from "./mappers/create-item-dto-to-entity.mapper";
-import { itemRepositoryAdapter } from "@/src/infrastructure/database/adapters/item/item-repository.adapter";
-import { ItemRepositoryPort } from "@/src/domain/item/item-repository.port";
-import { IItemQueryPort } from "../port/item.query.port";
-import { itemQueryAdapter } from "@/src/infrastructure/database/adapters/item/item-query.adapter";
+import { defineUsecase } from "@/src/application/core/usecase/factories";
+import { NotFoundError } from "@/src/application/core/errors/application.error";
+import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
+import { ItemDTO } from "@/src/application/item/dto/item.dto";
+import { Item } from "@/src/domain/item/aggregates/item.aggregate";
+import type { ItemRepositoryPort } from "@/src/domain/item/item-repository.port";
+import { CategoryId } from "@/src/domain/category/category-id";
+import { SpecificationId } from "@/src/domain/specification/specification-id";
+import { SpecificationValueId } from "@/src/domain/specification/specification-value-id";
+import type { IItemQueryPort } from "../port/item.query.port";
 import { StoreId } from "@/src/domain/store/store-id";
-import { editItemSchema } from "@/src/application/item/schema/edit.item.schema";
-import { ItemId } from "@/src/domain/item/item-id";
-import { UseCaseNotFoundError } from "@/src/application/shared/errors/use-case-errors";
 
-export interface EditItemUsecaseDeps {
+export type EditItemInputDTO = {
+  id: string;
+  name?: string;
+  number?: string;
+  description?: string;
+  price?: number;
+  categoryId?: string;
+  specificationAssignments?: ReadonlyArray<{
+    specificationId: string;
+    specificationValueId: string;
+  }>;
+};
+
+export type EditItemUsecaseDeps = {
   itemRepository: Pick<ItemRepositoryPort, "update">;
   itemQuery: Pick<IItemQueryPort, "getItemDTOById">;
-}
+};
 
-export const buildEditItemUsecase = (deps: EditItemUsecaseDeps) =>
-  buildAuthenticatedUsecase({
-    key: "items.edit",
-    auth: "required",
-    requiredPermissions: [PERMISSIONS.ITEMS.UPDATE],
-    inputSchema: editItemSchema,
-    execute: async ({ input: item, authContext: { storeId } }) => {
-      const brandedItemId: ItemId = brand(item.id);
-      const brandedStoreId: StoreId = brand(storeId);
+export const editItemUsecase = defineUsecase<
+  EditItemInputDTO,
+  ItemDTO | null,
+  StoreAuthContext,
+  EditItemUsecaseDeps
+>(async (input, context, deps) => {
+  const storeId = brand<string, "StoreId">(context.storeId) as StoreId;
+  const itemId = brand<string, "ItemId">(input.id) as Item.Id;
 
-      const existingItem: ItemDTO | null = await deps.itemQuery.getItemDTOById(
-        brandedItemId,
-        brandedStoreId,
-      );
+  const existingItem = await deps.itemQuery.getItemDTOById(itemId, storeId);
 
-      if (!existingItem) throw new UseCaseNotFoundError(``);
+  if (!existingItem) {
+    throw new NotFoundError(`Item ${input.id} was not found`);
+  }
 
-      const mappedItem: Item = createItemDTOToEntityMapper.map({
-        id: brandedItemId,
-        categoryId: item.categoryId ?? brand(existingItem.categoryId),
-        description: item.description ?? existingItem.description,
-        name: item.name ?? existingItem.name,
-        number: item.number ?? existingItem.number,
-        price: item.price ?? existingItem.price,
-        specificationAssignments:
-          item.specificationAssignments ??
-          existingItem.specificationAssignments.map((assignment) => ({
-            specificationId: assignment.specification.id,
-            specificationValueId: assignment.specificationValue.id,
-          })),
-      });
+  const specificationAssignments = (
+    input.specificationAssignments ??
+    existingItem.specificationAssignments.map((assignment) => ({
+      specificationId: assignment.specification.id,
+      specificationValueId: assignment.specificationValue.id,
+    }))
+  ).map((assignment) => ({
+    specificationId: brand<string, SpecificationId>(
+      assignment.specificationId,
+    ) as SpecificationId,
+    specificationValueId: brand<string, SpecificationValueId>(
+      assignment.specificationValueId,
+    ) as SpecificationValueId,
+  }));
 
-      const updatedItem = await deps.itemRepository.update(
-        mappedItem,
-        brand(storeId),
-      );
-
-      const updatedItemDTO: ItemDTO | null =
-        await deps.itemQuery.getItemDTOById(updatedItem.id, brandedStoreId);
-
-      return updatedItemDTO;
-    },
+  const item = Item.update({
+    id: itemId,
+    name: input.name ?? existingItem.name,
+    number: input.number ?? existingItem.number,
+    description: input.description ?? existingItem.description ?? null,
+    price: input.price ?? existingItem.price,
+    categoryId: brand<string, CategoryId>(
+      input.categoryId ?? existingItem.categoryId!,
+    ) as CategoryId,
+    specificationAssignments,
+    isDeleted: existingItem.isDeleted,
   });
 
-export const editItemUsecase = buildEditItemUsecase({
-  itemQuery: itemQueryAdapter,
-  itemRepository: itemRepositoryAdapter,
+  const updatedItem = await deps.itemRepository.update(item, storeId);
+
+  return deps.itemQuery.getItemDTOById(updatedItem.id, storeId);
 });

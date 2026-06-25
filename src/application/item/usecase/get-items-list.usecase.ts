@@ -1,25 +1,23 @@
-import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
 import { brand } from "@/lib/brand";
-import { IItemQueryPort } from "../port/item.query.port";
-import { itemQueryAdapter } from "@/src/infrastructure/database/adapters/item/item-query.adapter";
-import { itemListQueryInputSchema } from "../schema/item-list-query.schema";
+import { defineUsecase } from "@/src/application/core/usecase/factories";
+import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
+import { ItemDTO } from "@/src/application/item/dto/item.dto";
+import { StoreId } from "@/src/domain/store/store-id";
+import type { IItemQueryPort } from "../port/item.query.port";
+import type { ItemListQueryInput } from "../schema/item-list-query.schema";
 
-export interface GetItemsListUsecaseDeps {
+export type GetItemsListUsecaseDeps = {
   itemsQueryPort: Pick<IItemQueryPort, "getItemDTOList">;
-}
+};
 
-export const buildGetItemsListUsecase = (deps: GetItemsListUsecaseDeps) =>
-  buildAuthenticatedUsecase({
-    key: "items.list",
-    auth: "required",
-    requiredPermissions: [PERMISSIONS.ITEMS.READ],
-    inputSchema: itemListQueryInputSchema,
-    execute: async ({ input, authContext: { storeId } }) => {
-      return deps.itemsQueryPort.getItemDTOList(brand(storeId), input);
-    },
-  });
-
-export const getItemsListUsecase = buildGetItemsListUsecase({
-  itemsQueryPort: itemQueryAdapter,
-});
+export const getItemsListUsecase = defineUsecase<
+  ItemListQueryInput,
+  ItemDTO[],
+  StoreAuthContext,
+  GetItemsListUsecaseDeps
+>(async (input, context, deps) =>
+  deps.itemsQueryPort.getItemDTOList(
+    brand<string, "StoreId">(context.storeId) as StoreId,
+    input,
+  ),
+);

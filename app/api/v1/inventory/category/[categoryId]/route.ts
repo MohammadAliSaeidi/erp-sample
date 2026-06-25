@@ -1,8 +1,12 @@
-import { getCategoryByIdUsecase } from "@/src/application/category/usecase/get-category-by-id.usecase";
-import { updateCategoryUsecase } from "@/src/application/category/usecase/update-category.usecase";
+import { categoryDeps } from "@/src/application/category/composition/category-deps";
+import {
+  buildGetCategoryByIdRequest,
+  buildUpdateCategoryRequest,
+} from "@/src/application/category/composition/category-requests";
+import { buildUsecaseRunner } from "@/src/application/core/usecase/runner/runner";
 import { resolveAuthContextFromRequest } from "@/src/interface/http/resolve-auth-context-from-request";
+import { buildStoreRequestContext } from "@/src/interface/http/build-store-request-context";
 import { mapUsecaseErrorToResponse } from "@/src/interface/http/map-usecase-error-to-response";
-import { runUsecase } from "@/features/shared/application/run-use-case";
 import { validateRequestJsonBody } from "@/src/interface/http/validate-request-json-body";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -18,11 +22,14 @@ const getCategoryByIdHandler = async (
 
 	try {
 		const { categoryId } = await context.params;
-		const category = await runUsecase({
-			useCase: getCategoryByIdUsecase,
-			input: { categoryId },
-			authContext,
-		});
+		const runner = buildUsecaseRunner();
+		const category = await runner.runWithInput(
+			buildGetCategoryByIdRequest(
+				{ categoryId },
+				buildStoreRequestContext(authContext),
+				categoryDeps.getById,
+			),
+		);
 
 		return NextResponse.json(category);
 	} catch (error) {
@@ -44,11 +51,14 @@ const updateCategoryHandler = async (
 			id: categoryId,
 		};
 
-		const updatedCategory = await runUsecase({
-			useCase: updateCategoryUsecase,
-			input: rawInput,
-			authContext,
-		});
+		const runner = buildUsecaseRunner();
+		const updatedCategory = await runner.runWithInput(
+			buildUpdateCategoryRequest(
+				rawInput,
+				buildStoreRequestContext(authContext),
+				categoryDeps.update,
+			),
+		);
 
 		return NextResponse.json(updatedCategory);
 	} catch (error) {

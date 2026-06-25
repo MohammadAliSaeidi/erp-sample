@@ -1,16 +1,13 @@
 import { Category as PrismaCategory } from "@/src/infrastructure/database/orm/prisma/generated/client";
-import { CategoryId } from "@/src/domain/category/category-id";
-import {
-  createCategory,
-  Category as DomainCategory,
-} from "@/src/domain/category/category.entity";
+import { Category } from "@/src/domain/category/aggregates/category.aggregate";
+import { brand } from "@/lib/brand";
 
 export const mapToDomainCategory = (
   category: PrismaCategory,
-): DomainCategory => {
-  return createCategory({
-    id: category.id as CategoryId,
+): Category.Aggregate => {
+  return Category.rehydrate({
+    id: brand<string, "CategoryId">(category.id) as Category.Id,
     name: category.name,
-    description: category.description ?? undefined,
+    description: category.description ?? null,
   });
 };

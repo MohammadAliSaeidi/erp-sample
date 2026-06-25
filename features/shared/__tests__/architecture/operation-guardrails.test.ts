@@ -7,8 +7,8 @@ const transportFiles = [
 	"app/api/v1/inventory/category/route.ts",
 	"app/api/v1/inventory/category/[categoryId]/route.ts",
 	"app/api/v1/auth/login/route.ts",
-	"interface/actions/category/create-category.action.ts",
-	"interface/actions/category/update-category.action.ts",
+	"src/interface/actions/category/create-category.action.ts",
+	"src/interface/actions/category/update-category.action.ts",
 	"features/auth/actions/login.action.ts",
 ];
 

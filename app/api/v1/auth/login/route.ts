@@ -1,55 +1,13 @@
+import { loginDeps } from "@/src/application/auth/composition/login-deps";
+import { buildLoginRequest } from "@/src/application/auth/composition/login-request";
+import { buildUsecaseRunner } from "@/src/application/core/usecase/runner/runner";
 import { resolveStoreSlugFromRequest } from "@/src/interface/http/resolve-store-slug-from-request";
-import { buildLoginUsecase } from "@/src/application/auth/usecase/login.usecase";
+import { buildPublicRequestContext } from "@/src/interface/http/build-public-request-context";
 import { mapUsecaseErrorToResponse } from "@/src/interface/http/map-usecase-error-to-response";
-import { runUsecase } from "@/features/shared/application/run-use-case";
-import prisma from "@/lib/prisma";
 import { validateRequestJsonBody } from "@/src/interface/http/validate-request-json-body";
 import { setTokenCookie } from "@/lib/token";
-import { isHashMatch } from "@/lib/utils/hash/hash";
 import { NextRequest, NextResponse } from "next/server";
-import { UseCaseBadRequestError } from "@/src/application/shared/errors/use-case-errors";
-
-const loginOperation = buildLoginUsecase({
-	findStoreBySlug: async (storeSlug) => {
-		return prisma.store.findUnique({
-			where: { slug: storeSlug },
-			select: { id: true, slug: true },
-		});
-	},
-	findStoreUserByStoreAndUsername: async (storeId, username) => {
-		const storeUser = await prisma.storeUser.findUnique({
-			where: {
-				storeId_username: { storeId, username },
-			},
-			select: {
-				id: true,
-				name: true,
-				storeId: true,
-				username: true,
-				roleId: true,
-				password: true,
-				role: {
-					select: {
-						grantsAll: true,
-					},
-				},
-			},
-		});
-
-		return storeUser
-			? {
-					id: storeUser.id,
-					name: storeUser.name,
-					storeId: storeUser.storeId,
-					username: storeUser.username,
-					roleId: storeUser.roleId,
-					password: storeUser.password,
-					grantsAll: storeUser.role?.grantsAll ?? false,
-				}
-			: null;
-	},
-	isPasswordMatch: isHashMatch,
-});
+import { BadRequestError } from "@/src/application/core/errors/application.error";
 
 export const POST = async (request: NextRequest) => {
 	try {
@@ -57,16 +15,19 @@ export const POST = async (request: NextRequest) => {
 		const storeSlug = resolveStoreSlugFromRequest(request);
 
 		if (!storeSlug)
-			return mapUsecaseErrorToResponse(new UseCaseBadRequestError());
+			return mapUsecaseErrorToResponse(new BadRequestError());
 
-		const loginResult = await runUsecase({
-			useCase: loginOperation,
-			input: rawBody as {
-				username: string;
-				password: string;
-				storeSlug: string;
-			},
-		});
+		const runner = buildUsecaseRunner();
+		const loginResult = await runner.runWithInput(
+			buildLoginRequest(
+				{
+					...(typeof rawBody === "object" && rawBody !== null ? rawBody : {}),
+					storeSlug,
+				},
+				buildPublicRequestContext(),
+				loginDeps,
+			),
+		);
 
 		await setTokenCookie(loginResult.cookieName, loginResult.tokenPayload);
 

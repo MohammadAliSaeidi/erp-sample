@@ -1,17 +1,16 @@
+import { Category as CategoryAggregate } from "./aggregates/category.aggregate";
 import { CategoryId } from "./category-id";
 
-export type Category = {
+/** @deprecated Use `Category.Aggregate` from `./aggregates/category.aggregate` */
+export type Category = CategoryAggregate.Aggregate;
+
+export const createCategory = (input: {
   id: CategoryId;
   name: string;
   description?: string;
-};
-
-export const createCategory = (input: Category): Category => {
-  if (input.name.trim().length === 0)
-    throw new Error("Category name is required");
-
-  return {
-    ...input,
-    name: input.name.trim(),
-  };
-};
+}): Category =>
+  CategoryAggregate.rehydrate({
+    id: input.id as CategoryAggregate.Id,
+    name: input.name,
+    description: input.description ?? null,
+  });

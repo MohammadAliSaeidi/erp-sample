@@ -1,6 +1,8 @@
-import { getItemsListUsecase } from "@/src/application/item/usecase/get-items-list.usecase";
+import { itemDeps } from "@/src/application/item/composition/item-deps";
+import { buildGetItemsListRequest } from "@/src/application/item/composition/item-requests";
+import { buildUsecaseRunner } from "@/src/application/core/usecase/runner/runner";
 import { mapUsecaseErrorToResponse } from "@/src/interface/http/map-usecase-error-to-response";
-import { runUsecase } from "@/features/shared/application/run-use-case";
+import { buildStoreRequestContext } from "@/src/interface/http/build-store-request-context";
 import { resolveAuthContextFromRequest } from "@/src/interface/http/resolve-auth-context-from-request";
 import { NextRequest, NextResponse } from "next/server";
 import { validateRequestJsonBody } from "@/src/interface/http/validate-request-json-body";
@@ -10,13 +12,16 @@ const getItemsHandler = async (request: NextRequest) => {
 	const authContext = await resolveAuthContextFromRequest(request);
 
 	try {
-		const categories = await runUsecase({
-			useCase: getItemsListUsecase,
-			input: {},
-			authContext,
-		});
+		const runner = buildUsecaseRunner();
+		const items = await runner.runWithInput(
+			buildGetItemsListRequest(
+				{},
+				buildStoreRequestContext(authContext),
+				itemDeps.list,
+			),
+		);
 
-		return NextResponse.json(categories);
+		return NextResponse.json(items);
 	} catch (error) {
 		return mapUsecaseErrorToResponse(error);
 	

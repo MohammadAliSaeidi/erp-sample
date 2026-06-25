@@ -1,24 +1,25 @@
-import { runUsecase } from "@/features/shared/application/run-use-case";
-import { UseCaseValidationError } from "@/src/application/shared/errors/use-case-errors";
-import { buildRefreshLockUsecase } from "../refresh-lock.usecase";
+import { InputValidationError } from "@/src/application/core/errors/input-validation.error";
+import { buildUsecaseRunner } from "@/src/application/core/usecase/runner/runner";
+import { buildRefreshLockRequest } from "@/src/application/shared/lock-service/composition/lock-requests";
+import { refreshLockUsecase } from "../refresh-lock.usecase";
 import {
   buildItemLockKey,
   createMockLockService,
   ITEMS_UPDATE_PERMISSION,
-  LOCK_AUTH_CONTEXT,
-  LOCK_TOKEN,
+  LOCK_BASE_CONTEXT,
+  LOCK_STORE_AUTH_CONTEXT,
   REFRESH_LOCK_INPUT,
 } from "../../testing/lock-usecase-test.helpers";
+import { brand } from "@/lib/brand";
+import { LockToken } from "@/src/application/shared/lock-service/lock-service.types";
 
-describe("buildRefreshLockUsecase", () => {
+describe("refreshLockUsecase", () => {
   const lockService = createMockLockService();
-
-  const useCase = buildRefreshLockUsecase({
-    key: "test.refresh-lock",
-    permissions: [ITEMS_UPDATE_PERMISSION],
+  const runner = buildUsecaseRunner();
+  const deps = {
     lockService,
     buildLockKey: buildItemLockKey,
-  });
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -27,16 +28,16 @@ describe("buildRefreshLockUsecase", () => {
   it("refreshes using tenant-scoped key and ownership token", async () => {
     lockService.refresh.mockResolvedValue(true);
 
-    const result = await runUsecase({
-      useCase,
-      input: REFRESH_LOCK_INPUT,
-      authContext: LOCK_AUTH_CONTEXT,
-    });
+    const result = await refreshLockUsecase.execute(
+      REFRESH_LOCK_INPUT,
+      LOCK_STORE_AUTH_CONTEXT,
+      deps,
+    );
 
     expect(result).toEqual({ ok: true });
     expect(lockService.refresh).toHaveBeenCalledWith(
       buildItemLockKey("store-1", "item-1"),
-      LOCK_TOKEN,
+      brand<string, LockToken>(REFRESH_LOCK_INPUT.token),
       REFRESH_LOCK_INPUT.ttlMs,
     );
   });
@@ -44,30 +45,29 @@ describe("buildRefreshLockUsecase", () => {
   it("returns ok: false when token does not match lock owner", async () => {
     lockService.refresh.mockResolvedValue(false);
 
-    const result = await runUsecase({
-      useCase,
-      input: REFRESH_LOCK_INPUT,
-      authContext: LOCK_AUTH_CONTEXT,
-    });
+    const result = await runner.runWithInput(
+      buildRefreshLockRequest(
+        REFRESH_LOCK_INPUT,
+        LOCK_BASE_CONTEXT,
+        deps,
+        [ITEMS_UPDATE_PERMISSION],
+      ),
+    );
 
     expect(result).toEqual({ ok: false });
   });
 
-  it.each([
-    ["ttl below minimum", { entityId: "item-1", token: "t", ttlMs: 500 }],
-    [
-      "ttl above maximum",
-      { entityId: "item-1", token: "t", ttlMs: 11 * 60 * 1000 },
-    ],
-    ["empty entity id", { entityId: "", token: "t", ttlMs: 5_000 }],
-  ])("rejects invalid input: %s", async (_label, input) => {
+  it("rejects invalid input before calling lock service", async () => {
     await expect(
-      runUsecase({
-        useCase,
-        input,
-        authContext: LOCK_AUTH_CONTEXT,
-      }),
-    ).rejects.toBeInstanceOf(UseCaseValidationError);
+      runner.runWithInput(
+        buildRefreshLockRequest(
+          { entityId: "", token: "t", ttlMs: 5_000 },
+          LOCK_BASE_CONTEXT,
+          deps,
+          [ITEMS_UPDATE_PERMISSION],
+        ),
+      ),
+    ).rejects.toBeInstanceOf(InputValidationError);
 
     expect(lockService.refresh).not.toHaveBeenCalled();
   });

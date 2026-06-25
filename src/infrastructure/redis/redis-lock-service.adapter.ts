@@ -155,14 +155,18 @@ export function buildRedisLockService(client: Redis): LockServicePort {
       };
     },
 
-    async release(key: LockKey, lockToken: LockToken): Promise<UnlockResult> {
+    async release(
+      key: LockKey,
+      lockToken: LockToken,
+    ): Promise<UnlockResult> {
       const result = await client.eval(
         RELEASE_LUA,
         1,
         String(key),
         String(lockToken),
       );
-      return Number(result) > 0 ? { ok: true } : { ok: false };
+
+      return { ok: Number(result) > 0 };
     },
 
     async refresh(

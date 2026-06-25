@@ -1,34 +1,31 @@
-import { CategoryDTO } from "@/src/application/category/dto/category.dto";
-import { ICategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
+import { brand } from "@/lib/brand";
+import { defineUsecaseWithoutInput } from "@/src/application/core/usecase/factories";
+import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
+import type { ICategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
 import { StoreId } from "@/src/domain/store/store-id";
-import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
-import { buildAuthenticatedUsecase } from "@/features/shared/application/use-case";
-import { categoryRepositoryAdapter } from "@/src/infrastructure/database/adapters/category/category-repository.adapter";
-import z from "zod";
 
-const listCategoriesInputSchema = z.object({});
+export type CategoryOutputDTO = {
+  id: string;
+  name: string;
+  description: string | null;
+};
 
-export interface ListCategoriesUsecaseDeps {
+export type ListCategoriesUsecaseDeps = {
   categoryRepository: Pick<ICategoryRepositoryPort, "getList">;
-}
+};
 
-export const buildListCategoriesUsecase = (deps: ListCategoriesUsecaseDeps) =>
-  buildAuthenticatedUsecase({
-    key: "categories.list",
-    auth: "required",
-    requiredPermissions: [PERMISSIONS.CATEGORIES.READ],
-    inputSchema: listCategoriesInputSchema,
-    execute: async ({ authContext }): Promise<CategoryDTO[]> => {
-      const categories = await deps.categoryRepository.getList(
-        authContext.storeId as StoreId,
-      );
+export const listCategoriesUsecase = defineUsecaseWithoutInput<
+  CategoryOutputDTO[],
+  StoreAuthContext,
+  ListCategoriesUsecaseDeps
+>(async (context, deps) => {
+  const categories = await deps.categoryRepository.getList(
+    brand<string, "StoreId">(context.storeId) as StoreId,
+  );
 
-      return categories.map((category) => ({
-        ...category,
-      }));
-    },
-  });
-
-export const listCategoriesUsecase = buildListCategoriesUsecase({
-  categoryRepository: categoryRepositoryAdapter,
+  return categories.map((category) => ({
+    id: category.id,
+    name: category.name,
+    description: category.description,
+  }));
 });

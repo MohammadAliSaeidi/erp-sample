@@ -1,3 +1,6 @@
+import { brand } from "@/lib/brand";
+import { defineUsecase } from "@/src/application/core/usecase/factories";
+import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
 import { LockServicePort } from "@/src/application/shared/lock-service/lock-service.port";
 import {
   LockKey,
@@ -5,122 +8,73 @@ import {
   LockResultFailure,
   LockResultOk,
 } from "@/src/application/shared/lock-service/lock-service.types";
+import type { AcquireLockInput } from "@/src/application/shared/lock-service/schema/acquire-lock.schema";
 import { IEventPublisherPort } from "@/src/application/shared/ports/event-publisher.port";
 import {
   DomainEvent,
   EventType,
 } from "@/src/domain/shared/events/events.types";
+import { StoreAdminId } from "@/src/domain/store-admin/store-admin-id";
 import { StoreId } from "@/src/domain/store/store-id";
-import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
-import {
-  AuthenticatedUsecaseDefinition,
-  buildAuthenticatedUsecase,
-} from "@/features/shared/application/use-case";
-import { brand, Brand } from "@/lib/brand";
-import { z, ZodType } from "zod";
 
-export type AcquireLockDeps<
-  TSchema extends ZodType,
-  TResult,
-  TEntityBrand extends string,
-  TInput extends { entityId: TEntityBrand; ttlMs: number },
+export type AcquireLockEventFactory<
   TLockedEvent extends EventType,
   TDeniedEvent extends EventType,
-  TAuth = AuthContext,
+> = {
+  buildLockedEvent: (
+    context: StoreAuthContext,
+    input: AcquireLockInput,
+    result: LockResultOk,
+  ) => DomainEvent<TLockedEvent>;
+
+  buildDeniedEvent: (
+    context: StoreAuthContext,
+    input: AcquireLockInput,
+    result: LockResultFailure,
+  ) => DomainEvent<TDeniedEvent>;
+};
+
+export type AcquireLockUsecaseDeps<
+  TLockedEvent extends EventType = EventType,
+  TDeniedEvent extends EventType = EventType,
 > = {
   lockService: LockServicePort;
-  buildLockKey: (storeId: StoreId, entityId: TEntityBrand) => LockKey;
+  buildLockKey: (storeId: StoreId, entityId: string) => LockKey;
   eventPublisher?: IEventPublisherPort;
-  /**
-   * True by default
-   */
   emitEvents?: boolean;
-  eventFactory?: {
-    buildLockedEvent: (
-      ctx: TAuth,
-      input: TInput,
-      result: LockResultOk,
-    ) => DomainEvent<TLockedEvent>;
+  eventFactory?: AcquireLockEventFactory<TLockedEvent, TDeniedEvent>;
+};
 
-    buildDeniedEvent: (
-      ctx: TAuth,
-      input: TInput,
-      result: LockResultFailure,
-    ) => DomainEvent<TDeniedEvent>;
-  };
-} & Pick<
-  AuthenticatedUsecaseDefinition<TSchema, TResult>,
-  "key" | "requiredPermissions"
->;
+export const acquireLockUsecase = defineUsecase<
+  AcquireLockInput,
+  LockResult,
+  StoreAuthContext,
+  AcquireLockUsecaseDeps
+>(async (input, context, deps) => {
+  const key = deps.buildLockKey(
+    brand<string, StoreId>(context.storeId) as StoreId,
+    input.entityId,
+  );
 
-const inputSchema = z.object({
-  entityId: z.string().min(1),
-  ttlMs: z
-    .number()
-    .min(1000)
-    .max(10 * 60 * 1000),
+  const result = await deps.lockService.acquire(
+    key,
+    brand<string, StoreAdminId>(context.adminId) as StoreAdminId,
+    input.ttlMs,
+  );
+
+  const shouldEmit = deps.emitEvents ?? true;
+
+  if (shouldEmit && deps.eventPublisher && deps.eventFactory) {
+    if (result.ok) {
+      await deps.eventPublisher.publish(
+        deps.eventFactory.buildLockedEvent(context, input, result),
+      );
+    } else {
+      await deps.eventPublisher.publish(
+        deps.eventFactory.buildDeniedEvent(context, input, result),
+      );
+    }
+  }
+
+  return result;
 });
-
-export const buildAcquireLockUsecase = <
-  TSchema extends ZodType,
-  TResult extends { ok: false; lockedBy: string; expiresAt: number },
-  TEntityBrand extends string,
-  TInput extends { entityId: TEntityBrand; ttlMs: number },
-  TLockedEvent extends EventType,
-  TDeniedEvent extends EventType,
-  TAuth = AuthContext,
->(
-  deps: AcquireLockDeps<
-    TSchema,
-    TResult,
-    TEntityBrand,
-    TInput,
-    TLockedEvent,
-    TDeniedEvent,
-    TAuth
-  >,
-) =>
-  buildAuthenticatedUsecase({
-    key: deps.key,
-    auth: "required",
-    requiredPermissions: deps.requiredPermissions,
-    inputSchema,
-    execute: async ({ input, authContext }): Promise<LockResult> => {
-      const key: LockKey = deps.buildLockKey(
-        authContext.storeId,
-        brand<string, TEntityBrand>(input.entityId),
-      );
-
-      const result: LockResult = await deps.lockService.acquire(
-        key,
-        authContext.adminId,
-        input.ttlMs,
-      );
-
-      const shouldEmit = deps.emitEvents ?? true;
-
-      if (shouldEmit && deps.eventPublisher && deps.eventFactory) {
-        if (result.ok) {
-          const event: DomainEvent<TLockedEvent> =
-            deps.eventFactory.buildLockedEvent(
-              authContext as TAuth,
-              input as TInput,
-              result as LockResultOk,
-            );
-
-          await deps.eventPublisher.publish<EventType>(event);
-        } else {
-          const event: DomainEvent<TDeniedEvent> =
-            deps.eventFactory.buildDeniedEvent(
-              authContext as TAuth,
-              input as TInput,
-              result as LockResultFailure,
-            );
-
-          await deps.eventPublisher.publish<EventType>(event);
-        }
-      }
-
-      return result;
-    },
-  });
