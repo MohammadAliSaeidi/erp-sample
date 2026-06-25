@@ -26,15 +26,25 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import { useCreateItemMutation } from "../../hooks/use-create-item-mutation";
+import { uuid7GeneratorAdapter } from "@/lib/id-generator/uuid-generator.adapter";
 
 export default function CreateItemForm() {
   const categories: CategoryDTO[] = [
-    { id: brand("1"), name: "asdasd" } as CategoryDTO,
-    { id: brand("2"), name: "asdasd2" } as CategoryDTO,
+    {
+      id: brand(uuid7GeneratorAdapter.generate()),
+      name: "asdasd",
+    } as CategoryDTO,
+    {
+      id: brand(uuid7GeneratorAdapter.generate()),
+      name: "asdasd2",
+    } as CategoryDTO,
   ];
 
   const form = useForm<z.input<typeof createItemSchema>>({
     resolver: zodResolver(createItemSchema),
+    defaultValues: {
+      specificationAssignments: [],
+    },
   });
 
   const { mutate: mutateCreateItem, isPending: isMutateCreateItemPending } =
@@ -110,7 +120,11 @@ export default function CreateItemForm() {
                   valueKey="id"
                   labelKey="name"
                   value={field.value}
-                  onChange={field.onChange}
+                  onChange={(value) => {
+                    console.log(value);
+                    if (value) field.onChange(value);
+                    else field.onChange(undefined);
+                  }}
                   placeholder="Select A Category"
                   menu={<ComboboxList />}
                 >

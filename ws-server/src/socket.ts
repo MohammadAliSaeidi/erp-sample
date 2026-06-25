@@ -11,6 +11,18 @@ const itemRoom = (storeId: string, itemId: string) =>
   `store:${storeId}:item:${itemId}`;
 const adminRoom = (adminId: string) => `admin:${adminId}`;
 
+type SocketAuthContext = {
+  storeId: string;
+  adminId: string;
+};
+
+function canJoinStore(
+  authContext: SocketAuthContext | undefined,
+  storeId: string,
+): boolean {
+  return authContext != null && String(authContext.storeId) === storeId;
+}
+
 export function buildSocketServer(httpServer: HttpServer) {
   const io = new SocketIOServer(httpServer, { cors: { origin: "*" } });
 
@@ -29,6 +41,10 @@ export function buildSocketServer(httpServer: HttpServer) {
     console.log(`Socket connected: ${socket.id}`);
 
     socket.on("join-store", ({ storeId }: JoinStorePayload) => {
+      if (!canJoinStore(socket.data.authContext, storeId)) {
+        console.warn(`[ws] rejected join-store for storeId=${storeId}`);
+        return;
+      }
       socket.join(storeRoom(storeId));
     });
 
@@ -37,6 +53,10 @@ export function buildSocketServer(httpServer: HttpServer) {
     });
 
     socket.on("join-item", ({ storeId, itemId }: JoinItemPayload) => {
+      if (!canJoinStore(socket.data.authContext, storeId)) {
+        console.warn(`[ws] rejected join-item for storeId=${storeId}`);
+        return;
+      }
       socket.join(itemRoom(storeId, itemId));
     });
 
@@ -45,6 +65,11 @@ export function buildSocketServer(httpServer: HttpServer) {
     });
 
     socket.on("join-admin", ({ adminId }: JoinAdminPayload) => {
+      const authContext = socket.data.authContext as SocketAuthContext | undefined;
+      if (authContext == null || String(authContext.adminId) !== adminId) {
+        console.warn(`[ws] rejected join-admin for adminId=${adminId}`);
+        return;
+      }
       socket.join(adminRoom(adminId));
     });
 

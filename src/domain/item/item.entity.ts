@@ -34,20 +34,26 @@ export const createItem = (input: Item): Item => {
     throw new Error("Invalid price");
   }
 
-  if (!input.categoryId) throw new Error("categoryId is required");
+  // if (!input.categoryId) throw new Error("categoryId is required");
 
-  // for each specification, there should be only one assignment
-  const assignmentsClean = (input.specificationAssignments ?? []).map((a) => ({
-    specificationId: a.specificationId,
-    specificationValueId: a.specificationValueId,
-  }));
+  // If no categoryId, do not check specValues, return empty specificationAssignments
+  let processedSpecificationAssignments: ItemSpecificationAssignment[];
+  if (!input.categoryId) {
+    processedSpecificationAssignments = [];
+  } else {
+    // for each specification, there should be only one assignment
+    const assignmentsClean = (input.specificationAssignments ?? []).map((a) => ({
+      specificationId: a.specificationId,
+      specificationValueId: a.specificationValueId,
+    }));
 
-  const uniqueBySpec = uniq(assignmentsClean, (a) => a.specificationId);
+    processedSpecificationAssignments = uniq(assignmentsClean, (a) => a.specificationId);
+  }
 
   return {
     ...input,
     name: input.name.trim(),
     number: input.number.trim(),
-    specificationAssignments: uniqueBySpec,
+    specificationAssignments: processedSpecificationAssignments,
   };
 };

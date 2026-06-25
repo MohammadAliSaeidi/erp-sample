@@ -300,17 +300,17 @@ Copy to PR description or issue checklist.
 ```
 Phase 0  [x] Plan documented
 Phase 1  [x] 1.1 acquire empty
-         [ ] 1.2 acquire denied
+         [x] 1.2 acquire denied
          [x] 1.3 release correct token
-         [ ] 1.4 release wrong token
-         [ ] 1.5 refresh ok
-         [ ] 1.6 refresh denied
-         [x] 1.7–1.9 stray describe removed; port token-only release/refresh
-         [ ] 1.10 helpers lockToken aligned
-Phase 2  [ ] Use cases aligned
-Phase 3  [ ] Server actions / API
-Phase 4  [ ] WS pipeline
-Phase 5  [ ] Edit page lifecycle
+         [x] 1.4 release wrong token
+         [x] 1.5 refresh ok
+         [x] 1.6 refresh denied
+         [x] 1.7–1.9 port + adapter contracts
+         [x] 1.10 helpers lockToken aligned
+Phase 2  [x] Use cases aligned + `createItemLockInfrastructure`
+Phase 3  [x] `runAuthenticatedAction` + server actions
+Phase 4  [x] WS tenant guards + inventory socket client
+Phase 5  [x] `useItemEditLock` + edit page shell
 Phase 6  [ ] Categories
 Phase 7  [ ] Edge cases
 ```

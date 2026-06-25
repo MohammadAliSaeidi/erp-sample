@@ -76,11 +76,14 @@ describe("RedisLockService", () => {
   const adminId = brand<string, "StoreAdminId">(
     "0194a1b2-c3d7-7000-8000-000000000003",
   ) as StoreAdminId;
+  const otherAdminId = brand<string, "StoreAdminId">(
+    "0194a1b2-c3d7-7000-8000-000000000004",
+  ) as StoreAdminId;
 
   const key: LockKey = LockKeys.item(storeId, itemId);
   const ttlMs = 5_000;
 
-  describe("happy path", () => {
+  describe("acquire", () => {
     it("acquire on empty key returns ok with lockToken", async () => {
       const service = buildRedisLockService(createMemoryRedis());
 
@@ -106,12 +109,90 @@ describe("RedisLockService", () => {
       expect(released).toEqual({ ok: true });
       expect(await service.get(key)).toBeNull();
     });
+
+    it("denies acquire when lock already exists", async () => {
+      const service = buildRedisLockService(createMemoryRedis());
+
+      const first = await service.acquire(key, adminId, ttlMs);
+      expect(first.ok).toBe(true);
+
+      const second = await service.acquire(key, otherAdminId, ttlMs);
+
+      expect(second.ok).toBe(false);
+      if (second.ok) return;
+      expect(second.lockedBy).toBe(String(adminId));
+      expect(second.expiresAt).toBeDefined();
+    });
   });
 
-  describe("edge cases (planned — implement in Phase 1.2+)", () => {
-    it.todo("denies acquire when lock already exists");
-    it.todo("release with wrong token returns { ok: false } and keeps the lock");
-    it.todo("refresh with correct token extends TTL");
-    it.todo("refresh with wrong token returns false");
+  describe("release", () => {
+    it("returns { ok: false } and keeps the lock when lockToken is wrong", async () => {
+      const redis = createMemoryRedis();
+      const service = buildRedisLockService(redis);
+
+      const acquired = await service.acquire(key, adminId, ttlMs);
+      expect(acquired.ok).toBe(true);
+      if (!acquired.ok) return;
+
+      const wrongToken = brand<string, "LockToken">(
+        "00000000-0000-4000-8000-000000000099",
+      );
+      const released = await service.release(key, wrongToken);
+
+      expect(released).toEqual({ ok: false });
+      const stillLocked = await service.get(key);
+      expect(stillLocked?.ok).toBe(true);
+      if (!stillLocked?.ok) return;
+      expect(stillLocked.lockToken).toBe(acquired.lockToken);
+    });
+  });
+
+  describe("refresh", () => {
+    it("extends lock when lockToken matches", async () => {
+      const redis = createMemoryRedis();
+      const service = buildRedisLockService(redis);
+
+      const acquired = await service.acquire(key, adminId, ttlMs);
+      expect(acquired.ok).toBe(true);
+      if (!acquired.ok) return;
+
+      const beforeExpiresAt = acquired.expiresAt;
+      const extendedTtlMs = 10_000;
+
+      const refreshed = await service.refresh(
+        key,
+        acquired.lockToken,
+        extendedTtlMs,
+      );
+
+      expect(refreshed).toBe(true);
+      const after = await service.get(key);
+      expect(after?.ok).toBe(true);
+      if (!after?.ok) return;
+      expect(after.lockToken).toBe(acquired.lockToken);
+      expect(new Date(after.expiresAt).getTime()).toBeGreaterThan(
+        new Date(beforeExpiresAt).getTime(),
+      );
+    });
+
+    it("returns false when lockToken does not match", async () => {
+      const service = buildRedisLockService(createMemoryRedis());
+
+      const acquired = await service.acquire(key, adminId, ttlMs);
+      expect(acquired.ok).toBe(true);
+      if (!acquired.ok) return;
+
+      const wrongToken = brand<string, "LockToken">(
+        "00000000-0000-4000-8000-000000000099",
+      );
+      const refreshed = await service.refresh(key, wrongToken, ttlMs);
+
+      expect(refreshed).toBe(false);
+      const unchanged = await service.get(key);
+      expect(unchanged?.ok).toBe(true);
+      if (!unchanged?.ok) return;
+      expect(unchanged.lockToken).toBe(acquired.lockToken);
+      expect(unchanged.expiresAt).toBe(acquired.expiresAt);
+    });
   });
 });

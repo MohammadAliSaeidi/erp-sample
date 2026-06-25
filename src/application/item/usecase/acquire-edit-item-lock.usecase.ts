@@ -4,15 +4,15 @@ import { AuthContext } from "@/features/auth/domain/types/auth-context.type";
 import { buildEvent } from "@/src/domain/shared/events/build-event";
 import { LockServicePort } from "@/src/application/shared/lock-service/lock-service.port";
 import { IEventPublisherPort } from "@/src/application/shared/ports/event-publisher.port";
-import { buildRedisLockService } from "@/src/infrastructure/redis/redis-lock-service.adapter";
-import { buildRedisEventPublisher } from "@/src/infrastructure/redis/redis-event-publisher.adapter";
-import { redisClient } from "@/src/infrastructure/redis/redis-client";
+import { createItemLockInfrastructure } from "@/src/infrastructure/redis/item-lock-infrastructure";
 import { DomainEvent } from "@/src/domain/shared/events/events.types";
 import {
   LockResultFailure,
   LockResultOk,
 } from "@/src/application/shared/lock-service/lock-service.types";
 import { StoreId } from "@/src/domain/store/store-id";
+import { ItemId } from "@/src/domain/item/item-id";
+import { Brand, brand } from "@/lib/brand";
 
 export type AcquireEditItemLockDeps = {
   lockService: LockServicePort;
@@ -28,8 +28,10 @@ export const buildAcquireEditItemLockUsecase = (
     lockService: deps.lockService,
     emitEvents: true,
     eventPublisher: deps.events,
-    buildLockKey: (storeId: StoreId, entityId: string) =>
-      LockKeys.item(storeId, entityId),
+    buildLockKey: (storeId: StoreId, entityId: string) => {
+      const itemId: ItemId = brand(entityId);
+      return LockKeys.item(storeId, itemId);
+    },
 
     eventFactory: {
       buildLockedEvent: (
@@ -40,11 +42,11 @@ export const buildAcquireEditItemLockUsecase = (
         buildEvent(
           "item.locked",
           {
-            storeId: String(ctx.storeId),
-            itemId: input.entityId,
-            lockedBy: String(ctx.adminId),
+            storeId: ctx.storeId,
+            itemId: brand(input.entityId),
+            lockedBy: brand(ctx.adminId),
             expiresAt: result.expiresAt,
-            token: result.lockToken,
+            token: brand(result.lockToken),
           },
           undefined,
         ),
@@ -58,9 +60,9 @@ export const buildAcquireEditItemLockUsecase = (
           "item.lock.denied",
           {
             storeId: ctx.storeId,
-            itemId: input.entityId,
-            requestedBy: ctx.adminId,
-            lockedBy: result.lockedBy,
+            itemId: brand(input.entityId),
+            requestedBy: brand(ctx.adminId),
+            lockedBy: brand(result.lockedBy),
             expiresAt: result.expiresAt,
           },
           undefined,
@@ -68,7 +70,9 @@ export const buildAcquireEditItemLockUsecase = (
     },
   });
 
+const { lockService, eventPublisher } = createItemLockInfrastructure();
+
 export const acquireEditItemLockUsecase = buildAcquireEditItemLockUsecase({
-  lockService: buildRedisLockService(redisClient),
-  events: buildRedisEventPublisher(redisClient),
+  lockService,
+  events: eventPublisher,
 });

@@ -4,6 +4,7 @@ import { buildReleaseLockUsecase } from "@/src/application/shared/lock-service/u
 import { IEventPublisherPort } from "@/src/application/shared/ports/event-publisher.port";
 import { buildEvent } from "@/src/domain/shared/events/build-event";
 import { $brand } from "zod";
+import { createItemLockInfrastructure } from "@/src/infrastructure/redis/item-lock-infrastructure";
 
 export const buildReleaseEditItemLockUsecase = (deps: {
   lockService: LockServicePort;
@@ -38,3 +39,10 @@ export const buildReleaseEditItemLockUsecase = (deps: {
         ),
     },
   });
+
+const { lockService, eventPublisher } = createItemLockInfrastructure();
+
+export const releaseEditItemLockUsecase = buildReleaseEditItemLockUsecase({
+  lockService,
+  eventPublisher,
+});

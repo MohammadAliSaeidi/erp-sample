@@ -23,9 +23,9 @@ type RequireSsrAuthSource = {
   storeSlug?: string;
 };
 
-export async function requireSsrAuth(
+export async function getSsrAccessToken(
   source: RequireSsrAuthSource = {},
-): Promise<AuthContext> {
+): Promise<string | null> {
   const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
 
@@ -33,9 +33,16 @@ export async function requireSsrAuth(
     source,
     cookieStore.getAll().map((cookie) => cookie.name),
   );
-  const token = cookieName
-    ? (cookieStore.get(cookieName)?.value ?? null)
-    : null;
+
+  if (!cookieName) return null;
+
+  return cookieStore.get(cookieName)?.value ?? null;
+}
+
+export async function requireSsrAuth(
+  source: RequireSsrAuthSource = {},
+): Promise<AuthContext> {
+  const token = await getSsrAccessToken(source);
   const authContext = await resolveAuthContext(token);
 
   if (!authContext) {

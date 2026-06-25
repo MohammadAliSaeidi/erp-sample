@@ -31,7 +31,7 @@ export const buildCreateItemUsecase = (deps: CreateItemUsecaseDeps) =>
     execute: async ({ input: item, authContext: { storeId } }) => {
       const itemUUID = deps.idGenerator.generate();
       const brandedStoreId: StoreId = brand(storeId);
-
+      
       const mappedItem: Item = createItemDTOToEntityMapper.map({
         ...item,
         id: brand(itemUUID),
