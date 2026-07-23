@@ -16,7 +16,7 @@ import type {
   StoreAuthContext,
 } from "@/src/application/core/usecase/types/context.types";
 import { Category } from "@/src/domain/category/aggregates/category.aggregate";
-import type { ICategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
+import type { CategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
 import { StoreId } from "@/src/domain/store/store-id";
 
 const CATEGORY_ID = "018f3c8a-0000-7000-8000-000000000001";

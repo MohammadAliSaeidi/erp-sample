@@ -1,6 +1,6 @@
 import { PrismaClient } from "@/src/infrastructure/database/orm/prisma/generated/client";
 import { CategoryNotFoundForStoreError } from "@/src/domain/category/errors/category-not-found-for-store.error";
-import { ICategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
+import { CategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
 import { Category } from "@/src/domain/category/category.entity";
 import { mapToDomainCategory } from "./mappers/map-to-domain-category";
 import prisma from "@/lib/prisma";
@@ -8,7 +8,7 @@ import { CategoryId } from "@/src/domain/category/category-id";
 import { StoreId } from "@/src/domain/store/store-id";
 
 export interface ICategoryRepositoryAdapterBuilder {
-  (prismaDB: PrismaClient): ICategoryRepositoryPort;
+  (prismaDB: PrismaClient): CategoryRepositoryPort;
 }
 
 export const buildCategoryRepositoryAdapter: ICategoryRepositoryAdapterBuilder =

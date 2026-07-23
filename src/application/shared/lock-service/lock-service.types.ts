@@ -17,7 +17,7 @@ export const lockKeyRegex = new RegExp(
 	`^store:${uuidV7Pattern.source}:item:${uuidV7Pattern.source}$`,
 );
 
-export const lockKeySchema = z.string().regex(/ /).brand();
+export const lockKeySchema = z.string().regex(lockKeyRegex).brand("LockKey");
 
 export type LockKey = Brand<string, "LockKey">;
 

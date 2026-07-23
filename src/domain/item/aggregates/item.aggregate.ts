@@ -25,7 +25,7 @@ export namespace Item {
     number: string;
     description: string | null;
     price: number;
-    category: Category.Data;
+    categoryId?: Category.Id;
     specificationAssignments: readonly ItemSpecificationAssignment[];
     isDeleted: boolean;
   }>;
@@ -39,7 +39,7 @@ export namespace Item {
     number: string;
     description?: string | null;
     price: number;
-    category: Category.Data;
+    categoryId?: Category.Id;
     specificationAssignments?: readonly ItemSpecificationAssignment[];
     isDeleted?: boolean;
   };
@@ -72,7 +72,7 @@ export namespace Item {
       number: props.number?.trim() ?? "",
       description: props.description ?? null,
       price: props.price,
-      category: props.category,
+      categoryId: props.categoryId,
       specificationAssignments: normalizeAssignments(
         props.specificationAssignments,
       ),
@@ -94,7 +94,7 @@ export namespace Item {
       issues.push(new InvalidAmountError("price", "Invalid price"));
     }
 
-    if (!data.category) issues.push(new RequiredFieldError("category"));
+    if (!data.categoryId) issues.push(new RequiredFieldError("categoryId"));
 
     if (issues.length) throw new ValidationError(issues);
   }

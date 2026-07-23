@@ -3,7 +3,7 @@ import { defineUsecase } from "@/src/application/core/usecase/factories";
 import { NotFoundError } from "@/src/application/core/errors/application.error";
 import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
 import { Category } from "@/src/domain/category/aggregates/category.aggregate";
-import type { ICategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
+import type { CategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
 import { StoreId } from "@/src/domain/store/store-id";
 import type { CategoryOutputDTO } from "./list-categories.usecase";
 
@@ -12,7 +12,7 @@ export type GetCategoryByIdInputDTO = {
 };
 
 export type GetCategoryByIdUsecaseDeps = {
-  categoryRepository: Pick<ICategoryRepositoryPort, "getById">;
+  categoryRepository: Pick<CategoryRepositoryPort, "getById">;
 };
 
 export const getCategoryByIdUsecase = defineUsecase<

@@ -3,11 +3,15 @@ import { ItemSpecificationAssignmentDTO } from "./item-specification-assignment.
 import { Prettify } from "@/features/shared/types/prettify.type";
 
 export type ItemDTO = Prettify<
-  Omit<Item.Data, "categoryId" | "specificationAssignments"> & {
+  Omit<Item.Data, "categoryId" | "specificationAssignments" | "category"> & {
     id: string;
-    categoryId?: string;
     isDeleted: boolean;
     categoryName?: string;
+    category: {
+      id: string;
+      name: string;
+      description?: string | undefined;
+    };
     specificationAssignments: ItemSpecificationAssignmentDTO[];
   }
 >;

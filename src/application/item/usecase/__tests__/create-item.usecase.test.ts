@@ -63,6 +63,7 @@ const createdItemDto: ItemDTO = {
   description: null,
   price: 18,
   categoryId: CATEGORY_ID,
+  
   isDeleted: true,
   specificationAssignments: [],
 };

@@ -76,11 +76,8 @@ export function useItemEditLock(itemId: string) {
     if (!result.ok || !result.data.ok) {
       lockTokenRef.current = null;
       clearRefreshTimer();
-      setLockState({
-        status: "blocked",
-        lockedBy: "another user",
-        expiresAt: new Date(Date.now() + LOCK_TTL_MS).toISOString(),
-      });
+      setLockState({ status: "idle" });
+
       return;
     }
 
@@ -177,7 +174,9 @@ export function useItemEditLock(itemId: string) {
       if (payload.itemId !== itemId) return;
       if (payload.unlockedBy === adminId) return;
       if (lockTokenRef.current) return;
-      void acquireLock();
+      // add a jitter because multiple users might be waiting and suddenly they call acquire lock together at the same time
+      const delay = Math.random() * 500;
+      setTimeout(() => void acquireLock(), delay);
     };
 
     const handleDenied = (payload: ItemLockDeniedPayload) => {

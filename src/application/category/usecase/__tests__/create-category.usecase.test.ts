@@ -17,7 +17,7 @@ import type {
   StoreAuthContext,
 } from "@/src/application/core/usecase/types/context.types";
 import { Category } from "@/src/domain/category/aggregates/category.aggregate";
-import type { ICategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
+import type { CategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
 import { StoreId } from "@/src/domain/store/store-id";
 
 const NOW = new Date("2026-06-10T12:00:00.000Z");
@@ -45,7 +45,7 @@ const storeAuthContext: StoreAuthContext = {
 function createDeps(
   overrides: Partial<CreateCategoryUsecaseDeps> = {},
 ): CreateCategoryUsecaseDeps {
-  const categoryRepository: Pick<ICategoryRepositoryPort, "create"> = {
+  const categoryRepository: Pick<CategoryRepositoryPort, "create"> = {
     create: jest.fn(async (category) => category),
     ...overrides.categoryRepository,
   };

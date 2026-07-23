@@ -1,7 +1,7 @@
 import { brand } from "@/lib/brand";
 import { defineUsecaseWithoutInput } from "@/src/application/core/usecase/factories";
 import type { StoreAuthContext } from "@/src/application/core/usecase/types/context.types";
-import type { ICategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
+import type { CategoryRepositoryPort } from "@/src/domain/category/category-repository.port";
 import { StoreId } from "@/src/domain/store/store-id";
 
 export type CategoryOutputDTO = {
@@ -11,7 +11,7 @@ export type CategoryOutputDTO = {
 };
 
 export type ListCategoriesUsecaseDeps = {
-  categoryRepository: Pick<ICategoryRepositoryPort, "getList">;
+  categoryRepository: Pick<CategoryRepositoryPort, "getList">;
 };
 
 export const listCategoriesUsecase = defineUsecaseWithoutInput<
