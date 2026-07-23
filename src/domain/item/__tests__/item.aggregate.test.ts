@@ -1,27 +1,33 @@
 import { brand } from "@/lib/brand";
 import { CategoryId } from "@/src/domain/category/category-id";
-import { RequiredFieldError } from "@/src/domain/core/errors/validation.error";
+import { RequiredFieldError, ValidationError } from "@/src/domain/core/errors/validation.error";
 import { Item } from "@/src/domain/item/aggregates/item.aggregate";
 import { SpecificationId } from "@/src/domain/specification/specification-id";
 import { SpecificationValueId } from "@/src/domain/specification/specification-value-id";
+import { Category } from "../../category/aggregates/category.aggregate";
 
-const CATEGORY_ID = brand<string, CategoryId>(
-  "018f3c8a-0000-7000-8000-000000000003",
-);
-const SPEC_ID = brand<string, SpecificationId>(
-  "018f3c8a-0000-7000-8000-000000000004",
-);
-const SPEC_VALUE_ID = brand<string, SpecificationValueId>(
+const CATEGORY_ID: CategoryId = brand("018f3c8a-0000-7000-8000-000000000003");
+const SPEC_ID: SpecificationId = brand("018f3c8a-0000-7000-8000-000000000004");
+
+const SPEC_VALUE_ID: SpecificationValueId = brand(
   "018f3c8a-0000-7000-8000-000000000005",
 );
 
 describe("Item aggregate", () => {
+  let category: Category.Aggregate;
+
+  beforeAll(() => {
+    category = Category.create({
+      name: "My Category",
+    });
+  });
+
   it("creates an item with normalized fields", () => {
     const item = Item.createNew({
       name: "  Latte  ",
       number: " 1001 ",
       price: 12.5,
-      categoryId: CATEGORY_ID,
+      category: category,
       specificationAssignments: [
         {
           specificationId: SPEC_ID,
@@ -33,7 +39,7 @@ describe("Item aggregate", () => {
     expect(item.name).toBe("Latte");
     expect(item.number).toBe("1001");
     expect(item.price).toBe(12.5);
-    expect(item.categoryId).toBe(CATEGORY_ID);
+    expect(item.category).toBe(category);
     expect(item.specificationAssignments).toHaveLength(1);
     expect(item.isDeleted).toBe(true);
     expect(Object.isFrozen(item)).toBe(true);
@@ -44,7 +50,7 @@ describe("Item aggregate", () => {
       name: "Mocha",
       number: "1002",
       price: 15,
-      categoryId: CATEGORY_ID,
+      category: category,
       specificationAssignments: [
         {
           specificationId: SPEC_ID,
@@ -52,7 +58,7 @@ describe("Item aggregate", () => {
         },
         {
           specificationId: SPEC_ID,
-          specificationValueId: brand<string, SpecificationValueId>(
+          specificationValueId: brand(
             "018f3c8a-0000-7000-8000-000000000006",
           ),
         },
@@ -68,9 +74,9 @@ describe("Item aggregate", () => {
         name: "   ",
         number: "1003",
         price: 10,
-        categoryId: CATEGORY_ID,
+        category: category,
       }),
-    ).toThrow(RequiredFieldError);
+    ).toThrow(ValidationError);
   });
 
   it("rejects negative price", () => {
@@ -79,9 +85,9 @@ describe("Item aggregate", () => {
         name: "Tea",
         number: "1004",
         price: -1,
-        categoryId: CATEGORY_ID,
+        category: category,
       }),
-    ).toThrow("Invalid price");
+    ).toThrow(ValidationError);
   });
 
   it("updates an existing item with validated fields", () => {
@@ -94,7 +100,7 @@ describe("Item aggregate", () => {
       name: "  Espresso  ",
       number: "3001",
       price: 9,
-      categoryId: CATEGORY_ID,
+      category: category,
       specificationAssignments: [],
       isDeleted: false,
     });
