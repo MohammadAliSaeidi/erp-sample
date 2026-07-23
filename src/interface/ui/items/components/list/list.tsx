@@ -1,9 +1,33 @@
 "use client";
 
+import { ItemDTO } from "@/src/application/item/dto/item.dto";
 import { AgGridReact } from "ag-grid-react";
 import { useGetItemsListQuery } from "../../hooks/use-get-items-list-query";
 import { createApiClient } from "@/lib/api-client";
 import { ClientRedirectHandler } from "@/lib/api-client/handlers/client-redirect-handler";
+import { Button } from "@/src/presentation/components/ui/button";
+import { ColDef, ICellRendererParams } from "ag-grid-community";
+import { EyeIcon } from "lucide-react";
+import Link from "next/link";
+
+const columns: ColDef<ItemDTO>[] = [
+  {
+    sortable: false,
+    resizable: false,
+    width: 57,
+    cellRenderer: (params: ICellRendererParams<ItemDTO>) => (
+      <Button size="icon-xs" variant="ghost" disabled={!params.data}>
+        <Link href={params.data ? `${params.data.id}/edit` : "#"}>
+          <EyeIcon />
+        </Link>
+      </Button>
+    ),
+  },
+  { field: "name" },
+  { field: "number" },
+  { field: "price" },
+  { field: "description" },
+];
 
 export default function List() {
   const { isFetching, data } = useGetItemsListQuery(
@@ -14,18 +38,7 @@ export default function List() {
 
   return (
     <AgGridReact
-      columnDefs={[
-        {
-          field: "name",
-        },
-        { field: "number" },
-        {
-          field: "price",
-        },
-        {
-          field: "description",
-        },
-      ]}
+      columnDefs={columns}
       rowData={data ?? []}
       loading={isFetching}
     />

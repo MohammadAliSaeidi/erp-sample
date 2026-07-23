@@ -1,16 +1,18 @@
 import { uniq } from "@/lib/uniq/uniq";
-import { CategoryId } from "@/src/domain/category/category-id";
 import {
   Aggregate as AggregateBase,
   AggregateId,
   createAggregateFactory,
 } from "@/src/domain/core/entity";
 import {
+  DomainValidationCause,
   InvalidAmountError,
   RequiredFieldError,
+  ValidationError,
 } from "@/src/domain/core/errors/validation.error";
 import { SpecificationId } from "@/src/domain/specification/specification-id";
 import { SpecificationValueId } from "@/src/domain/specification/specification-value-id";
+import { Category } from "../../category/aggregates/category.aggregate";
 
 export namespace Item {
   export type ItemSpecificationAssignment = Readonly<{
@@ -23,7 +25,7 @@ export namespace Item {
     number: string;
     description: string | null;
     price: number;
-    categoryId: CategoryId;
+    category: Category.Data;
     specificationAssignments: readonly ItemSpecificationAssignment[];
     isDeleted: boolean;
   }>;
@@ -32,111 +34,95 @@ export namespace Item {
   export type Aggregate = AggregateBase<Data, Tag>;
   export type Id = AggregateId<Tag>;
 
-  type CreateProps = {
+  export type CreateProps = {
     name: string;
     number: string;
     description?: string | null;
     price: number;
-    categoryId: CategoryId;
+    category: Category.Data;
     specificationAssignments?: readonly ItemSpecificationAssignment[];
     isDeleted?: boolean;
   };
 
-  type RehydrateProps = CreateProps & {
-    id: Id;
-  };
+  export type RestoreProps = CreateProps & { id: Id };
 
-  export const factory = createAggregateFactory<Data, Aggregate, Tag>({
+  type Mode = "create" | "restore" | "update";
+
+  const factory = createAggregateFactory<Data, Aggregate, Tag>({
     tag: "Item",
     validate: () => [],
-    build: (id, props) => ({
-      id,
-      ...props,
-    }),
+    build: (id, props) => ({ id, ...props }),
   });
 
   function normalizeAssignments(
     assignments: readonly ItemSpecificationAssignment[] = [],
   ): readonly ItemSpecificationAssignment[] {
     return uniq(
-      assignments.map((assignment) => ({
-        specificationId: assignment.specificationId,
-        specificationValueId: assignment.specificationValueId,
+      assignments.map((a) => ({
+        specificationId: a.specificationId,
+        specificationValueId: a.specificationValueId,
       })),
-      (assignment) => assignment.specificationId,
+      (a) => a.specificationId,
     );
   }
 
-  export function create(props: CreateProps): Aggregate {
-    if (!props.name?.trim()) {
-      throw new RequiredFieldError("name");
-    }
-
-    if (!props.number?.trim()) {
-      throw new RequiredFieldError("number");
-    }
-
-    if (
-      props.price === undefined ||
-      Number.isNaN(props.price) ||
-      props.price < 0
-    ) {
-      throw new InvalidAmountError("price", "Invalid price");
-    }
-
-    if (!props.categoryId) {
-      throw new RequiredFieldError("categoryId");
-    }
-
-    return factory.create({
-      name: props.name.trim(),
-      number: props.number.trim(),
+  function normalize(props: CreateProps, mode: Mode): Data {
+    return {
+      name: props.name?.trim() ?? "",
+      number: props.number?.trim() ?? "",
       description: props.description ?? null,
       price: props.price,
-      categoryId: props.categoryId,
+      category: props.category,
       specificationAssignments: normalizeAssignments(
         props.specificationAssignments,
       ),
-      isDeleted: props.isDeleted ?? true,
-    });
+      isDeleted: props.isDeleted ?? mode === "create",
+    };
   }
 
-  export function rehydrate(props: RehydrateProps): Aggregate {
+  function validate(data: Data): void {
+    const issues: DomainValidationCause[] = [];
+
+    if (!data.name) issues.push(new RequiredFieldError("name"));
+    if (!data.number) issues.push(new RequiredFieldError("number"));
+
+    if (
+      data.price === undefined ||
+      Number.isNaN(data.price) ||
+      data.price < 0
+    ) {
+      issues.push(new InvalidAmountError("price", "Invalid price"));
+    }
+
+    if (!data.category) issues.push(new RequiredFieldError("category"));
+
+    if (issues.length) throw new ValidationError(issues);
+  }
+
+  function buildForWrite(props: CreateProps, mode: Mode): Data {
+    const data = normalize(props, mode);
+    validate(data);
+    return data;
+  }
+
+  /** Create brand-new Item. Generates id. */
+  export function createNew(props: CreateProps): Aggregate {
+    return factory.create(buildForWrite(props, "create"));
+  }
+
+  /** Restore Item from persistence using existing id. */
+  export function restore(props: RestoreProps): Aggregate {
     return factory.fromPersistence({
       id: props.id,
-      name: props.name.trim(),
-      number: props.number.trim(),
-      description: props.description ?? null,
-      price: props.price,
-      categoryId: props.categoryId,
-      specificationAssignments: normalizeAssignments(
-        props.specificationAssignments,
-      ),
-      isDeleted: props.isDeleted ?? false,
+      ...buildForWrite(props, "restore"),
     });
   }
 
-  export function update(props: RehydrateProps): Aggregate {
-    if (!props.name?.trim()) {
-      throw new RequiredFieldError("name");
-    }
-
-    if (!props.number?.trim()) {
-      throw new RequiredFieldError("number");
-    }
-
-    if (
-      props.price === undefined ||
-      Number.isNaN(props.price) ||
-      props.price < 0
-    ) {
-      throw new InvalidAmountError("price", "Invalid price");
-    }
-
-    if (!props.categoryId) {
-      throw new RequiredFieldError("categoryId");
-    }
-
-    return rehydrate(props);
+  /** Update existing Item (immutable style). */
+  export function update(props: RestoreProps): Aggregate {
+    return factory.fromPersistence({
+      id: props.id,
+      ...buildForWrite(props, "update"),
+    });
   }
 }

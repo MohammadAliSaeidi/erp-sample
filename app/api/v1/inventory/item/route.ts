@@ -3,7 +3,7 @@ import { buildGetItemsListRequest } from "@/src/application/item/composition/ite
 import { buildUsecaseRunner } from "@/src/application/core/usecase/runner/runner";
 import { mapUsecaseErrorToResponse } from "@/src/interface/http/map-usecase-error-to-response";
 import { buildStoreRequestContext } from "@/src/interface/http/build-store-request-context";
-import { resolveAuthContextFromRequest } from "@/src/interface/http/resolve-auth-context-from-request";
+import { resolveAuthContextFromRequest } from "@/src/interface/http/ports/resolve-auth-context-from-request.adapter";
 import { NextRequest, NextResponse } from "next/server";
 
 const getItemsHandler = async (request: NextRequest) => {

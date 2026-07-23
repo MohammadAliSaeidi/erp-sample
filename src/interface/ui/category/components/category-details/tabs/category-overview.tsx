@@ -47,7 +47,7 @@ export default function CategoryOverview(props: CategoryOverviewProps) {
     if (!category) return;
     form.reset({
       name: category.name,
-      description: category.description,
+      description: category.description ?? undefined,
     });
   }, [category, categoryId, form]);
 

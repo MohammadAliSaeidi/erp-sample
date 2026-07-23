@@ -1,18 +1,14 @@
 import { IMapper } from "@/src/application/shared/map-dto-to-entity";
-import {
-  createItem,
-  Item,
-  ItemSpecificationAssignment,
-} from "@/src/domain/item/item.entity";
 import { CreateItemInputDTO } from "@/src/application/item/dto/create-item-input.dto";
 import { brand } from "@/lib/brand";
+import { Item } from "@/src/domain/item/aggregates/item.aggregate";
 
 export const createItemDTOToEntityMapper: IMapper<
   CreateItemInputDTO & { id: string },
-  Item
+  Item.Aggregate
 > = {
-  map: (itemDTO: CreateItemInputDTO & { id: string }): Item => {
-    return createItem({
+  map: (itemDTO: CreateItemInputDTO & { id: string }): Item.Aggregate => {
+    return Item.restore({
       id: brand(itemDTO.id),
       name: itemDTO.name,
       number: itemDTO.number,
@@ -21,7 +17,7 @@ export const createItemDTOToEntityMapper: IMapper<
       price: itemDTO.price,
       categoryId: brand(itemDTO.categoryId),
       specificationAssignments: itemDTO.specificationAssignments.map(
-        (assignment): ItemSpecificationAssignment => ({
+        (assignment): Item.ItemSpecificationAssignment => ({
           specificationId: brand(assignment.specificationId),
           specificationValueId: brand(assignment.specificationValueId),
         }),

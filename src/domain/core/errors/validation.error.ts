@@ -11,6 +11,7 @@ export type ValidationCauseInput = {
 };
 
 export class DomainValidationCause extends DomainError {
+  readonly code: string;
   readonly field?: string;
   readonly path?: ValidationPath;
   readonly meta?: Readonly<Record<string, unknown>>;

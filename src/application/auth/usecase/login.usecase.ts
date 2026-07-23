@@ -12,6 +12,7 @@ import {
 import { Role } from "@/features/admin/domain/role";
 import { AdminAccessTokenPayload } from "@/features/shared/types/admin-access-token-payload";
 import { LoginInput } from "@/features/auth/domain/types/login-body.type";
+import { brand } from "@/lib/brand";
 
 export type LoginStoreDTO = Pick<Store, "id" | "slug">;
 export type LoginStoreUserDTO = Pick<
@@ -66,8 +67,8 @@ export const loginUsecase = defineUsecase<
   const cookieName = getAdminAccessTokenCookieName(input.storeSlug);
   const tokenPayload: AdminAccessTokenPayload = {
     sub: storeUser.id,
-    adminId: storeUser.id,
-    storeId: storeUser.storeId,
+    adminId: brand(storeUser.id),
+    storeId: brand(storeUser.storeId),
     storeSlug: input.storeSlug,
     grantsAll: storeUser.grantsAll,
     exp: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).getTime(),

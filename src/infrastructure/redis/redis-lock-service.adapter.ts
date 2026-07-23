@@ -1,6 +1,5 @@
 import type { LockServicePort } from "@/src/application/shared/lock-service/lock-service.port";
 import {
-  lockKeyRegex,
   type LockKey,
   type LockResult,
   type LockResultFailure,
@@ -36,6 +35,7 @@ function parseStoredLock<TEntityBrand extends string>(
       typeof v.storeId !== "string" ||
       typeof v.entityId !== "string" ||
       typeof v.lockedBy !== "string" ||
+      typeof v.lockToken !== "string" ||
       typeof v.expiresAt !== "string"
     ) {
       return null;
@@ -82,7 +82,7 @@ if not raw then
   return 0
 end
 local data = cjson.decode(raw)
-if data["token"] == token then
+if data["lockToken"] == token then
   return redis.call("DEL", key)
 end
 return 0
@@ -101,7 +101,7 @@ if not raw then
 end
 
 local data = cjson.decode(raw)
-if data["token"] ~= token then
+if data["lockToken"] ~= token then
   return 0
 end
 

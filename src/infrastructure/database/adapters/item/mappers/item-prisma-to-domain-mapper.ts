@@ -1,11 +1,14 @@
-import { createItem, Item } from "@/src/domain/item/item.entity";
+import { Item } from "@/src/domain/item/aggregates/item.aggregate";
 import { IMapper } from "@/src/application/shared/map-dto-to-entity";
 import { brand } from "@/lib/brand";
 import { ItemWithRelations } from "../types";
 
-export const itemPrismaToDomainMapper: IMapper<ItemWithRelations, Item> = {
-  map: (item: ItemWithRelations): Item => {
-    return createItem({
+export const itemPrismaToDomainMapper: IMapper<
+  ItemWithRelations,
+  Item.Aggregate
+> = {
+  map: (item: ItemWithRelations): Item.Aggregate => {
+    return Item.factory({
       id: brand(item.id),
       name: item.name,
       isDeleted: item.deletedAt === null,

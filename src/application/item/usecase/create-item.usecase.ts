@@ -29,13 +29,13 @@ export type CreateItemUsecaseDeps = {
 
 export const createItemUsecase = defineUsecase<
   CreateItemInputDTO,
-  ItemDTO | null,
+  ItemDTO,
   StoreAuthContext,
   CreateItemUsecaseDeps
 >(async (input, context, deps) => {
   const storeId = brand<string, "StoreId">(context.storeId) as StoreId;
 
-  const item = Item.create({
+  const item = Item.createNew({
     name: input.name,
     number: input.number,
     description: input.description ?? null,
@@ -55,5 +55,20 @@ export const createItemUsecase = defineUsecase<
 
   const createdItem = await deps.itemRepository.create(item, storeId);
 
-  return deps.itemQuery.getItemDTOById(createdItem.id, storeId);
+  return {
+    description: createdItem.description,
+    name: createdItem.name,
+    number: createdItem.number,
+    price: createdItem.price,
+    isDeleted: createdItem.isDeleted,
+    id: createdItem.id,
+    categoryId: createdItem.categoryId,
+    categoryName: createdItem.ca,
+    specificationAssignments: createdItem.specificationAssignments.map(
+      (assignment) => ({
+        specificationId: assignment.specificationId,
+        specificationValueId: assignment.specificationValueId,
+      }),
+    ),
+  };
 });

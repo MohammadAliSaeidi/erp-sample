@@ -63,7 +63,7 @@ const updatedItemDto: ItemDTO = {
 function createDeps(
   overrides: Partial<EditItemUsecaseDeps> = {},
 ): EditItemUsecaseDeps {
-  const updatedAggregate = Item.rehydrate({
+  const updatedAggregate = Item.restore({
     id: brand<string, "ItemId">(ITEM_ID) as Item.Id,
     name: "Iced Latte",
     number: "2001",

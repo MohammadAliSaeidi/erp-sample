@@ -4,7 +4,7 @@ import {
   buildUpdateCategoryRequest,
 } from "@/src/application/category/composition/category-requests";
 import { buildUsecaseRunner } from "@/src/application/core/usecase/runner/runner";
-import { resolveAuthContextFromRequest } from "@/src/interface/http/resolve-auth-context-from-request";
+import { resolveAuthContextFromRequest } from "@/src/interface/http/ports/resolve-auth-context-from-request.adapter";
 import { buildStoreRequestContext } from "@/src/interface/http/build-store-request-context";
 import { mapUsecaseErrorToResponse } from "@/src/interface/http/map-usecase-error-to-response";
 import { validateRequestJsonBody } from "@/src/interface/http/validate-request-json-body";

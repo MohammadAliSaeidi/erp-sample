@@ -10,7 +10,7 @@ export const createCategoryDTOToEntityMapper: IMapper<CategoryDTO, Category> = {
     return createCategory({
       id: categoryDTO.id,
       name: categoryDTO.name,
-      description: categoryDTO.description,
+      description: categoryDTO.description ?? undefined,
     });
   },
 };

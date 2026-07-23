@@ -28,6 +28,10 @@ export async function createItemAction(
       ),
     );
 
+    if(createdItem === null) {
+      return (new Error("Failed to create item"));
+    }
+
     return actionSuccess({ ...createdItem });
   } catch (error) {
     return mapUsecaseErrorToActionResult(error);

@@ -14,6 +14,7 @@ export { ProtectedRoute } from "./ui/components/protected-route";
 const jwtSecret = new TextEncoder().encode(process.env.JWT_SECRET ?? "");
 
 export const jwtService = buildJwtService(jwtSecret);
+
 export const resolveAuthContext = buildJwtAuthContextResolver(
   jwtService,
   permissionService,

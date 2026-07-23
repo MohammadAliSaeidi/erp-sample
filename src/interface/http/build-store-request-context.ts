@@ -1,9 +1,9 @@
 import type { AuthContext } from "@/features/auth/domain/types/auth-context.type";
 import type { BaseContext } from "@/src/application/core/usecase/types/context.types";
 
-export function buildStoreRequestContext(
+export function buildStoreRequestContext<TContext extends BaseContext>(
   authContext: AuthContext,
-  overrides: Partial<BaseContext> = {},
+  overrides: Partial<TContext> = {},
 ): BaseContext {
   return {
     requestId: overrides.requestId ?? crypto.randomUUID(),

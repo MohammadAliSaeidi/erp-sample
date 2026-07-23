@@ -15,9 +15,8 @@ import type {
   StoreAuthContext,
 } from "@/src/application/core/usecase/types/context.types";
 import { Item } from "@/src/domain/item/aggregates/item.aggregate";
-import type { ItemRepositoryPort } from "@/src/domain/item/item-repository.port";
-import type { IItemQueryPort } from "@/src/application/item/port/item.query.port";
 import { StoreId } from "@/src/domain/store/store-id";
+import { ItemDTO } from "../../dto/item.dto";
 
 const CATEGORY_ID = "018f3c8a-0000-7000-8000-000000000007";
 const SPEC_ID = "018f3c8a-0000-7000-8000-000000000008";
@@ -57,10 +56,21 @@ const validInput = {
   ],
 };
 
+const createdItemDto: ItemDTO = {
+  id: ITEM_ID,
+  name: "Latte",
+  number: "2001",
+  description: null,
+  price: 18,
+  categoryId: CATEGORY_ID,
+  isDeleted: true,
+  specificationAssignments: [],
+};
+
 function createDeps(
   overrides: Partial<CreateItemUsecaseDeps> = {},
 ): CreateItemUsecaseDeps {
-  const createdItem = Item.rehydrate({
+  const createdItem = Item.restore({
     id: brand<string, "ItemId">(ITEM_ID) as Item.Id,
     name: "Latte",
     number: "2001",
@@ -77,15 +87,7 @@ function createDeps(
       ...overrides.itemRepository,
     },
     itemQuery: {
-      getItemDTOById: jest.fn(async () => ({
-        id: ITEM_ID,
-        name: "Latte",
-        number: "2001",
-        price: 18,
-        categoryId: CATEGORY_ID,
-        isDeleted: true,
-        specificationAssignments: [],
-      })),
+      getItemDTOById: jest.fn(async () => createdItemDto),
       ...overrides.itemQuery,
     },
   };

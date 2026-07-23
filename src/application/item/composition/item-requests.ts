@@ -4,6 +4,7 @@ import {
   requireItemUpdatePermission,
   validateCreateItemInput,
   validateEditItemInput,
+  validateGetItemByIdInput,
   validateGetItemsListInput,
 } from "@/src/application/item/policy/item.policies";
 import {
@@ -14,6 +15,10 @@ import {
   editItemUsecase,
   type EditItemUsecaseDeps,
 } from "@/src/application/item/usecase/edit-item.usecase";
+import {
+  getItemByIdUsecase,
+  type GetItemByIdUsecaseDeps,
+} from "@/src/application/item/usecase/get-item-by-id.usecase";
 import {
   getItemsListUsecase,
   type GetItemsListUsecaseDeps,
@@ -72,6 +77,24 @@ export function buildGetItemsListRequest(
     deps,
     beforePolicies: [
       validateGetItemsListInput,
+      requireStoreAuth,
+      requireItemReadPermission,
+    ] as const,
+  });
+}
+
+export function buildGetItemByIdRequest(
+  input: unknown,
+  context: BaseContext,
+  deps: GetItemByIdUsecaseDeps,
+) {
+  return buildRunWithInputRequest({
+    usecase: getItemByIdUsecase,
+    input,
+    context,
+    deps,
+    beforePolicies: [
+      validateGetItemByIdInput,
       requireStoreAuth,
       requireItemReadPermission,
     ] as const,

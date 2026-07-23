@@ -6,6 +6,7 @@ import type { BaseContext } from "@/src/application/core/usecase/types/context.t
 import { PERMISSIONS } from "@/features/auth/domain/constants/permissions";
 import { createItemSchema } from "../schema/create-item.schema";
 import { editItemSchema } from "../schema/edit.item.schema";
+import { getItemByIdSchema } from "../schema/get-item-by-id.schema";
 import { itemListQueryInputSchema } from "../schema/item-list-query.schema";
 
 export const validateCreateItemInput = createValidateInputPolicy<
@@ -22,6 +23,11 @@ export const validateGetItemsListInput = createValidateInputPolicy<
   BaseContext,
   typeof itemListQueryInputSchema
 >("ValidateGetItemsListInput", itemListQueryInputSchema);
+
+export const validateGetItemByIdInput = createValidateInputPolicy<
+  BaseContext,
+  typeof getItemByIdSchema
+>("ValidateGetItemByIdInput", getItemByIdSchema);
 
 export const requireItemCreatePermission = createRequirePermissionsPolicy([
   PERMISSIONS.ITEMS.CREATE,

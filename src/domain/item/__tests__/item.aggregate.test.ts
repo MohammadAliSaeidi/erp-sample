@@ -5,15 +5,19 @@ import { Item } from "@/src/domain/item/aggregates/item.aggregate";
 import { SpecificationId } from "@/src/domain/specification/specification-id";
 import { SpecificationValueId } from "@/src/domain/specification/specification-value-id";
 
-const CATEGORY_ID = brand<string, CategoryId>("018f3c8a-0000-7000-8000-000000000003");
-const SPEC_ID = brand<string, SpecificationId>("018f3c8a-0000-7000-8000-000000000004");
+const CATEGORY_ID = brand<string, CategoryId>(
+  "018f3c8a-0000-7000-8000-000000000003",
+);
+const SPEC_ID = brand<string, SpecificationId>(
+  "018f3c8a-0000-7000-8000-000000000004",
+);
 const SPEC_VALUE_ID = brand<string, SpecificationValueId>(
   "018f3c8a-0000-7000-8000-000000000005",
 );
 
 describe("Item aggregate", () => {
   it("creates an item with normalized fields", () => {
-    const item = Item.create({
+    const item = Item.createNew({
       name: "  Latte  ",
       number: " 1001 ",
       price: 12.5,
@@ -36,7 +40,7 @@ describe("Item aggregate", () => {
   });
 
   it("deduplicates specification assignments by specification id", () => {
-    const item = Item.create({
+    const item = Item.createNew({
       name: "Mocha",
       number: "1002",
       price: 15,
@@ -60,7 +64,7 @@ describe("Item aggregate", () => {
 
   it("rejects empty name", () => {
     expect(() =>
-      Item.create({
+      Item.createNew({
         name: "   ",
         number: "1003",
         price: 10,
@@ -71,7 +75,7 @@ describe("Item aggregate", () => {
 
   it("rejects negative price", () => {
     expect(() =>
-      Item.create({
+      Item.createNew({
         name: "Tea",
         number: "1004",
         price: -1,

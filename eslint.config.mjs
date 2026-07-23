@@ -17,6 +17,12 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
   ]),
   ...storybook.configs["flat/recommended"],
+  {
+    // files: ["src/domain/**/aggregates/**/*.ts"],
+    rules: {
+      "@typescript-eslint/no-namespace": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;
