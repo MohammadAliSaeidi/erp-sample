@@ -1,5 +1,7 @@
 import { Brand } from "@/lib/brand";
 import { z, ZodObject, ZodRawShape } from "zod";
+import { STORE_ID_TAG, storeIdSchema } from "../../store/store-id";
+import { itemIdSchema } from "../../item/item-id";
 
 export type EventRoom = Brand<string, "EventRoom">;
 
@@ -18,8 +20,8 @@ export const EventRegistry = defineRegistry({
   "item.locked": {
     version: 1,
     payloadSchema: z.object({
-      storeId: z.string(),
-      itemId: z.string(),
+      storeId: storeIdSchema,
+      itemId: itemIdSchema,
       lockedBy: z.string(),
       expiresAt: z.string(),
       token: z.string(),
@@ -31,8 +33,8 @@ export const EventRegistry = defineRegistry({
   "item.unlocked": {
     version: 1,
     payloadSchema: z.object({
-      storeId: z.string(),
-      itemId: z.string(),
+      storeId: storeIdSchema,
+      itemId: itemIdSchema,
       unlockedBy: z.string().brand("AdminId"),
     }),
     room: (payload) =>
@@ -42,8 +44,8 @@ export const EventRegistry = defineRegistry({
   "item.updated": {
     version: 1,
     payloadSchema: z.object({
-      storeId: z.string(),
-      itemId: z.string(),
+      storeId: storeIdSchema,
+      itemId: itemIdSchema,
       name: z.string(),
       price: z.number(),
     }),
@@ -54,8 +56,8 @@ export const EventRegistry = defineRegistry({
   "item.lock.denied": {
     version: 1,
     payloadSchema: z.object({
-      storeId: z.string(),
-      itemId: z.string(),
+      storeId: storeIdSchema,
+      itemId: itemIdSchema,
       requestedBy: z.string(),
       lockedBy: z.string(),
       expiresAt: z.string(),
@@ -67,8 +69,8 @@ export const EventRegistry = defineRegistry({
   "item.unlock.denied": {
     version: 1,
     payloadSchema: z.object({
-      storeId: z.string(),
-      itemId: z.string(),
+      storeId: storeIdSchema,
+      itemId: itemIdSchema,
     }),
     room: (payload) =>
       `store:${payload.storeId}:item:${payload.itemId}` as EventRoom,

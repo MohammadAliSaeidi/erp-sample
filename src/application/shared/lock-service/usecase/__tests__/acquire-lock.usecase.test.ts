@@ -107,6 +107,38 @@ describe("acquireLockUsecase", () => {
     );
   });
 
+  it("publishes item.lock.denied when acquisition fails", async () => {
+    lockService.acquire.mockResolvedValue(lockResultDenied());
+
+    await runner.runWithInput(
+      buildAcquireLockRequest(
+        ACQUIRE_LOCK_INPUT,
+        LOCK_BASE_CONTEXT,
+        deps,
+        [ITEMS_UPDATE_PERMISSION],
+      ),
+    );
+
+    expect(eventPublisher.publish).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "item.lock.denied" }),
+    );
+  });
+
+  it("skips publishing when emitEvents is false", async () => {
+    lockService.acquire.mockResolvedValue(lockResultOk());
+
+    await runner.runWithInput(
+      buildAcquireLockRequest(
+        ACQUIRE_LOCK_INPUT,
+        LOCK_BASE_CONTEXT,
+        { ...deps, emitEvents: false },
+        [ITEMS_UPDATE_PERMISSION],
+      ),
+    );
+
+    expect(eventPublisher.publish).not.toHaveBeenCalled();
+  });
+
   it("rejects invalid input before calling lock service", async () => {
     await expect(
       runner.runWithInput(

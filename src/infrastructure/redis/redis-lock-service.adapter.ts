@@ -172,7 +172,7 @@ export function buildRedisLockService(client: Redis): LockServicePort {
 
     async refresh(
       key: LockKey,
-      token: LockToken,
+      lockToken: LockToken,
       ttlMs: number,
     ): Promise<boolean> {
       const expiresAtIso = new Date(Date.now() + ttlMs).toISOString();
@@ -180,7 +180,7 @@ export function buildRedisLockService(client: Redis): LockServicePort {
         REFRESH_LUA,
         1,
         String(key),
-        token,
+        String(lockToken),
         String(ttlMs),
         expiresAtIso,
       );

@@ -20,14 +20,21 @@ export interface LockServicePort {
   ): Promise<LockResult>;
 
   /**
-   * Release a lock when the caller presents the correct lock token.
+   * Release a lock when the caller presents the token from acquire.
+   * @param key Entity lock key.
+   * @param lockToken Token issued at acquisition.
    */
   release(key: LockKey, lockToken: LockToken): Promise<UnlockResult>;
 
   /**
-   * Refresh/extend a lock TTL if the token still matches.
+   * Extend lock TTL when the caller still owns it (verified by token).
+   *
+   * @param key Entity lock key.
+   * @param lockToken Token issued at acquisition.
+   * @param ttlMs New TTL in milliseconds.
+   * @returns true if refreshed, false if token mismatch or lock missing.
    */
-  refresh(key: LockKey, token: LockToken, ttlMs: number): Promise<boolean>;
+  refresh(key: LockKey, lockToken: LockToken, ttlMs: number): Promise<boolean>;
 
   /**
    * Check current lock state.
