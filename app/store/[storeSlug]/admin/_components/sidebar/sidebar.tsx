@@ -6,7 +6,7 @@ import { NavMain } from "@/app/store/[storeSlug]/admin/_components/sidebar/nav-m
 import {
 	Sidebar,
 	SidebarContent,
-} from "@/src/presentation/components/ui/sidebar";
+} from "@/src/presentation/shared/components/ui/sidebar";
 import { useSidebarData } from "./use-sidebar-data";
 
 export default function AppSidebar({

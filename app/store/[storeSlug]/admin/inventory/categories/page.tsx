@@ -1,19 +1,19 @@
-import { SpinnerCustom } from "@/src/presentation/components/ui/spinner";
-import CategoriesList from "@/src/interface/ui/category/components/categories-list/categories-list";
+import { URLS } from "@/constants/urls";
 import { requireSsrAuth } from "@/features/auth";
+import { getQueryClient } from "@/lib/get-query-client";
 import { categoryDeps } from "@/src/application/category/composition/category-deps";
 import { buildListCategoriesRequest } from "@/src/application/category/composition/category-requests";
 import { buildUsecaseRunner } from "@/src/application/core/usecase/runner/runner";
-import { CATEGORY_QUERY_KEYS } from "@/src/interface/ui/category/constants/query-keys";
 import { buildStoreRequestContext } from "@/src/interface/http/build-store-request-context";
-import { getQueryClient } from "@/lib/get-query-client";
+import CategoriesList from "@/src/interface/ui/category/components/categories-list/categories-list";
+import { CATEGORY_QUERY_KEYS } from "@/src/interface/ui/category/constants/query-keys";
+import { Button } from "@/src/presentation/shared/components/ui/button";
+import { SpinnerCustom } from "@/src/presentation/shared/components/ui/spinner";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { PlusIcon } from "lucide-react";
+import Link from "next/link";
 import { Suspense } from "react";
 import Breadcrumb from "./breadcrumb";
-import { URLS } from "@/constants/urls";
-import Link from "next/link";
-import { Button } from "@/src/presentation/components/ui/button";
-import { PlusIcon } from "lucide-react";
 
 type CategoryPageProps = {
 	params: Promise<{

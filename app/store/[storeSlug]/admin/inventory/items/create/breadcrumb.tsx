@@ -1,14 +1,14 @@
 "use client";
 
+import { URLS } from "@/constants/urls";
 import {
-	Breadcrumb as BreadcrumbUIComponent,
-	BreadcrumbList,
 	BreadcrumbItem,
 	BreadcrumbLink,
+	BreadcrumbList,
 	BreadcrumbSeparator,
-} from "@/src/presentation/components/ui/breadcrumb";
-import { URLS } from "@/constants/urls";
-import { useStoreUrlSlug } from "@/src/presentation/hooks/use-store-url-slug";
+	Breadcrumb as BreadcrumbUIComponent,
+} from "@/src/presentation/shared/components/ui/breadcrumb";
+import { useStoreUrlSlug } from "@/src/presentation/shared/hooks/use-store-url-slug";
 import Link from "next/link";
 export default function Breadcrumb() {
 	const storeSlug = useStoreUrlSlug();

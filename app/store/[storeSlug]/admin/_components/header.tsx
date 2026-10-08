@@ -4,10 +4,10 @@ import { SearchForm } from "@/app/store/[storeSlug]/admin/_components/sidebar/se
 import {
 	Breadcrumb,
 	BreadcrumbList,
-} from "@/src/presentation/components/ui/breadcrumb";
-import { Button } from "@/src/presentation/components/ui/button";
-import { Separator } from "@/src/presentation/components/ui/separator";
-import { useSidebar } from "@/src/presentation/components/ui/sidebar";
+} from "@/src/presentation/shared/components/ui/breadcrumb";
+import { Button } from "@/src/presentation/shared/components/ui/button";
+import { Separator } from "@/src/presentation/shared/components/ui/separator";
+import { useSidebar } from "@/src/presentation/shared/components/ui/sidebar";
 import { PanelLeftIcon } from "lucide-react";
 
 export function SiteHeader() {

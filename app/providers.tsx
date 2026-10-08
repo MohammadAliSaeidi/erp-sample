@@ -1,7 +1,7 @@
 "use client";
-import { DirectionProvider } from "@/src/presentation/components/ui/direction";
-import { TooltipProvider } from "@/src/presentation/components/ui/tooltip";
 import { getQueryClient } from "@/lib/get-query-client";
+import { DirectionProvider } from "@/src/presentation/shared/components/ui/direction";
+import { TooltipProvider } from "@/src/presentation/shared/components/ui/tooltip";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {

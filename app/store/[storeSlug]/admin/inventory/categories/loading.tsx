@@ -1,4 +1,4 @@
-import { SpinnerCustom } from "@/src/presentation/components/ui/spinner";
+import { SpinnerCustom } from "@/src/presentation/shared/components/ui/spinner";
 
 function Loading() {
 	return (

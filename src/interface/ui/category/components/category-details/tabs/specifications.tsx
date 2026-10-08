@@ -1,24 +1,27 @@
 "use client";
 
-import { Card, CardContent } from "@/src/presentation/components/ui/card";
 import { CreateSpecificationModal } from "@/src/interface/ui/specification/components/create-specification-modal";
 import SpecificationsList from "@/src/interface/ui/specification/components/specifications-list/list";
+import {
+	Card,
+	CardContent,
+} from "@/src/presentation/shared/components/ui/card";
 
 type CategoryDetailsSpecificationsTabProps = {
-  categoryId: string;
+	categoryId: string;
 };
 
 export default function CategoryDetailsSpecificationsTab(
-  props: CategoryDetailsSpecificationsTabProps,
+	props: CategoryDetailsSpecificationsTabProps,
 ) {
-  const { categoryId } = props;
+	const { categoryId } = props;
 
-  return (
-    <Card>
-      <CardContent>
-        <CreateSpecificationModal categoryId={categoryId} />
-        <SpecificationsList categoryId={categoryId} />
-      </CardContent>
-    </Card>
-  );
+	return (
+		<Card>
+			<CardContent>
+				<CreateSpecificationModal categoryId={categoryId} />
+				<SpecificationsList categoryId={categoryId} />
+			</CardContent>
+		</Card>
+	);
 }

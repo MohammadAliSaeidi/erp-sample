@@ -1,4 +1,4 @@
-import AdminDashboardLayout from "@/src/presentation/components/layouts/admin-dashboard-layout";
+import AdminDashboardLayout from "@/src/presentation/shared/components/layouts/admin-dashboard-layout";
 import { PropsWithChildren } from "react";
 import InventoryRealtimeLayout from "./realtime-layout";
 
