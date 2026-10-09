@@ -1,7 +1,7 @@
 "use client";
 
 import { LoginForm } from "@/features/auth/ui/components/login-form";
-import DarkVeil from "@/src/presentation/components/DarkVeil";
+import DarkVeil from "@/src/presentation/shared/components/dark-veil";
 import { useStoreUrlSlug } from "@/src/presentation/shared/hooks/use-store-url-slug";
 
 export default function LoginPage() {
