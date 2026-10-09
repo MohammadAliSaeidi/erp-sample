@@ -5,6 +5,9 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "js/ts.tsdk.path": "node_modules\\typescript\\lib",
+  "jest.jestCommandLine": "npm run test --",
+  "jest.runMode": "watch",
+  "jest.rootPath": ".",
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
   },
