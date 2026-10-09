@@ -1,8 +1,9 @@
 "use client";
 
-import { loginInputSchema } from "@/features/auth/domain/schemas/login-body.schema";
 import { cn } from "@/lib/utils";
+import { loginInputDTOSchema } from "@/src/application/auth/usecase/login-input-dto.schema";
 import { ActionResult } from "@/src/interface/actions/map-usecase-error-to-action-result";
+import { loginAction } from "@/src/presentation/identity/actions/login.action";
 import { Button } from "@/src/presentation/shared/components/ui/button";
 import {
 	Card,
@@ -29,8 +30,7 @@ import React, {
 	useState,
 } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { loginAction } from "../../actions/login.action";
-import type { LoginInput as LoginInputType } from "../../domain/types/login-body.type";
+import type { LoginInputDTO as LoginInputType } from "../../../../src/application/auth/usecase/login-input-dto.type";
 
 const INPUT_CLASS =
 	"bg-transparent text-white border-white/30 border placeholder-white/30";
@@ -48,7 +48,7 @@ export function LoginForm({ className, storeSlug, ...props }: LoginFormProps) {
 			username: "",
 			password: "",
 		},
-		resolver: zodResolver(loginInputSchema),
+		resolver: zodResolver(loginInputDTOSchema),
 	});
 
 	useEffect(() => {
