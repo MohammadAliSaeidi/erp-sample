@@ -1,6 +1,6 @@
 import { resolveAdminAccessTokenCookieName } from "@/features/auth/domain/lib/resolve-admin-access-token-cookie-name";
-import { resolveStoreSlugFromRequest } from "./resolve-store-slug-from-request";
 import { NextRequest } from "next/server";
+import { resolveStoreSlugFromRequest } from "../../../features/auth/adapters/route/with-authorization/resolve-store-slug-from-request";
 
 export const resolveCookieNameFromRequest = (
 	req: NextRequest,
