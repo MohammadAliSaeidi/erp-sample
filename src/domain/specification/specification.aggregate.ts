@@ -1,27 +1,24 @@
-import { Specification as SpecificationAggregate } from "./aggregates/specification.aggregate";
-
-/** @deprecated Use `Specification.Aggregate` from `./aggregates/specification.aggregate` */
-export type Specification = SpecificationAggregate.Aggregate;
+import { Specification } from "./aggregates/specification.aggregate";
 
 export const createSpecification = (input: {
-  id: string;
-  name: string;
-  categoryId: string | null;
-  storeId: string;
-  type: SpecificationAggregate.Data["type"];
-  isRequired: boolean;
-  isPrimary: boolean;
-  specificationValues: SpecificationAggregate.SpecificationValueData[];
-  isActive: boolean;
-}): Specification =>
-  SpecificationAggregate.rehydrate({
-    id: input.id as SpecificationAggregate.Id,
-    name: input.name,
-    categoryId: input.categoryId as SpecificationAggregate.Data["categoryId"],
-    storeId: input.storeId as SpecificationAggregate.Data["storeId"],
-    type: input.type,
-    isRequired: input.isRequired,
-    isPrimary: input.isPrimary,
-    specificationValues: input.specificationValues,
-    isActive: input.isActive,
-  });
+	id: string;
+	name: string;
+	categoryId: string | null;
+	storeId: string;
+	type: Specification.Data["type"];
+	isRequired: boolean;
+	isPrimary: boolean;
+	specificationValues: Specification.SpecificationValueData[];
+	isActive: boolean;
+}): Specification.Aggregate =>
+	Specification.rehydrate({
+		id: input.id as Specification.Id,
+		name: input.name,
+		categoryId: input.categoryId as Specification.Data["categoryId"],
+		storeId: input.storeId as Specification.Data["storeId"],
+		type: input.type,
+		isRequired: input.isRequired,
+		isPrimary: input.isPrimary,
+		specificationValues: input.specificationValues,
+		isActive: input.isActive,
+	});

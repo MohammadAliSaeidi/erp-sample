@@ -1,128 +1,288 @@
-import { uniq } from "@/lib/uniq/uniq";
 import {
-  Aggregate as AggregateBase,
-  AggregateId,
-  createAggregateFactory,
+	Aggregate as AggregateBase,
+	AggregateId,
+	createAggregateFactory,
 } from "@/src/domain/core/entity";
 import {
-  DomainValidationCause,
-  InvalidAmountError,
-  RequiredFieldError,
-  ValidationError,
+	DomainInvalidAmountError,
+	DomainRequiredFieldError,
+	DomainValidationCause,
+	DomainValidationError,
 } from "@/src/domain/core/errors/validation.error";
+import { CategoryId } from "@/src/domain/category/category-id";
+import { StoreId } from "@/src/domain/store/store-id";
 import { SpecificationId } from "@/src/domain/specification/specification-id";
 import { SpecificationValueId } from "@/src/domain/specification/specification-value-id";
-import { Category } from "../../category/aggregates/category.aggregate";
+import { VendorId } from "@/src/domain/vendor/vendor-id";
 
 export namespace Item {
-  export type ItemSpecificationAssignment = Readonly<{
-    specificationId: SpecificationId;
-    specificationValueId: SpecificationValueId;
-  }>;
+	export type SpecificationAssignment = Readonly<{
+		specificationId: SpecificationId;
+		specificationValueId: SpecificationValueId;
+	}>;
+	export type SpecValue = Readonly<
+		{ specificationId: SpecificationId } & (
+			| { type: "OPTION"; optionId: SpecificationValueId }
+			| { type: "STRING"; value: string }
+			| { type: "NUMBER"; value: number }
+			| { type: "BOOLEAN"; value: boolean }
+		)
+	>;
+	export type VendorLink = Readonly<{
+		vendorId: VendorId;
+		vendorSku: string | null;
+		costPrice: number | null;
+		leadTimeDays: number | null;
+		isPreferred: boolean;
+	}>;
+	export type Data = Readonly<{
+		storeId: StoreId | null;
+		categoryId: CategoryId | null;
+		number: string;
+		sku: string | null;
+		barcode: string | null;
+		name: string;
+		description: string | null;
+		unit: string;
+		price: number;
+		cost: number | null;
+		isActive: boolean;
+		specValues: readonly SpecValue[];
+		vendors: readonly VendorLink[];
+		createdAt: Date;
+		updatedAt: Date;
+		deletedAt: Date | null;
+		specificationAssignments?: readonly SpecificationAssignment[];
+		isDeleted?: boolean;
+	}>;
+	export type Tag = "Item";
+	export type Aggregate = AggregateBase<Data, Tag>;
+	export type Id = AggregateId<Tag>;
 
-  export type Data = Readonly<{
-    name: string;
-    number: string;
-    description: string | null;
-    price: number;
-    categoryId?: Category.Id;
-    specificationAssignments: readonly ItemSpecificationAssignment[];
-    isDeleted: boolean;
-  }>;
+	export const factory = createAggregateFactory<Data, Aggregate, Tag>({
+		tag: "Item",
+		validate: (p) => {
+			const i: DomainValidationCause[] = [];
+			if (!p.name.trim()) i.push(new DomainRequiredFieldError("name"));
+			if (!p.number.trim())
+				i.push(new DomainRequiredFieldError("number"));
+			if (!Number.isFinite(p.price) || p.price < 0)
+				i.push(
+					new DomainInvalidAmountError(
+						"price",
+						"price must be zero or positive",
+					),
+				);
+			if (p.cost !== null && (!Number.isFinite(p.cost) || p.cost < 0))
+				i.push(
+					new DomainInvalidAmountError(
+						"cost",
+						"cost must be zero or positive",
+					),
+				);
+			if (
+				new Set(p.specValues.map((x) => String(x.specificationId)))
+					.size !== p.specValues.length
+			)
+				i.push(
+					new DomainInvalidAmountError(
+						"specValues",
+						"duplicate specification",
+					),
+				);
+			if (
+				new Set(p.vendors.map((x) => String(x.vendorId))).size !==
+				p.vendors.length
+			)
+				i.push(
+					new DomainInvalidAmountError(
+						"vendors",
+						"duplicate vendor",
+					),
+				);
+			if (p.vendors.filter((x) => x.isPreferred).length > 1)
+				i.push(
+					new DomainInvalidAmountError(
+						"vendors",
+						"only one preferred vendor allowed",
+					),
+				);
+			return i;
+		},
+		build: (id, p) => ({
+			...p,
+			id,
+			name: p.name.trim(),
+			number: p.number.trim(),
+			specValues: [...p.specValues],
+			vendors: [...p.vendors],
+			specificationAssignments:
+				p.specificationAssignments ??
+				p.specValues
+					.filter((x) => x.type === "OPTION")
+					.map(
+						(x) =>
+							({
+								specificationId: x.specificationId,
+								specificationValueId: x.optionId,
+							}) as SpecificationAssignment,
+					),
+			isDeleted: p.isDeleted ?? p.deletedAt !== null,
+		}),
+	});
 
-  export type Tag = "Item";
-  export type Aggregate = AggregateBase<Data, Tag>;
-  export type Id = AggregateId<Tag>;
+	type CreateProps = Partial<
+		Pick<
+			Data,
+			| "storeId"
+			| "sku"
+			| "barcode"
+			| "unit"
+			| "cost"
+			| "isActive"
+			| "isDeleted"
+			| "vendors"
+		>
+	> & {
+		name: string;
+		number: string;
+		description?: string | null;
+		price: number;
+		categoryId?: CategoryId | null;
+		specValues?: readonly SpecValue[];
+		specificationAssignments?: readonly SpecificationAssignment[];
+	};
+	const normalize = (p: CreateProps): Omit<Data, "id"> => ({
+		storeId: p.storeId ?? null,
+		categoryId: p.categoryId ?? null,
+		number: p.number,
+		sku: p.sku ?? null,
+		barcode: p.barcode ?? null,
+		name: p.name,
+		description: p.description ?? null,
+		unit: p.unit ?? "pcs",
+		price: p.price,
+		cost: p.cost ?? null,
+		isActive: p.isActive ?? true,
+		specValues:
+			p.specValues ??
+			[...new Map((p.specificationAssignments ?? []).map((x) => [String(x.specificationId), x])).values()].map((x) => ({
+				specificationId: x.specificationId,
+				type: "OPTION" as const,
+				optionId: x.specificationValueId,
+			})),
+		vendors: p.vendors ?? [],
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		deletedAt: p.isDeleted ? new Date() : null,
+		isDeleted: p.isDeleted ?? true,
+	});
 
-  export type CreateProps = {
-    name: string;
-    number: string;
-    description?: string | null;
-    price: number;
-    categoryId?: Category.Id;
-    specificationAssignments?: readonly ItemSpecificationAssignment[];
-    isDeleted?: boolean;
-  };
+	export function create(props: CreateProps): Aggregate {
+		return factory.create(normalize(props));
+	}
 
-  export type RestoreProps = CreateProps & { id: Id };
+	export const createNew = create;
 
-  type Mode = "create" | "restore" | "update";
-
-  const factory = createAggregateFactory<Data, Aggregate, Tag>({
-    tag: "Item",
-    validate: () => [],
-    build: (id, props) => ({ id, ...props }),
-  });
-
-  function normalizeAssignments(
-    assignments: readonly ItemSpecificationAssignment[] = [],
-  ): readonly ItemSpecificationAssignment[] {
-    return uniq(
-      assignments.map((a) => ({
-        specificationId: a.specificationId,
-        specificationValueId: a.specificationValueId,
-      })),
-      (a) => a.specificationId,
-    );
-  }
-
-  function normalize(props: CreateProps, mode: Mode): Data {
-    return {
-      name: props.name?.trim() ?? "",
-      number: props.number?.trim() ?? "",
-      description: props.description ?? null,
-      price: props.price,
-      categoryId: props.categoryId,
-      specificationAssignments: normalizeAssignments(
-        props.specificationAssignments,
-      ),
-      isDeleted: props.isDeleted ?? mode === "create",
-    };
-  }
-
-  function validate(data: Data): void {
-    const issues: DomainValidationCause[] = [];
-
-    if (!data.name) issues.push(new RequiredFieldError("name"));
-    if (!data.number) issues.push(new RequiredFieldError("number"));
-
-    if (
-      data.price === undefined ||
-      Number.isNaN(data.price) ||
-      data.price < 0
-    ) {
-      issues.push(new InvalidAmountError("price", "Invalid price"));
-    }
-
-    if (!data.categoryId) issues.push(new RequiredFieldError("categoryId"));
-
-    if (issues.length) throw new ValidationError(issues);
-  }
-
-  function buildForWrite(props: CreateProps, mode: Mode): Data {
-    const data = normalize(props, mode);
-    validate(data);
-    return data;
-  }
-
-  /** Create brand-new Item. Generates id. */
-  export function createNew(props: CreateProps): Aggregate {
-    return factory.create(buildForWrite(props, "create"));
-  }
-
-  /** Restore Item from persistence using existing id. */
-  export function restore(props: RestoreProps): Aggregate {
-    return factory.fromPersistence({
-      id: props.id,
-      ...buildForWrite(props, "restore"),
-    });
-  }
-
-  /** Update existing Item (immutable style). */
-  export function update(props: RestoreProps): Aggregate {
-    return factory.fromPersistence({
-      id: props.id,
-      ...buildForWrite(props, "update"),
-    });
-  }
+	export function rehydrate(props: Data & { id: Id }): Aggregate {
+		return factory.fromPersistence(props);
+	}
+	export function restore(
+		props: CreateProps & {
+			id: Id;
+			createdAt?: Date;
+			updatedAt?: Date;
+			deletedAt?: Date | null;
+		},
+	): Aggregate {
+		const d = normalize(props);
+		return factory.fromPersistence({
+			...d,
+			...props,
+			createdAt: props.createdAt ?? d.createdAt,
+			updatedAt: props.updatedAt ?? d.updatedAt,
+			id: props.id,
+		});
+	}
+	export const update = restore;
+	
+	export function withChanges(
+		entity: Aggregate,
+		patch: Partial<Data>,
+	): Aggregate {
+		const { id, ...current } = entity;
+		const updated = {
+			...current,
+			...patch,
+			updatedAt: patch.updatedAt ?? new Date(),
+		};
+		const issues = factory.validate(updated);
+		if (issues.length) throw new DomainValidationError(issues);
+		return factory.fromPersistence({ id, ...updated });
+	}
+	export const changePrice = (
+		entity: Aggregate,
+		price: number,
+		now = new Date(),
+	) => withChanges(entity, { price, updatedAt: now });
+	export const deactivate = (entity: Aggregate, now = new Date()) =>
+		withChanges(entity, { isActive: false, updatedAt: now });
+	export const softDelete = (entity: Aggregate, now = new Date()) =>
+		withChanges(entity, {
+			deletedAt: now,
+			isActive: false,
+			updatedAt: now,
+		});
+	export function assignSpecValue(
+		entity: Aggregate,
+		value: SpecValue,
+		now = new Date(),
+	): Aggregate {
+		return withChanges(entity, {
+			specValues: [
+				...entity.specValues.filter(
+					(x) => x.specificationId !== value.specificationId,
+				),
+				value,
+			],
+			updatedAt: now,
+		});
+	}
+	export function removeSpecValue(
+		entity: Aggregate,
+		specificationId: SpecificationId,
+		now = new Date(),
+	): Aggregate {
+		return withChanges(entity, {
+			specValues: entity.specValues.filter(
+				(x) => x.specificationId !== specificationId,
+			),
+			updatedAt: now,
+		});
+	}
+	export function setVendor(
+		entity: Aggregate,
+		link: VendorLink,
+		now = new Date(),
+	): Aggregate {
+		const vendors = [
+			...entity.vendors
+				.filter((x) => x.vendorId !== link.vendorId)
+				.map((x) =>
+					link.isPreferred ? { ...x, isPreferred: false } : x,
+				),
+			link,
+		];
+		return withChanges(entity, { vendors, updatedAt: now });
+	}
+	export function removeVendor(
+		entity: Aggregate,
+		vendorId: VendorId,
+		now = new Date(),
+	): Aggregate {
+		return withChanges(entity, {
+			vendors: entity.vendors.filter((x) => x.vendorId !== vendorId),
+			updatedAt: now,
+		});
+	}
 }
