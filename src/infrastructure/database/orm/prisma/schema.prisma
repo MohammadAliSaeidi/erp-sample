@@ -7,170 +7,229 @@ datasource db {
   provider = "postgresql"
 }
 
+enum SpecificationValueType {
+  STRING
+  BOOLEAN
+  NUMBER
+  OPTION
+}
+
 model Store {
-  id             String          @id @default(uuid(7))
-  specifications Specification[]
-  name           String
-  addressId      String
-  address        Address         @relation(fields: [addressId], references: [id])
-  storeContacts  StoreContact[]
+  id        String    @id @default(uuid(7)) @db.Uuid
+  name      String
+  slug      String    @unique
+  addressId String    @db.Uuid
+  address   Address   @relation(fields: [addressId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  contacts       Contact[]
   users          StoreUser[]
-  slug           String          @unique
-  categories     Category[]
   roles          Role[]
+  categories     Category[]
   items          Item[]
-  deletedAt      DateTime?
-  updatedAt      DateTime?       @updatedAt
+  vendors        Vendor[]
+  clients        Client[]
+  specifications Specification[]
 }
 
 model Category {
-  id          String     @id @default(uuid(7))
-  storeId     String
+  id          String     @id @default(uuid(7)) @db.Uuid
+  storeId     String     @db.Uuid
   store       Store      @relation(fields: [storeId], references: [id])
-  parentId    String?
+  parentId    String?    @db.Uuid
   parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryTree")
   name        String
   description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   deletedAt   DateTime?
-  updatedAt   DateTime?  @updatedAt
-  items       Item[]
 
-  @@unique([storeId, parentId, name])
+  items          Item[]
+  specifications Specification[]
+
+  @@unique([storeId, parentId, name]) // + partial unique index (parentId IS NULL) via raw SQL
+  @@index([storeId, parentId])
 }
 
 model Item {
-  id          String  @id @default(uuid(7))
-  name        String
+  id          String    @id @default(uuid(7)) @db.Uuid
+  storeId     String    @db.Uuid
+  store       Store     @relation(fields: [storeId], references: [id])
+  categoryId  String?   @db.Uuid
+  category    Category? @relation(fields: [categoryId], references: [id])
   number      String
+  sku         String?
+  barcode     String?
+  name        String
   description String?
-  price       Float
+  unit        String    @default("pcs")
+  price       Decimal   @db.Decimal(14, 2)
+  cost        Decimal?  @db.Decimal(14, 2)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 
-  categoryId String?
-  category   Category? @relation(fields: [categoryId], references: [id])
-
-  storeId String
-  store   Store  @relation(fields: [storeId], references: [id])
-
-  vendors Vendor[]
-
-  itemSpecificationValues ItemSpecificationValue[]
-
-  deletedAt DateTime?
-  updatedAt DateTime? @updatedAt
+  vendors    ItemVendor[]
+  specValues ItemSpecificationValue[]
 
   @@unique([storeId, number])
+  @@unique([storeId, sku])
+  @@index([storeId, categoryId])
+  @@index([storeId, deletedAt])
+}
+
+model ItemVendor {
+  itemId       String   @db.Uuid
+  vendorId     String   @db.Uuid
+  vendorSku    String?
+  costPrice    Decimal? @db.Decimal(14, 2)
+  leadTimeDays Int?
+  isPreferred  Boolean  @default(false)
+  item         Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  vendor       Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@id([itemId, vendorId])
+  @@index([vendorId])
 }
 
 model Vendor {
-  id             String          @id @default(uuid(7))
-  name           String
-  description    String?
-  vendorContacts VendorContact[]
-  vendorItems    Item[]
-  addressId      String
-  address        Address         @relation(fields: [addressId], references: [id])
-  deletedAt      DateTime?
-  updatedAt      DateTime?       @updatedAt
+  id          String    @id @default(uuid(7)) @db.Uuid
+  storeId     String    @db.Uuid
+  store       Store     @relation(fields: [storeId], references: [id])
+  name        String
+  description String?
+  addressId   String?   @db.Uuid
+  address     Address?  @relation(fields: [addressId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  contacts VendorContact[]
+  items    ItemVendor[]
+
+  @@index([storeId, deletedAt])
 }
 
 model Client {
-  id             String          @id @default(uuid(7))
-  name           String
-  description    String?
-  clientContacts ClientContact[]
-  addressId      String
-  address        Address         @relation(fields: [addressId], references: [id])
-  deletedAt      DateTime?
-  updatedAt      DateTime?       @updatedAt
-}
+  id          String    @id @default(uuid(7)) @db.Uuid
+  storeId     String    @db.Uuid
+  store       Store     @relation(fields: [storeId], references: [id])
+  name        String
+  description String?
+  addressId   String?   @db.Uuid
+  address     Address?  @relation(fields: [addressId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 
-model ClientContact {
-  id        String  @id @default(uuid(7))
-  clientId  String
-  client    Client  @relation(fields: [clientId], references: [id])
-  contactId String
-  contact   Contact @relation(fields: [contactId], references: [id])
-}
+  contacts ClientContact[]
 
-model VendorContact {
-  id        String  @id @default(uuid(7))
-  vendorId  String
-  vendor    Vendor  @relation(fields: [vendorId], references: [id])
-  contactId String
-  contact   Contact @relation(fields: [contactId], references: [id])
+  @@index([storeId, deletedAt])
 }
 
 model Contact {
-  id             String          @id @default(uuid(7))
-  name           String
-  email          String
-  phone          String
-  storeContacts  StoreContact[]
+  id        String    @id @default(uuid(7)) @db.Uuid
+  storeId   String    @db.Uuid
+  store     Store     @relation(fields: [storeId], references: [id])
+  name      String
+  email     String?
+  phone     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
   vendorContacts VendorContact[]
   clientContacts ClientContact[]
-  deletedAt      DateTime?
-  updatedAt      DateTime?       @updatedAt
+
+  @@index([storeId])
 }
 
-model StoreContact {
-  id        String  @id @default(uuid(7))
-  storeId   String
-  contactId String
-  store     Store   @relation(fields: [storeId], references: [id])
-  contact   Contact @relation(fields: [contactId], references: [id])
+model VendorContact {
+  vendorId  String  @db.Uuid
+  contactId String  @db.Uuid
+  isPrimary Boolean @default(false)
+  vendor    Vendor  @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@id([vendorId, contactId])
+  @@index([contactId])
+}
+
+model ClientContact {
+  clientId  String  @db.Uuid
+  contactId String  @db.Uuid
+  isPrimary Boolean @default(false)
+  client    Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@id([clientId, contactId])
+  @@index([contactId])
 }
 
 model Address {
-  id        String    @id @default(uuid(7))
-  street    String
+  id        String   @id @default(uuid(7)) @db.Uuid
+  line1     String
+  line2     String?
   city      String
   state     String
   zipCode   String
-  stores    Store[]
-  vendors   Vendor[]
-  clients   Client[]
-  updatedAt DateTime? @updatedAt
+  country   String   @default("IR") @db.Char(2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stores  Store[]
+  vendors Vendor[]
+  clients Client[]
 }
 
 model StoreUser {
-  id        String    @id @default(uuid(7))
-  name      String
-  storeId   String
-  store     Store     @relation(fields: [storeId], references: [id])
-  username  String
-  password  String
-  roleId    String
-  role      Role      @relation(fields: [roleId], references: [id])
-  deletedAt DateTime?
-  updatedAt DateTime? @updatedAt
+  id           String    @id @default(uuid(7)) @db.Uuid
+  storeId      String    @db.Uuid
+  store        Store     @relation(fields: [storeId], references: [id])
+  roleId       String    @db.Uuid
+  role         Role      @relation(fields: [roleId], references: [id])
+  name         String
+  username     String
+  passwordHash String
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
 
   @@unique([storeId, username])
+  @@index([roleId])
 }
 
 model Permission {
-  id              String           @id @default(uuid(7))
-  key             String           @unique
-  rolePermissions RolePermission[]
+  id    String           @id @default(uuid(7)) @db.Uuid
+  key   String           @unique
+  roles RolePermission[]
 }
 
 model Role {
-  id              String           @id @default(uuid(7))
-  name            String
-  storeId         String
-  store           Store            @relation(fields: [storeId], references: [id])
-  rolePermissions RolePermission[]
-  admins          StoreUser[]
-  grantsAll       Boolean
-  deletedAt       DateTime?
-  updatedAt       DateTime?        @updatedAt
+  id        String    @id @default(uuid(7)) @db.Uuid
+  storeId   String    @db.Uuid
+  store     Store     @relation(fields: [storeId], references: [id])
+  name      String
+  grantsAll Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  permissions RolePermission[]
+  users       StoreUser[]
 
   @@unique([storeId, name])
 }
 
 model RolePermission {
-  roleId       String
-  permissionId String
+  roleId       String     @db.Uuid
+  permissionId String     @db.Uuid
   role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
@@ -178,48 +237,55 @@ model RolePermission {
   @@index([permissionId])
 }
 
-enum SpecificationValueType {
-  STRING
-  BOOLEAN
-  NUMBER
-}
-
 model Specification {
-  id         String  @id
+  id         String                 @id @default(uuid(7)) @db.Uuid
+  storeId    String                 @db.Uuid
+  store      Store                  @relation(fields: [storeId], references: [id])
+  categoryId String?                @db.Uuid
+  category   Category?              @relation(fields: [categoryId], references: [id])
   name       String
-  categoryId String?
-  storeId    String
+  type       SpecificationValueType
+  isPrimary  Boolean                @default(false)
+  isRequired Boolean                @default(false)
+  isActive   Boolean                @default(true)
+  createdAt  DateTime               @default(now())
+  updatedAt  DateTime               @updatedAt
+  deletedAt  DateTime?
 
-  type                    SpecificationValueType
-  isPrimary               Boolean
-  isRequired              Boolean
-  specificationValues     SpecificationValue[]
-  itemSpecificationValues ItemSpecificationValue[]
-  isActive                Boolean                  @default(true)
-  deletedAt               DateTime?
-  updatedAt               DateTime?                @updatedAt
-  stores                  Store[]
+  options SpecificationValue[]
+  values  ItemSpecificationValue[]
 
-  @@unique([categoryId, name, storeId])
+  @@unique([storeId, categoryId, name]) // + partial unique (categoryId IS NULL) via raw SQL
+  @@index([categoryId])
 }
 
+// گزینه‌های از پیش تعریف‌شده (فقط برای type = OPTION)
 model SpecificationValue {
-  id              String        @id
-  value           String
-  specificationId String
+  id              String        @id @default(uuid(7)) @db.Uuid
+  specificationId String        @db.Uuid
   specification   Specification @relation(fields: [specificationId], references: [id], onDelete: Cascade)
+  value           String
+  sortOrder       Int           @default(0)
   deletedAt       DateTime?
 
-  itemSpecificationValues ItemSpecificationValue[]
+  itemValues ItemSpecificationValue[]
+
+  @@unique([specificationId, value])
 }
 
 model ItemSpecificationValue {
-  id                   String @id
-  itemId               String
-  specificationId      String
-  specificationValueId String
+  itemId          String   @db.Uuid
+  specificationId String   @db.Uuid
+  optionId        String?  @db.Uuid
+  valueString     String?
+  valueNumber     Decimal? @db.Decimal(18, 4)
+  valueBoolean    Boolean?
 
-  item               Item               @relation(fields: [itemId], references: [id])
-  specification      Specification      @relation(fields: [specificationId], references: [id])
-  specificationValue SpecificationValue @relation(fields: [specificationValueId], references: [id])
+  item          Item                @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  specification Specification       @relation(fields: [specificationId], references: [id])
+  option        SpecificationValue? @relation(fields: [optionId], references: [id])
+
+  @@id([itemId, specificationId])
+  @@index([specificationId, valueNumber])
+  @@index([optionId])
 }
